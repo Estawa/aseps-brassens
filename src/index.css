@@ -1,0 +1,39 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --ink: #101826;
+  --ink-soft: #1c2940;
+  --piste: #ff7a29;
+  --piste-soft: #ffe4d2;
+  --teal: #1fb6a6;
+  --teal-soft: #d9f5f1;
+  --craie: #f7f5f0;
+  --ligne: #e3e0d8;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: "Inter", system-ui, sans-serif;
+  background: var(--craie);
+  color: var(--ink);
+}
+
+h1, h2, h3, .display {
+  font-family: "Oswald", sans-serif;
+  letter-spacing: 0.2px;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-thumb {
+  background: #d8d3c6;
+  border-radius: 4px;
+}
