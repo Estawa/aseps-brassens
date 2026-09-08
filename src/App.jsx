@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useMemo, useRef } from "react";
 import {
-  Home, LayoutList, FolderOpen, Settings, Lock, Unlock, Plus, Trash2, Pencil,
-  ChevronUp, ChevronDown, ChevronRight, ChevronLeft, ExternalLink, Image as ImageIcon,
-  Video, FileText, Upload, X, Check, Link2, Save, ArrowLeft, Menu,
+  Home, LayoutList, FolderOpen, Lock, Unlock, Plus, Trash2, Pencil,
+  ChevronUp, ChevronDown, ChevronRight, ExternalLink, Image as ImageIcon,
+  Video, FileText, Upload, X, Link2, ArrowLeft, Menu, Images, Type, LayoutTemplate, GripVertical,
 } from "lucide-react";
 
 const uid = () => Math.random().toString(36).slice(2, 10);
-const APP_VERSION = "0.1.0";
+const APP_VERSION = "0.2.0";
 
 // ---------- Stockage local persistant ----------
 function lsLire(cle, defaut) {
@@ -25,52 +25,50 @@ function lsEcrire(cle, valeur) {
   }
 }
 
-// ---------- Données de départ (reprise du site existant) ----------
+function fichierVersDataUrl(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+function estFonce(couleur) {
+  if (!couleur) return true;
+  const hex = couleur.replace("#", "");
+  if (hex.length !== 6) return true;
+  const r = parseInt(hex.slice(0, 2), 16), g = parseInt(hex.slice(2, 4), 16), b = parseInt(hex.slice(4, 6), 16);
+  return (r * 299 + g * 587 + b * 114) / 1000 < 140;
+}
+
+// ---------- Données de départ ----------
+function blocTexte(texte) { return { id: uid(), type: "texte", texte }; }
+function blocLiens(liens) { return { id: uid(), type: "liens", liens: liens.map((l) => ({ id: uid(), ...l })) }; }
+
+const PAGE_ACCUEIL_SEED = {
+  blocs: [
+    {
+      id: uid(), type: "bandeau", fondType: "couleur", fondCouleur: "#101826", fondImage: "", diaporamaImages: [],
+      titre: "L'EPS au lycée Georges-Brassens",
+      texte: "Ressources d'enseignement, actualités de l'Association Sportive et documents utiles, rassemblés par l'équipe EPS.",
+    },
+  ],
+};
+
 const SEED_RUBRIQUES = [
-  {
-    id: "musculation", titre: "Musculation", parentId: null, ordre: 0,
-    page: { texte: "", fondCouleur: "#101826", fondImage: "", medias: [], liens: [] },
-  },
-  {
-    id: "musculation-chezsoi", titre: "Muscu chez soi", parentId: "musculation", ordre: 0,
-    page: { texte: "Séances de musculation à réaliser à la maison, sans matériel.", fondCouleur: "#ffffff", fondImage: "", medias: [], liens: [] },
-  },
-  {
-    id: "musculation-hiit", titre: "Entraînement HIIT", parentId: "musculation", ordre: 1,
-    page: { texte: "Séances d'entraînement fractionné à haute intensité.", fondCouleur: "#ffffff", fondImage: "", medias: [], liens: [] },
-  },
-  {
-    id: "musculation-jeu", titre: "Jeu de l'Oie", parentId: "musculation", ordre: 2,
-    page: { texte: "Version ludique d'une séance de musculation.", fondCouleur: "#ffffff", fondImage: "", medias: [], liens: [] },
-  },
-  {
-    id: "musculation-theorie", titre: "Théorie", parentId: "musculation", ordre: 3,
-    page: { texte: "Notions théoriques autour de la musculation.", fondCouleur: "#ffffff", fondImage: "", medias: [], liens: [] },
-  },
-  {
-    id: "sopra", titre: "Sopra Flashmob", parentId: null, ordre: 1,
-    page: { texte: "", fondCouleur: "#101826", fondImage: "", medias: [], liens: [] },
-  },
+  { id: "musculation", titre: "Musculation", parentId: null, ordre: 0, page: { blocs: [] } },
+  { id: "musculation-chezsoi", titre: "Muscu chez soi", parentId: "musculation", ordre: 0, page: { blocs: [blocTexte("Séances de musculation à réaliser à la maison, sans matériel.")] } },
+  { id: "musculation-hiit", titre: "Entraînement HIIT", parentId: "musculation", ordre: 1, page: { blocs: [blocTexte("Séances d'entraînement fractionné à haute intensité.")] } },
+  { id: "musculation-jeu", titre: "Jeu de l'Oie", parentId: "musculation", ordre: 2, page: { blocs: [blocTexte("Version ludique d'une séance de musculation.")] } },
+  { id: "musculation-theorie", titre: "Théorie", parentId: "musculation", ordre: 3, page: { blocs: [blocTexte("Notions théoriques autour de la musculation.")] } },
+  { id: "sopra", titre: "Sopra Flashmob", parentId: null, ordre: 1, page: { blocs: [] } },
   {
     id: "sopra-flashmob", titre: "En mode flashmob", parentId: "sopra", ordre: 0,
-    page: {
-      texte: "Chorégraphie collective sur Sopra.",
-      fondCouleur: "#ffffff", fondImage: "", medias: [],
-      liens: [{ id: uid(), label: "Playlist Chorés (YouTube)", url: "https://www.youtube.com/playlist?list=PL7ZFD8B4khX1Iw7hNSVHNJPJZM8U9A4BY" }],
-    },
+    page: { blocs: [blocTexte("Chorégraphie collective sur Sopra."), blocLiens([{ label: "Playlist Chorés (YouTube)", url: "https://www.youtube.com/playlist?list=PL7ZFD8B4khX1Iw7hNSVHNJPJZM8U9A4BY" }])] },
   },
-  {
-    id: "echauffement", titre: "L'échauffement", parentId: null, ordre: 2,
-    page: { texte: "Protocoles d'échauffement avant les séances d'EPS.", fondCouleur: "#ffffff", fondImage: "", medias: [], liens: [] },
-  },
-  {
-    id: "sportsante", titre: "Sport & Santé", parentId: null, ordre: 3,
-    page: { texte: "", fondCouleur: "#101826", fondImage: "", medias: [], liens: [] },
-  },
-  {
-    id: "sportsante-alim", titre: "L'alimentation", parentId: "sportsante", ordre: 0,
-    page: { texte: "Repères sur l'alimentation du sportif.", fondCouleur: "#ffffff", fondImage: "", medias: [], liens: [] },
-  },
+  { id: "echauffement", titre: "L'échauffement", parentId: null, ordre: 2, page: { blocs: [blocTexte("Protocoles d'échauffement avant les séances d'EPS.")] } },
+  { id: "sportsante", titre: "Sport & Santé", parentId: null, ordre: 3, page: { blocs: [] } },
+  { id: "sportsante-alim", titre: "L'alimentation", parentId: "sportsante", ordre: 0, page: { blocs: [blocTexte("Repères sur l'alimentation du sportif.")] } },
 ];
 
 const SEED_LIENS = [
@@ -89,13 +87,101 @@ function construireArbre(rubriques) {
   }));
 }
 
-function fichierVersDataUrl(file) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result);
-    reader.onerror = reject;
-    reader.readAsDataURL(file);
-  });
+// ---------- Diaporama (photos défilantes) ----------
+function Diaporama({ images, vitesse = 4, style, fondu = true }) {
+  const [i, setI] = useState(0);
+  useEffect(() => {
+    if (!images || images.length < 2) return;
+    const t = setInterval(() => setI((v) => (v + 1) % images.length), Math.max(1.5, vitesse) * 1000);
+    return () => clearInterval(t);
+  }, [images, vitesse]);
+  if (!images || images.length === 0) return null;
+  return (
+    <div style={{ position: "relative", overflow: "hidden", ...style }}>
+      {images.map((img, idx) => (
+        <img
+          key={img.id || idx}
+          src={img.url}
+          alt={img.legende || ""}
+          style={{
+            position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover",
+            opacity: idx === i ? 1 : 0, transition: fondu ? "opacity 0.9s ease" : "none",
+          }}
+        />
+      ))}
+    </div>
+  );
+}
+
+// ---------- Rendu public des blocs ----------
+function RenduBlocs({ blocs }) {
+  return (
+    <div>
+      {(blocs || []).map((b) => <RenduBloc key={b.id} bloc={b} />)}
+    </div>
+  );
+}
+function RenduBloc({ bloc }) {
+  if (bloc.type === "bandeau") {
+    const fondImg = bloc.fondType === "image" && bloc.fondImage ? bloc.fondImage : null;
+    const clair = !estFonce(bloc.fondType === "couleur" ? bloc.fondCouleur : "#101826");
+    return (
+      <div style={{ position: "relative", minHeight: 200, display: "flex", alignItems: "flex-end", overflow: "hidden", background: bloc.fondType === "couleur" ? (bloc.fondCouleur || "#101826") : "#101826" }}>
+        {fondImg && <img src={fondImg} alt="" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }} />}
+        {bloc.fondType === "diaporama" && bloc.diaporamaImages?.length > 0 && (
+          <Diaporama images={bloc.diaporamaImages} vitesse={bloc.vitesse} style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }} />
+        )}
+        {(fondImg || bloc.fondType === "diaporama") && <div style={{ position: "absolute", inset: 0, background: "linear-gradient(180deg, rgba(16,24,38,0.15), rgba(16,24,38,0.75))" }} />}
+        <div style={{ position: "relative", padding: "34px 20px 28px", color: clair ? "#101826" : "#fff" }}>
+          {bloc.titre && <div className="display" style={{ fontSize: 26, fontWeight: 600, lineHeight: 1.15 }}>{bloc.titre}</div>}
+          {bloc.texte && <div style={{ marginTop: 8, fontSize: 13.5, opacity: 0.85, maxWidth: 480 }}>{bloc.texte}</div>}
+        </div>
+      </div>
+    );
+  }
+  if (bloc.type === "texte") {
+    if (!bloc.texte) return null;
+    return <div style={{ padding: "16px 20px 4px", fontSize: 14, lineHeight: 1.6, color: "#101826", whiteSpace: "pre-wrap" }}>{bloc.texte}</div>;
+  }
+  if (bloc.type === "image") {
+    if (!bloc.url) return null;
+    return (
+      <div style={{ padding: "10px 20px" }}>
+        <img src={bloc.url} alt={bloc.legende || ""} style={{ width: "100%", borderRadius: 12, border: "1px solid var(--ligne)", display: "block" }} />
+        {bloc.legende && <div style={{ fontSize: 11.5, color: "#6b6656", marginTop: 6 }}>{bloc.legende}</div>}
+      </div>
+    );
+  }
+  if (bloc.type === "video") {
+    if (!bloc.url) return null;
+    return (
+      <div style={{ padding: "10px 20px" }}>
+        <video src={bloc.url} controls style={{ width: "100%", borderRadius: 12, border: "1px solid var(--ligne)", display: "block" }} />
+        {bloc.legende && <div style={{ fontSize: 11.5, color: "#6b6656", marginTop: 6 }}>{bloc.legende}</div>}
+      </div>
+    );
+  }
+  if (bloc.type === "diaporama") {
+    if (!bloc.images || bloc.images.length === 0) return null;
+    return (
+      <div style={{ padding: "10px 20px" }}>
+        <Diaporama images={bloc.images} vitesse={bloc.vitesse} style={{ width: "100%", aspectRatio: "16/9", borderRadius: 12, border: "1px solid var(--ligne)" }} />
+      </div>
+    );
+  }
+  if (bloc.type === "liens") {
+    if (!bloc.liens || bloc.liens.length === 0) return null;
+    return (
+      <div style={{ padding: "12px 20px", display: "flex", flexWrap: "wrap", gap: 8 }}>
+        {bloc.liens.map((l) => (
+          <a key={l.id} href={l.url} target="_blank" rel="noreferrer" style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 12.5, fontWeight: 600, color: "#101826", background: "#fff", border: "1px solid var(--ligne)", borderRadius: 8, padding: "7px 10px", textDecoration: "none" }}>
+            <ExternalLink size={12} /> {l.label}
+          </a>
+        ))}
+      </div>
+    );
+  }
+  return null;
 }
 
 // ---------- En-tête / navigation publique ----------
@@ -150,19 +236,10 @@ function navBtnStyle(actif) {
 }
 
 // ---------- Page d'accueil publique ----------
-function PageAccueil({ arbre, liens, allerA }) {
+function PageAccueil({ pageAccueil, arbre, liens, allerA }) {
   return (
     <div>
-      <div style={{ background: "linear-gradient(135deg, #101826, #1c2940)", color: "#fff", padding: "44px 20px 36px" }}>
-        <div className="display" style={{ fontSize: 30, fontWeight: 600, lineHeight: 1.1 }}>
-          L'EPS au lycée<br />Georges-Brassens
-        </div>
-        <div style={{ marginTop: 10, fontSize: 14, opacity: 0.8, maxWidth: 480 }}>
-          Ressources d'enseignement, actualités de l'Association Sportive et documents utiles,
-          rassemblés par l'équipe EPS.
-        </div>
-      </div>
-
+      <RenduBlocs blocs={pageAccueil.blocs} />
       <div style={{ padding: 20 }}>
         <div style={{ fontSize: 12.5, fontWeight: 700, color: "#6b6656", textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 10 }}>
           Enseignements
@@ -209,77 +286,37 @@ const TUILE_COULEURS = ["var(--piste-soft)", "var(--teal-soft)", "#fdeecb", "#e6
 
 // ---------- Page d'une rubrique / sous-rubrique ----------
 function PageRubrique({ rubrique, sousRubriques, allerA, parent }) {
-  const p = rubrique.page || {};
-  const fondImage = p.fondImage ? `url(${p.fondImage})` : null;
   return (
     <div>
-      <div
-        style={{
-          background: fondImage ? `${fondImage} center/cover no-repeat` : (p.fondCouleur || "#101826"),
-          color: estFonce(p.fondCouleur) ? "#fff" : "#101826",
-          padding: "30px 20px",
-        }}
-      >
-        {parent && (
-          <button onClick={() => allerA({ type: "rubrique", id: parent.id })} style={{ display: "flex", alignItems: "center", gap: 4, background: "none", border: "none", color: "inherit", opacity: 0.75, fontSize: 12, cursor: "pointer", padding: 0, marginBottom: 8 }}>
+      {parent && (
+        <div style={{ padding: "14px 20px 0" }}>
+          <button onClick={() => allerA({ type: "rubrique", id: parent.id })} style={{ display: "flex", alignItems: "center", gap: 4, background: "none", border: "none", color: "#6b6656", fontSize: 12, cursor: "pointer", padding: 0 }}>
             <ArrowLeft size={13} /> {parent.titre}
           </button>
-        )}
-        <div className="display" style={{ fontSize: 24, fontWeight: 600 }}>{rubrique.titre}</div>
+        </div>
+      )}
+      <div style={{ padding: "10px 20px 0" }}>
+        <div className="display" style={{ fontSize: 22, fontWeight: 600 }}>{rubrique.titre}</div>
       </div>
 
-      <div style={{ padding: 20 }}>
-        {p.texte && <p style={{ fontSize: 14, lineHeight: 1.6, color: "#101826", whiteSpace: "pre-wrap" }}>{p.texte}</p>}
+      <RenduBlocs blocs={rubrique.page.blocs} />
 
-        {sousRubriques.length > 0 && (
-          <div style={{ display: "grid", gap: 8, marginTop: 6, marginBottom: 18 }}>
-            {sousRubriques.map((s) => (
-              <button key={s.id} onClick={() => allerA({ type: "rubrique", id: s.id })} style={{ textAlign: "left", border: "1px solid var(--ligne)", borderRadius: 10, padding: "11px 14px", background: "#fff", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                <span style={{ fontSize: 13.5, fontWeight: 600 }}>{s.titre}</span>
-                <ChevronRight size={16} color="#6b6656" />
-              </button>
-            ))}
-          </div>
-        )}
+      {sousRubriques.length > 0 && (
+        <div style={{ display: "grid", gap: 8, margin: "6px 20px 18px" }}>
+          {sousRubriques.map((s) => (
+            <button key={s.id} onClick={() => allerA({ type: "rubrique", id: s.id })} style={{ textAlign: "left", border: "1px solid var(--ligne)", borderRadius: 10, padding: "11px 14px", background: "#fff", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+              <span style={{ fontSize: 13.5, fontWeight: 600 }}>{s.titre}</span>
+              <ChevronRight size={16} color="#6b6656" />
+            </button>
+          ))}
+        </div>
+      )}
 
-        {(p.medias || []).length > 0 && (
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(140px, 1fr))", gap: 10, marginBottom: 18 }}>
-            {p.medias.map((m) => (
-              <div key={m.id} style={{ border: "1px solid var(--ligne)", borderRadius: 10, overflow: "hidden", background: "#fff" }}>
-                {m.type === "video" ? (
-                  <video src={m.url} controls style={{ width: "100%", display: "block", aspectRatio: "4/3", objectFit: "cover" }} />
-                ) : (
-                  <img src={m.url} alt={m.legende || ""} style={{ width: "100%", display: "block", aspectRatio: "4/3", objectFit: "cover" }} />
-                )}
-                {m.legende && <div style={{ fontSize: 11, padding: "5px 8px", color: "#6b6656" }}>{m.legende}</div>}
-              </div>
-            ))}
-          </div>
-        )}
-
-        {(p.liens || []).length > 0 && (
-          <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-            {p.liens.map((l) => (
-              <a key={l.id} href={l.url} target="_blank" rel="noreferrer" style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 12.5, fontWeight: 600, color: "#101826", background: "#fff", border: "1px solid var(--ligne)", borderRadius: 8, padding: "7px 10px", textDecoration: "none" }}>
-                <ExternalLink size={12} /> {l.label}
-              </a>
-            ))}
-          </div>
-        )}
-
-        {!p.texte && sousRubriques.length === 0 && (p.medias || []).length === 0 && (p.liens || []).length === 0 && (
-          <div style={{ color: "#9a9384", fontSize: 13, fontStyle: "italic" }}>Cette page n'a pas encore de contenu.</div>
-        )}
-      </div>
+      {(rubrique.page.blocs || []).length === 0 && sousRubriques.length === 0 && (
+        <div style={{ padding: "0 20px 20px", color: "#9a9384", fontSize: 13, fontStyle: "italic" }}>Cette page n'a pas encore de contenu.</div>
+      )}
     </div>
   );
-}
-function estFonce(couleur) {
-  if (!couleur) return true;
-  const hex = couleur.replace("#", "");
-  if (hex.length !== 6) return true;
-  const r = parseInt(hex.slice(0, 2), 16), g = parseInt(hex.slice(2, 4), 16), b = parseInt(hex.slice(4, 6), 16);
-  return (r * 299 + g * 587 + b * 114) / 1000 < 140;
 }
 
 // ---------- Page Documents (publique) ----------
@@ -335,14 +372,14 @@ function CadenasAdmin({ pinAttendu, onDeverrouille, onAnnuler }) {
 }
 
 // ---------- Espace admin : gestion des rubriques ----------
-function AdminRubriques({ rubriques, setRubriques, ongletChoisi, setOngletChoisi }) {
+function AdminRubriques({ rubriques, setRubriques, ongletChoisi, setOngletChoisi, pageAccueilChoisie, setPageAccueilChoisie }) {
   const arbre = useMemo(() => construireArbre(rubriques), [rubriques]);
 
   const ajouterRubrique = (parentId) => {
     const titre = prompt(parentId ? "Nom de la nouvelle sous-rubrique :" : "Nom de la nouvelle rubrique :");
     if (!titre || !titre.trim()) return;
     const freres = rubriques.filter((r) => r.parentId === (parentId || null));
-    const nouvelle = { id: uid(), titre: titre.trim(), parentId: parentId || null, ordre: freres.length, page: { texte: "", fondCouleur: "#ffffff", fondImage: "", medias: [], liens: [] } };
+    const nouvelle = { id: uid(), titre: titre.trim(), parentId: parentId || null, ordre: freres.length, page: { blocs: [] } };
     setRubriques([...rubriques, nouvelle]);
   };
   const renommer = (id) => {
@@ -371,25 +408,32 @@ function AdminRubriques({ rubriques, setRubriques, ongletChoisi, setOngletChoisi
   return (
     <div>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
-        <div style={{ fontSize: 12.5, fontWeight: 700, color: "#6b6656", textTransform: "uppercase", letterSpacing: 0.5 }}>Rubriques du site</div>
+        <div style={{ fontSize: 12.5, fontWeight: 700, color: "#6b6656", textTransform: "uppercase", letterSpacing: 0.5 }}>Pages du site</div>
         <button onClick={() => ajouterRubrique(null)} style={boutonPrimaire}>
           <Plus size={13} /> Rubrique
         </button>
       </div>
 
+      <button
+        onClick={() => { setPageAccueilChoisie(true); setOngletChoisi(null); }}
+        style={{ width: "100%", textAlign: "left", border: `1px solid ${pageAccueilChoisie ? "var(--piste)" : "var(--ligne)"}`, background: pageAccueilChoisie ? "var(--piste-soft)" : "#fff", borderRadius: 9, padding: "9px 11px", fontSize: 13, fontWeight: 700, color: "#101826", cursor: "pointer", marginBottom: 10, display: "flex", alignItems: "center", gap: 7 }}
+      >
+        <Home size={13} /> Page d'accueil
+      </button>
+
       <div style={{ display: "grid", gap: 8 }}>
         {arbre.map((r) => (
           <div key={r.id}>
             <LigneRubrique
-              rubrique={r} niveau={0} actif={ongletChoisi === r.id}
-              onChoisir={() => setOngletChoisi(r.id)} onRenommer={() => renommer(r.id)}
+              rubrique={r} niveau={0} actif={!pageAccueilChoisie && ongletChoisi === r.id}
+              onChoisir={() => { setOngletChoisi(r.id); setPageAccueilChoisie(false); }} onRenommer={() => renommer(r.id)}
               onSupprimer={() => supprimer(r.id)} onMonter={() => deplacer(r.id, "haut")} onDescendre={() => deplacer(r.id, "bas")}
               onAjouterEnfant={() => ajouterRubrique(r.id)}
             />
             {r.enfants.map((s) => (
               <LigneRubrique
-                key={s.id} rubrique={s} niveau={1} actif={ongletChoisi === s.id}
-                onChoisir={() => setOngletChoisi(s.id)} onRenommer={() => renommer(s.id)}
+                key={s.id} rubrique={s} niveau={1} actif={!pageAccueilChoisie && ongletChoisi === s.id}
+                onChoisir={() => { setOngletChoisi(s.id); setPageAccueilChoisie(false); }} onRenommer={() => renommer(s.id)}
                 onSupprimer={() => supprimer(s.id)} onMonter={() => deplacer(s.id, "haut")} onDescendre={() => deplacer(s.id, "bas")}
               />
             ))}
@@ -415,132 +459,247 @@ function LigneRubrique({ rubrique, niveau, actif, onChoisir, onRenommer, onSuppr
 }
 const iconBtn = { border: "1px solid var(--ligne)", background: "#fff", borderRadius: 7, width: 28, height: 28, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", color: "#6b6656", flexShrink: 0 };
 const boutonPrimaire = { display: "flex", alignItems: "center", gap: 5, border: "none", background: "var(--piste)", color: "#fff", borderRadius: 8, padding: "7px 12px", fontSize: 12, fontWeight: 700, cursor: "pointer" };
+const champLabel = { fontSize: 11.5, fontWeight: 700, color: "#6b6656", textTransform: "uppercase", letterSpacing: 0.4, marginBottom: 6 };
+const champStyle = (largeur) => ({ width: largeur, padding: "7px 9px", borderRadius: 7, border: "1px solid var(--ligne)", fontSize: 12.5, fontFamily: "inherit" });
 
-// ---------- Espace admin : édition d'une page ----------
-function AdminEditeurPage({ rubrique, rubriques, setRubriques }) {
-  const [texte, setTexte] = useState(rubrique.page.texte || "");
-  const [fondCouleur, setFondCouleur] = useState(rubrique.page.fondCouleur || "#ffffff");
-  const [fondImage, setFondImage] = useState(rubrique.page.fondImage || "");
-  const [nouveauLienLabel, setNouveauLienLabel] = useState("");
-  const [nouveauLienUrl, setNouveauLienUrl] = useState("");
-  const [nouveauMediaUrl, setNouveauMediaUrl] = useState("");
-  const [nouveauMediaType, setNouveauMediaType] = useState("image");
-  const [nouveauMediaLegende, setNouveauMediaLegende] = useState("");
+const TYPES_BLOC = [
+  { id: "bandeau", label: "Bandeau (titre + fond)", Icon: LayoutTemplate },
+  { id: "texte", label: "Texte", Icon: Type },
+  { id: "image", label: "Photo", Icon: ImageIcon },
+  { id: "video", label: "Vidéo", Icon: Video },
+  { id: "diaporama", label: "Diaporama photos", Icon: Images },
+  { id: "liens", label: "Liens externes", Icon: Link2 },
+];
+function nouveauBloc(type) {
+  const base = { id: uid(), type };
+  if (type === "bandeau") return { ...base, fondType: "couleur", fondCouleur: "#101826", fondImage: "", diaporamaImages: [], vitesse: 4, titre: "", texte: "" };
+  if (type === "texte") return { ...base, texte: "" };
+  if (type === "image") return { ...base, url: "", legende: "" };
+  if (type === "video") return { ...base, url: "", legende: "" };
+  if (type === "diaporama") return { ...base, images: [], vitesse: 4 };
+  if (type === "liens") return { ...base, liens: [] };
+  return base;
+}
 
-  useEffect(() => {
-    setTexte(rubrique.page.texte || "");
-    setFondCouleur(rubrique.page.fondCouleur || "#ffffff");
-    setFondImage(rubrique.page.fondImage || "");
-  }, [rubrique.id]);
+// ---------- Espace admin : éditeur de blocs (page d'accueil ET rubriques) ----------
+function AdminEditeurBlocs({ page, onChange }) {
+  const blocs = page.blocs || [];
+  const [typeAAjouter, setTypeAAjouter] = useState("texte");
+  const dragId = useRef(null);
 
-  const majPage = (patch) => {
-    setRubriques(rubriques.map((r) => r.id === rubrique.id ? { ...r, page: { ...r.page, ...patch } } : r));
+  const majBlocs = (nouveaux) => onChange({ ...page, blocs: nouveaux });
+  const majBloc = (id, patch) => majBlocs(blocs.map((b) => b.id === id ? { ...b, ...patch } : b));
+  const supprimerBloc = (id) => majBlocs(blocs.filter((b) => b.id !== id));
+  const deplacerBloc = (id, sens) => {
+    const idx = blocs.findIndex((b) => b.id === id);
+    const cible = sens === "haut" ? idx - 1 : idx + 1;
+    if (cible < 0 || cible >= blocs.length) return;
+    const copie = [...blocs];
+    [copie[idx], copie[cible]] = [copie[cible], copie[idx]];
+    majBlocs(copie);
   };
+  const ajouterBloc = () => majBlocs([...blocs, nouveauBloc(typeAAjouter)]);
 
-  const importerFondImage = async (file) => {
-    const dataUrl = await fichierVersDataUrl(file);
-    setFondImage(dataUrl);
-    majPage({ fondImage: dataUrl });
+  // Glisser-déposer (souris/ordinateur) — en complément des flèches (fiables aussi au tactile)
+  const onDragStart = (id) => (e) => { dragId.current = id; e.dataTransfer.effectAllowed = "move"; };
+  const onDragOver = (id) => (e) => { e.preventDefault(); };
+  const onDrop = (id) => (e) => {
+    e.preventDefault();
+    if (!dragId.current || dragId.current === id) return;
+    const idxSrc = blocs.findIndex((b) => b.id === dragId.current);
+    const idxDst = blocs.findIndex((b) => b.id === id);
+    if (idxSrc === -1 || idxDst === -1) return;
+    const copie = [...blocs];
+    const [retire] = copie.splice(idxSrc, 1);
+    copie.splice(idxDst, 0, retire);
+    majBlocs(copie);
+    dragId.current = null;
   };
-  const importerMediaFichier = async (file) => {
-    const dataUrl = await fichierVersDataUrl(file);
-    const type = file.type.startsWith("video") ? "video" : "image";
-    majPage({ medias: [...(rubrique.page.medias || []), { id: uid(), type, url: dataUrl, legende: "" }] });
-  };
-  const ajouterMediaUrl = () => {
-    if (!nouveauMediaUrl.trim()) return;
-    majPage({ medias: [...(rubrique.page.medias || []), { id: uid(), type: nouveauMediaType, url: nouveauMediaUrl.trim(), legende: nouveauMediaLegende.trim() }] });
-    setNouveauMediaUrl(""); setNouveauMediaLegende("");
-  };
-  const supprimerMedia = (id) => majPage({ medias: (rubrique.page.medias || []).filter((m) => m.id !== id) });
-  const ajouterLien = () => {
-    if (!nouveauLienLabel.trim() || !nouveauLienUrl.trim()) return;
-    majPage({ liens: [...(rubrique.page.liens || []), { id: uid(), label: nouveauLienLabel.trim(), url: nouveauLienUrl.trim() }] });
-    setNouveauLienLabel(""); setNouveauLienUrl("");
-  };
-  const supprimerLien = (id) => majPage({ liens: (rubrique.page.liens || []).filter((l) => l.id !== id) });
 
   return (
-    <div style={{ display: "grid", gap: 18 }}>
-      <div>
-        <div style={champLabel}>Texte de la page</div>
-        <textarea
-          value={texte} onChange={(e) => setTexte(e.target.value)} onBlur={() => majPage({ texte })}
-          rows={5} placeholder="Contenu de la page…"
-          style={{ width: "100%", padding: 10, borderRadius: 9, border: "1px solid var(--ligne)", fontSize: 13.5, fontFamily: "inherit", resize: "vertical" }}
-        />
-      </div>
-
-      <div>
-        <div style={champLabel}>Fond de la page</div>
-        <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
-          <input type="color" value={fondCouleur} onChange={(e) => { setFondCouleur(e.target.value); majPage({ fondCouleur: e.target.value }); }} style={{ width: 44, height: 36, border: "1px solid var(--ligne)", borderRadius: 7, padding: 2, cursor: "pointer" }} />
-          <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12, fontWeight: 600, color: "var(--piste)", cursor: "pointer" }}>
-            <input type="file" accept="image/*" onChange={(e) => e.target.files[0] && importerFondImage(e.target.files[0])} style={{ display: "none" }} />
-            <Upload size={13} /> Image de fond
-          </label>
-          {fondImage && (
-            <button onClick={() => { setFondImage(""); majPage({ fondImage: "" }); }} style={{ ...iconBtn, color: "#c24b4b" }} title="Retirer l'image de fond"><X size={13} /></button>
-          )}
-        </div>
-        {fondImage && <img src={fondImage} alt="" style={{ marginTop: 8, width: 90, height: 60, objectFit: "cover", borderRadius: 8, border: "1px solid var(--ligne)" }} />}
-      </div>
-
-      <div>
-        <div style={champLabel}>Photos / vidéos</div>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(90px, 1fr))", gap: 8, marginBottom: 10 }}>
-          {(rubrique.page.medias || []).map((m) => (
-            <div key={m.id} style={{ position: "relative", borderRadius: 8, overflow: "hidden", border: "1px solid var(--ligne)", aspectRatio: "1" }}>
-              {m.type === "video" ? <video src={m.url} style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : <img src={m.url} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />}
-              <button onClick={() => supprimerMedia(m.id)} style={{ position: "absolute", top: 3, right: 3, background: "rgba(0,0,0,0.6)", border: "none", borderRadius: 5, padding: 3, cursor: "pointer", display: "flex" }}>
-                <X size={11} color="#fff" />
-              </button>
+    <div style={{ display: "grid", gap: 12 }}>
+      {blocs.length === 0 && <div style={{ fontSize: 12.5, color: "#9a9384", fontStyle: "italic" }}>Aucun bloc pour l'instant — ajoute-en un ci-dessous.</div>}
+      {blocs.map((b) => {
+        const meta = TYPES_BLOC.find((t) => t.id === b.type);
+        return (
+          <div
+            key={b.id}
+            draggable
+            onDragStart={onDragStart(b.id)}
+            onDragOver={onDragOver(b.id)}
+            onDrop={onDrop(b.id)}
+            style={{ border: "1px solid var(--ligne)", borderRadius: 10, padding: 12, background: "#fff" }}
+          >
+            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
+              <GripVertical size={14} color="#c7c1b2" style={{ cursor: "grab" }} />
+              {meta?.Icon && <meta.Icon size={13} color="var(--piste)" />}
+              <span style={{ fontSize: 12, fontWeight: 700, color: "#6b6656", flex: 1 }}>{meta?.label || b.type}</span>
+              <button onClick={() => deplacerBloc(b.id, "haut")} title="Monter" style={iconBtn}><ChevronUp size={13} /></button>
+              <button onClick={() => deplacerBloc(b.id, "bas")} title="Descendre" style={iconBtn}><ChevronDown size={13} /></button>
+              <button onClick={() => supprimerBloc(b.id)} title="Supprimer" style={{ ...iconBtn, color: "#c24b4b" }}><Trash2 size={13} /></button>
             </div>
-          ))}
-        </div>
-        <div style={{ display: "flex", gap: 6, flexWrap: "wrap", alignItems: "center" }}>
-          <label style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 12, fontWeight: 600, color: "var(--piste)", cursor: "pointer" }}>
-            <input type="file" accept="image/*,video/*" onChange={(e) => e.target.files[0] && importerMediaFichier(e.target.files[0])} style={{ display: "none" }} />
-            <Upload size={13} /> Importer un fichier
-          </label>
-          <select value={nouveauMediaType} onChange={(e) => setNouveauMediaType(e.target.value)} style={champStyle(80)}>
-            <option value="image">Photo</option>
-            <option value="video">Vidéo</option>
-          </select>
-          <input value={nouveauMediaUrl} onChange={(e) => setNouveauMediaUrl(e.target.value)} placeholder="…ou coller une URL" style={champStyle(160)} />
-          <input value={nouveauMediaLegende} onChange={(e) => setNouveauMediaLegende(e.target.value)} placeholder="Légende (optionnel)" style={champStyle(120)} />
-          <button onClick={ajouterMediaUrl} style={boutonPrimaire}><Plus size={13} /> Ajouter</button>
-        </div>
-        <div style={{ fontSize: 10.5, color: "#9a9384", marginTop: 4 }}>
-          Les fichiers importés sont stockés sur cet appareil ; pour un contenu partagé (dépôts des collègues), on passera par le stockage en ligne à l'étape suivante.
-        </div>
-      </div>
+            <EditeurContenuBloc bloc={b} majBloc={(patch) => majBloc(b.id, patch)} />
+          </div>
+        );
+      })}
 
-      <div>
-        <div style={champLabel}>Liens externes</div>
-        <div style={{ display: "grid", gap: 6, marginBottom: 10 }}>
-          {(rubrique.page.liens || []).map((l) => (
-            <div key={l.id} style={{ display: "flex", alignItems: "center", gap: 8, border: "1px solid var(--ligne)", borderRadius: 8, padding: "7px 10px" }}>
-              <Link2 size={13} color="#6b6656" />
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ fontSize: 12.5, fontWeight: 600 }}>{l.label}</div>
-                <div style={{ fontSize: 11, color: "#9a9384", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{l.url}</div>
-              </div>
-              <button onClick={() => supprimerLien(l.id)} style={{ ...iconBtn, color: "#c24b4b" }}><Trash2 size={12} /></button>
-            </div>
-          ))}
-        </div>
-        <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
-          <input value={nouveauLienLabel} onChange={(e) => setNouveauLienLabel(e.target.value)} placeholder="Libellé" style={champStyle(120)} />
-          <input value={nouveauLienUrl} onChange={(e) => setNouveauLienUrl(e.target.value)} placeholder="https://…" style={champStyle(180)} />
-          <button onClick={ajouterLien} style={boutonPrimaire}><Plus size={13} /> Ajouter</button>
-        </div>
+      <div style={{ display: "flex", gap: 6, alignItems: "center", borderTop: blocs.length > 0 ? "1px solid var(--ligne)" : "none", paddingTop: blocs.length > 0 ? 12 : 0 }}>
+        <select value={typeAAjouter} onChange={(e) => setTypeAAjouter(e.target.value)} style={champStyle(190)}>
+          {TYPES_BLOC.map((t) => <option key={t.id} value={t.id}>{t.label}</option>)}
+        </select>
+        <button onClick={ajouterBloc} style={boutonPrimaire}><Plus size={13} /> Ajouter un bloc</button>
       </div>
     </div>
   );
 }
-const champLabel = { fontSize: 11.5, fontWeight: 700, color: "#6b6656", textTransform: "uppercase", letterSpacing: 0.4, marginBottom: 6 };
-const champStyle = (largeur) => ({ width: largeur, padding: "7px 9px", borderRadius: 7, border: "1px solid var(--ligne)", fontSize: 12.5, fontFamily: "inherit" });
+
+function EditeurContenuBloc({ bloc, majBloc }) {
+  const [local, setLocal] = useState(bloc);
+  useEffect(() => setLocal(bloc), [bloc.id]);
+
+  if (bloc.type === "bandeau") {
+    const importerFond = async (file) => majBloc({ fondImage: await fichierVersDataUrl(file) });
+    const importerDiapo = async (files) => {
+      const nouvelles = await Promise.all(Array.from(files).map(async (f) => ({ id: uid(), url: await fichierVersDataUrl(f) })));
+      majBloc({ diaporamaImages: [...(bloc.diaporamaImages || []), ...nouvelles] });
+    };
+    return (
+      <div style={{ display: "grid", gap: 10 }}>
+        <input value={local.titre} onChange={(e) => setLocal({ ...local, titre: e.target.value })} onBlur={() => majBloc({ titre: local.titre })} placeholder="Titre du bandeau" style={{ ...champStyle("100%"), fontFamily: "'Oswald', sans-serif", fontSize: 15, fontWeight: 600 }} />
+        <textarea value={local.texte} onChange={(e) => setLocal({ ...local, texte: e.target.value })} onBlur={() => majBloc({ texte: local.texte })} rows={2} placeholder="Texte court (optionnel)" style={{ ...champStyle("100%"), resize: "vertical" }} />
+        <div>
+          <div style={champLabel}>Type de fond</div>
+          <div style={{ display: "flex", gap: 6, marginBottom: 8 }}>
+            {[["couleur", "Couleur"], ["image", "Image"], ["diaporama", "Diaporama"]].map(([v, l]) => (
+              <button key={v} onClick={() => majBloc({ fondType: v })} style={{ flex: 1, padding: "6px 0", borderRadius: 7, fontSize: 11.5, fontWeight: 700, cursor: "pointer", border: `1.5px solid ${bloc.fondType === v ? "var(--piste)" : "var(--ligne)"}`, background: bloc.fondType === v ? "var(--piste)" : "#fff", color: bloc.fondType === v ? "#fff" : "#6b6656" }}>{l}</button>
+            ))}
+          </div>
+          {bloc.fondType === "couleur" && (
+            <input type="color" value={bloc.fondCouleur} onChange={(e) => majBloc({ fondCouleur: e.target.value })} style={{ width: 44, height: 34, border: "1px solid var(--ligne)", borderRadius: 7, padding: 2, cursor: "pointer" }} />
+          )}
+          {bloc.fondType === "image" && (
+            <div>
+              <label style={{ display: "inline-flex", alignItems: "center", gap: 5, fontSize: 12, fontWeight: 600, color: "var(--piste)", cursor: "pointer" }}>
+                <input type="file" accept="image/*" onChange={(e) => e.target.files[0] && importerFond(e.target.files[0])} style={{ display: "none" }} />
+                <Upload size={13} /> Choisir une image
+              </label>
+              {bloc.fondImage && <img src={bloc.fondImage} alt="" style={{ display: "block", marginTop: 8, width: 100, height: 60, objectFit: "cover", borderRadius: 8, border: "1px solid var(--ligne)" }} />}
+            </div>
+          )}
+          {bloc.fondType === "diaporama" && (
+            <div>
+              <label style={{ display: "inline-flex", alignItems: "center", gap: 5, fontSize: 12, fontWeight: 600, color: "var(--piste)", cursor: "pointer", marginBottom: 8 }}>
+                <input type="file" accept="image/*" multiple onChange={(e) => e.target.files.length && importerDiapo(e.target.files)} style={{ display: "none" }} />
+                <Upload size={13} /> Ajouter des photos
+              </label>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 8 }}>
+                {(bloc.diaporamaImages || []).map((img) => (
+                  <div key={img.id} style={{ position: "relative" }}>
+                    <img src={img.url} alt="" style={{ width: 54, height: 54, objectFit: "cover", borderRadius: 6, border: "1px solid var(--ligne)" }} />
+                    <button onClick={() => majBloc({ diaporamaImages: bloc.diaporamaImages.filter((i) => i.id !== img.id) })} style={{ position: "absolute", top: -5, right: -5, background: "#c24b4b", border: "none", borderRadius: "50%", width: 16, height: 16, color: "#fff", cursor: "pointer", fontSize: 10, lineHeight: "16px" }}>×</button>
+                  </div>
+                ))}
+              </div>
+              <label style={{ fontSize: 11.5, color: "#6b6656", display: "flex", alignItems: "center", gap: 6 }}>
+                Vitesse (secondes) :
+                <input type="number" min={2} max={20} value={bloc.vitesse || 4} onChange={(e) => majBloc({ vitesse: Number(e.target.value) })} style={{ width: 50, padding: "4px 6px", borderRadius: 6, border: "1px solid var(--ligne)" }} />
+              </label>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  if (bloc.type === "texte") {
+    return <textarea value={local.texte} onChange={(e) => setLocal({ ...local, texte: e.target.value })} onBlur={() => majBloc({ texte: local.texte })} rows={4} placeholder="Contenu du texte…" style={{ ...champStyle("100%"), resize: "vertical" }} />;
+  }
+
+  if (bloc.type === "image" || bloc.type === "video") {
+    const accept = bloc.type === "image" ? "image/*" : "video/*";
+    const importer = async (file) => majBloc({ url: await fichierVersDataUrl(file) });
+    return (
+      <div style={{ display: "grid", gap: 8 }}>
+        {bloc.url && (bloc.type === "image" ? <img src={bloc.url} alt="" style={{ width: "100%", maxWidth: 220, borderRadius: 8, border: "1px solid var(--ligne)" }} /> : <video src={bloc.url} style={{ width: "100%", maxWidth: 220, borderRadius: 8, border: "1px solid var(--ligne)" }} />)}
+        <div style={{ display: "flex", gap: 6, flexWrap: "wrap", alignItems: "center" }}>
+          <label style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 12, fontWeight: 600, color: "var(--piste)", cursor: "pointer" }}>
+            <input type="file" accept={accept} onChange={(e) => e.target.files[0] && importer(e.target.files[0])} style={{ display: "none" }} />
+            <Upload size={13} /> Importer
+          </label>
+          <input value={local.url} onChange={(e) => setLocal({ ...local, url: e.target.value })} onBlur={() => majBloc({ url: local.url })} placeholder="…ou coller une URL" style={champStyle(180)} />
+        </div>
+        <input value={local.legende} onChange={(e) => setLocal({ ...local, legende: e.target.value })} onBlur={() => majBloc({ legende: local.legende })} placeholder="Légende (optionnel)" style={champStyle("100%")} />
+      </div>
+    );
+  }
+
+  if (bloc.type === "diaporama") {
+    const importer = async (files) => {
+      const nouvelles = await Promise.all(Array.from(files).map(async (f) => ({ id: uid(), url: await fichierVersDataUrl(f), legende: "" })));
+      majBloc({ images: [...(bloc.images || []), ...nouvelles] });
+    };
+    const majLegende = (id, legende) => majBloc({ images: bloc.images.map((i) => i.id === id ? { ...i, legende } : i) });
+    return (
+      <div>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(80px, 1fr))", gap: 8, marginBottom: 8 }}>
+          {(bloc.images || []).map((img) => (
+            <div key={img.id} style={{ position: "relative" }}>
+              <img src={img.url} alt="" style={{ width: "100%", aspectRatio: "1", objectFit: "cover", borderRadius: 8, border: "1px solid var(--ligne)" }} />
+              <button onClick={() => majBloc({ images: bloc.images.filter((i) => i.id !== img.id) })} style={{ position: "absolute", top: 3, right: 3, background: "rgba(0,0,0,0.6)", border: "none", borderRadius: 5, padding: 3, cursor: "pointer", display: "flex" }}><X size={11} color="#fff" /></button>
+            </div>
+          ))}
+        </div>
+        <label style={{ display: "inline-flex", alignItems: "center", gap: 5, fontSize: 12, fontWeight: 600, color: "var(--piste)", cursor: "pointer", marginBottom: 8 }}>
+          <input type="file" accept="image/*" multiple onChange={(e) => e.target.files.length && importer(e.target.files)} style={{ display: "none" }} />
+          <Upload size={13} /> Ajouter des photos
+        </label>
+        <div>
+          <label style={{ fontSize: 11.5, color: "#6b6656", display: "flex", alignItems: "center", gap: 6 }}>
+            Vitesse (secondes) :
+            <input type="number" min={2} max={20} value={bloc.vitesse || 4} onChange={(e) => majBloc({ vitesse: Number(e.target.value) })} style={{ width: 50, padding: "4px 6px", borderRadius: 6, border: "1px solid var(--ligne)" }} />
+          </label>
+        </div>
+      </div>
+    );
+  }
+
+  if (bloc.type === "liens") {
+    return <EditeurLiensBloc bloc={bloc} majBloc={majBloc} />;
+  }
+
+  return null;
+}
+function EditeurLiensBloc({ bloc, majBloc }) {
+  const [label, setLabel] = useState("");
+  const [url, setUrl] = useState("");
+  const ajouter = () => {
+    if (!label.trim() || !url.trim()) return;
+    majBloc({ liens: [...(bloc.liens || []), { id: uid(), label: label.trim(), url: url.trim() }] });
+    setLabel(""); setUrl("");
+  };
+  const supprimer = (id) => majBloc({ liens: bloc.liens.filter((l) => l.id !== id) });
+  return (
+    <div>
+      <div style={{ display: "grid", gap: 6, marginBottom: 8 }}>
+        {(bloc.liens || []).map((l) => (
+          <div key={l.id} style={{ display: "flex", alignItems: "center", gap: 8, border: "1px solid var(--ligne)", borderRadius: 8, padding: "7px 10px" }}>
+            <Link2 size={13} color="#6b6656" />
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ fontSize: 12.5, fontWeight: 600 }}>{l.label}</div>
+              <div style={{ fontSize: 11, color: "#9a9384", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{l.url}</div>
+            </div>
+            <button onClick={() => supprimer(l.id)} style={{ ...iconBtn, color: "#c24b4b" }}><Trash2 size={12} /></button>
+          </div>
+        ))}
+      </div>
+      <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+        <input value={label} onChange={(e) => setLabel(e.target.value)} placeholder="Libellé" style={champStyle(120)} />
+        <input value={url} onChange={(e) => setUrl(e.target.value)} placeholder="https://…" style={champStyle(180)} />
+        <button onClick={ajouter} style={boutonPrimaire}><Plus size={13} /> Ajouter</button>
+      </div>
+    </div>
+  );
+}
 
 // ---------- Espace admin : documents & liens globaux ----------
 function AdminDocuments({ documents, setDocuments }) {
@@ -605,10 +764,13 @@ function AdminLiens({ liens, setLiens }) {
 }
 
 // ---------- Espace admin (racine) ----------
-function EspaceAdmin({ rubriques, setRubriques, documents, setDocuments, liens, setLiens, onVerrouiller }) {
-  const [onglet, setOnglet] = useState("rubriques"); // rubriques | documents | liens
+function EspaceAdmin({ rubriques, setRubriques, pageAccueil, setPageAccueil, documents, setDocuments, liens, setLiens, onVerrouiller }) {
+  const [onglet, setOnglet] = useState("rubriques");
   const [rubriqueChoisie, setRubriqueChoisie] = useState(null);
+  const [pageAccueilChoisie, setPageAccueilChoisie] = useState(false);
   const rubrique = rubriques.find((r) => r.id === rubriqueChoisie);
+
+  const majPageRubrique = (page) => setRubriques(rubriques.map((r) => r.id === rubrique.id ? { ...r, page } : r));
 
   return (
     <div style={{ padding: 18, maxWidth: 720, margin: "0 auto" }}>
@@ -621,7 +783,7 @@ function EspaceAdmin({ rubriques, setRubriques, documents, setDocuments, liens, 
 
       <div style={{ display: "flex", gap: 6, marginBottom: 18 }}>
         {[
-          { id: "rubriques", label: "Rubriques & pages" },
+          { id: "rubriques", label: "Pages" },
           { id: "documents", label: "Documents" },
           { id: "liens", label: "Liens d'accueil" },
         ].map((o) => (
@@ -633,13 +795,25 @@ function EspaceAdmin({ rubriques, setRubriques, documents, setDocuments, liens, 
 
       {onglet === "rubriques" && (
         <div style={{ display: "grid", gap: 20 }}>
-          <AdminRubriques rubriques={rubriques} setRubriques={setRubriques} ongletChoisi={rubriqueChoisie} setOngletChoisi={setRubriqueChoisie} />
-          {rubrique && (
+          <AdminRubriques
+            rubriques={rubriques} setRubriques={setRubriques}
+            ongletChoisi={rubriqueChoisie} setOngletChoisi={setRubriqueChoisie}
+            pageAccueilChoisie={pageAccueilChoisie} setPageAccueilChoisie={setPageAccueilChoisie}
+          />
+          {pageAccueilChoisie && (
+            <div style={{ borderTop: "1px solid var(--ligne)", paddingTop: 16 }}>
+              <div style={{ fontSize: 12.5, fontWeight: 700, color: "#6b6656", textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 10 }}>
+                Contenu de la page d'accueil
+              </div>
+              <AdminEditeurBlocs page={pageAccueil} onChange={setPageAccueil} />
+            </div>
+          )}
+          {!pageAccueilChoisie && rubrique && (
             <div style={{ borderTop: "1px solid var(--ligne)", paddingTop: 16 }}>
               <div style={{ fontSize: 12.5, fontWeight: 700, color: "#6b6656", textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 10 }}>
                 Contenu de la page « {rubrique.titre} »
               </div>
-              <AdminEditeurPage rubrique={rubrique} rubriques={rubriques} setRubriques={setRubriques} />
+              <AdminEditeurBlocs page={rubrique.page} onChange={majPageRubrique} />
             </div>
           )}
         </div>
@@ -653,6 +827,7 @@ function EspaceAdmin({ rubriques, setRubriques, documents, setDocuments, liens, 
 // ---------- App racine ----------
 export default function App() {
   const [rubriques, setRubriquesState] = useState(() => lsLire("rubriques", SEED_RUBRIQUES));
+  const [pageAccueil, setPageAccueilState] = useState(() => lsLire("pageAccueil", PAGE_ACCUEIL_SEED));
   const [documents, setDocumentsState] = useState(() => lsLire("documents", []));
   const [liens, setLiensState] = useState(() => lsLire("liens", SEED_LIENS));
   const [pinAdmin] = useState(() => lsLire("pinAdmin", "1234"));
@@ -661,6 +836,7 @@ export default function App() {
   const [ecran, setEcran] = useState({ type: "accueil" });
 
   const setRubriques = (v) => { setRubriquesState(v); lsEcrire("rubriques", v); };
+  const setPageAccueil = (v) => { setPageAccueilState(v); lsEcrire("pageAccueil", v); };
   const setDocuments = (v) => { setDocumentsState(v); lsEcrire("documents", v); };
   const setLiens = (v) => { setLiensState(v); lsEcrire("liens", v); };
 
@@ -683,13 +859,14 @@ export default function App() {
     corps = (
       <EspaceAdmin
         rubriques={rubriques} setRubriques={setRubriques}
+        pageAccueil={pageAccueil} setPageAccueil={setPageAccueil}
         documents={documents} setDocuments={setDocuments}
         liens={liens} setLiens={setLiens}
         onVerrouiller={() => { setAdminDeverrouille(false); setEcran({ type: "accueil" }); }}
       />
     );
   } else {
-    corps = <PageAccueil arbre={arbre} liens={liens} allerA={setEcran} />;
+    corps = <PageAccueil pageAccueil={pageAccueil} arbre={arbre} liens={liens} allerA={setEcran} />;
   }
 
   return (
