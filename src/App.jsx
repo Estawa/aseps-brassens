@@ -6,7 +6,7 @@ import {
 } from "lucide-react";
 
 const uid = () => Math.random().toString(36).slice(2, 10);
-const APP_VERSION = "0.2.0";
+const APP_VERSION = "0.2.1";
 
 // ---------- Stockage local persistant ----------
 function lsLire(cle, defaut) {
