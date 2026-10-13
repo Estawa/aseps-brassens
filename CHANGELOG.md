@@ -1,8 +1,14 @@
 # Site EPS — journal des changements
 
-Version actuelle : **0.2.0**
+Version actuelle : **0.2.1**
 
 ---
+
+### v0.2.1 — 13/10/2026
+- **Application installable** (PC, Android, iPhone) : ajout du manifest, des icônes
+  ASEPS (dossier `public/icons/`) et d'un service worker (`public/sw.js`).
+  Chrome/Edge proposent désormais « Installer » dans la barre d'adresse.
+- Hors connexion : les pages déjà ouvertes restent consultables.
 
 ### v0.2.0 — 08/09/2026
 - **Refonte en système de blocs** : chaque page (y compris la page d'accueil, désormais
