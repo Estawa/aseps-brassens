@@ -1,8 +1,20 @@
 # Site EPS — journal des changements
 
-Version actuelle : **0.3.0**
+Version actuelle : **0.3.1**
 
 ---
+
+### v0.3.1 — 13/10/2026
+- **Nouveau bloc « Galerie photos »** : plusieurs photos sur une même ligne, au choix :
+  - *Grille* : photos réduites pour tenir côte à côte (passage à la ligne si besoin)
+  - *Défilement ↔* : photos sur une seule ligne, à faire glisser du doigt
+  - nombre de photos par ligne réglable séparément : ordinateur (1 à 6), téléphone (1 à 4)
+  - forme : même taille (recadrées) ou photo entière ; légende par photo ; ordre modifiable
+  - un clic / appui sur une photo l'ouvre en grand (photo précédente / suivante)
+- **Largeur sur téléphone** réglable pour chaque bloc : pleine, ½, ⅓ ou ¼ — permet de
+  mettre des blocs côte à côte aussi sur téléphone (par défaut : pleine largeur).
+  En mode édition sur téléphone (ou en aperçu 📱), le bouton de largeur de la barre
+  du bloc règle directement cette largeur téléphone.
 
 ### v0.3.0 — 13/10/2026
 - **Mise en page libre en grille** : chaque bloc a une largeur (¼, ⅓, ½, ⅔, ¾,

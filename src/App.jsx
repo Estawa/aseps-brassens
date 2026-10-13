@@ -2,12 +2,12 @@ import React, { useState, useEffect, useMemo, useRef } from "react";
 import {
   Home, LayoutList, FolderOpen, Lock, Unlock, Plus, Trash2, Pencil,
   ChevronUp, ChevronDown, ChevronRight, ExternalLink, Image as ImageIcon,
-  Video, FileText, Upload, X, Link2, ArrowLeft, Menu, Images, Type, LayoutTemplate, GripVertical,
+  Video, FileText, Upload, X, Link2, ArrowLeft, Menu, Images, Type, LayoutTemplate, GripVertical, LayoutGrid,
   ChevronLeft, Copy, Undo2, Monitor, Smartphone, Check, Square,
 } from "lucide-react";
 
 const uid = () => Math.random().toString(36).slice(2, 10);
-const APP_VERSION = "0.3.0";
+const APP_VERSION = "0.3.1";
 
 // ---------- Stockage local persistant ----------
 function lsLire(cle, defaut) {
@@ -155,6 +155,44 @@ function libelleLargeur(n) {
   return p ? p.l : `${n}/12`;
 }
 const ALIGN_SELF = { haut: "start", milieu: "center", bas: "end" };
+// Largeur sur téléphone : pleine (12), moitié (6) ou tiers (4) de l'écran
+const LARGEURS_MOBILE = [{ v: 12, l: "Plein" }, { v: 6, l: "½" }, { v: 4, l: "⅓" }, { v: 3, l: "¼" }];
+function libelleLargeurMobile(n) {
+  const p = LARGEURS_MOBILE.find((x) => x.v === n);
+  return p ? p.l : "Plein";
+}
+
+// ---------- Galerie photos : grille (photos réduites) ou défilement horizontal ----------
+function Galerie({ bloc, edition }) {
+  const [ouverte, setOuverte] = useState(null); // index de la photo affichée en grand
+  const images = bloc.images || [];
+  const uniforme = (bloc.recadrage || "uniforme") === "uniforme";
+  const classe = (bloc.affichage === "defilement" ? "galerie-defil" : "galerie-grille");
+  return (
+    <>
+      <div className={classe} style={{ "--n-o": bloc.parLigneOrdi || 4, "--n-t": bloc.parLigneTel || 2 }}>
+        {images.map((img, i) => (
+          <figure key={img.id || i} className="galerie-item" onClick={() => !edition && setOuverte(i)}>
+            <img src={img.url} alt={img.legende || ""} loading="lazy" style={{ width: "100%", display: "block", borderRadius: 10, border: "1px solid var(--ligne)", aspectRatio: uniforme ? "4 / 3" : "auto", objectFit: "cover", background: "#eee" }} />
+            {img.legende && <figcaption style={{ fontSize: 11, color: "#6b6656", marginTop: 4, lineHeight: 1.3 }}>{img.legende}</figcaption>}
+          </figure>
+        ))}
+      </div>
+      {ouverte !== null && images[ouverte] && (
+        <div onClick={() => setOuverte(null)} style={{ position: "fixed", inset: 0, zIndex: 60, background: "rgba(10,14,22,0.92)", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: 16 }}>
+          <img src={images[ouverte].url} alt={images[ouverte].legende || ""} style={{ maxWidth: "100%", maxHeight: "82vh", borderRadius: 8, objectFit: "contain" }} />
+          {images[ouverte].legende && <div style={{ color: "#fff", fontSize: 13, marginTop: 10, textAlign: "center" }}>{images[ouverte].legende}</div>}
+          <div style={{ display: "flex", gap: 10, marginTop: 14 }} onClick={(e) => e.stopPropagation()}>
+            <button onClick={() => setOuverte((ouverte - 1 + images.length) % images.length)} style={{ ...iconBtn, width: 44, height: 40 }}><ChevronLeft size={18} /></button>
+            <span style={{ color: "#fff", fontSize: 13, alignSelf: "center", minWidth: 50, textAlign: "center" }}>{ouverte + 1} / {images.length}</span>
+            <button onClick={() => setOuverte((ouverte + 1) % images.length)} style={{ ...iconBtn, width: 44, height: 40 }}><ChevronRight size={18} /></button>
+            <button onClick={() => setOuverte(null)} style={{ ...iconBtn, width: 44, height: 40 }}><X size={18} /></button>
+          </div>
+        </div>
+      )}
+    </>
+  );
+}
 
 function RenduBlocs({ blocs }) {
   return (
@@ -163,7 +201,7 @@ function RenduBlocs({ blocs }) {
         <div
           key={b.id}
           className={"cellule" + (b.type === "espace" ? " espace-bloc" : "")}
-          style={{ "--span": b.largeur || 12, alignSelf: ALIGN_SELF[b.alignV] || "stretch" }}
+          style={{ "--span": b.largeur || 12, "--span-m": b.largeurMobile || 12, alignSelf: ALIGN_SELF[b.alignV] || "stretch" }}
         >
           <RenduBloc bloc={b} />
         </div>
@@ -224,6 +262,10 @@ function RenduBloc({ bloc, edition = false }) {
   if (bloc.type === "diaporama") {
     if (!bloc.images || bloc.images.length === 0) return edition ? <VideEdition texte="Diaporama vide — clique pour ajouter des photos" /> : null;
     return <Diaporama images={bloc.images} vitesse={bloc.vitesse} style={{ width: "100%", aspectRatio: "16/9", borderRadius: 12, border: "1px solid var(--ligne)" }} />;
+  }
+  if (bloc.type === "galerie") {
+    if (!bloc.images || bloc.images.length === 0) return edition ? <VideEdition texte="Galerie vide — clique pour ajouter des photos" /> : null;
+    return <Galerie bloc={bloc} edition={edition} />;
   }
   if (bloc.type === "liens") {
     if (!bloc.liens || bloc.liens.length === 0) return edition ? <VideEdition texte="Aucun lien — clique pour en ajouter" /> : null;
@@ -536,6 +578,7 @@ const TYPES_BLOC = [
   { id: "image", label: "Photo", Icon: ImageIcon },
   { id: "video", label: "Vidéo", Icon: Video },
   { id: "diaporama", label: "Diaporama photos", Icon: Images },
+  { id: "galerie", label: "Galerie photos (plusieurs par ligne)", Icon: LayoutGrid },
   { id: "liens", label: "Liens externes", Icon: Link2 },
   { id: "espace", label: "Espace vide", Icon: Square },
 ];
@@ -546,6 +589,7 @@ function nouveauBloc(type) {
   if (type === "image") return { ...base, largeur: 6, url: "", legende: "" };
   if (type === "video") return { ...base, largeur: 6, url: "", legende: "" };
   if (type === "diaporama") return { ...base, images: [], vitesse: 4 };
+  if (type === "galerie") return { ...base, images: [], affichage: "grille", parLigneOrdi: 4, parLigneTel: 2, recadrage: "uniforme" };
   if (type === "liens") return { ...base, liens: [] };
   if (type === "espace") return { ...base, largeur: 4, hauteur: 40 };
   return base;
@@ -591,6 +635,12 @@ function GrilleEdition({ blocs, onChange, selectionId, setSelectionId, apercuMob
     if (!confirm("Supprimer ce bloc ?\n(Tu pourras revenir en arrière avec « Annuler ».)")) return;
     onChange(blocs.filter((b) => b.id !== id));
     if (selectionId === id) setSelectionId(null);
+  };
+  // Sur téléphone (ou en aperçu téléphone), le bouton de largeur règle la largeur « téléphone »
+  const largeurMobileSuivante = (b) => {
+    const ordre = [12, 6, 4, 3];
+    const idx = ordre.indexOf(b.largeurMobile || 12);
+    onChange(blocs.map((x) => x.id === b.id ? { ...x, largeurMobile: ordre[(idx + 1) % ordre.length] } : x));
   };
   const largeurSuivante = (b) => {
     const actuelle = b.largeur || 12;
@@ -645,13 +695,13 @@ function GrilleEdition({ blocs, onChange, selectionId, setSelectionId, apercuMob
             key={b.id}
             data-bloc={b.id}
             className={classes.join(" ")}
-            style={{ "--span": span, alignSelf: ALIGN_SELF[b.alignV] || "stretch" }}
+            style={{ "--span": span, "--span-m": b.largeurMobile || 12, alignSelf: ALIGN_SELF[b.alignV] || "stretch" }}
             onClick={() => setSelectionId(b.id)}
             onDragOver={(e) => {
               if (!dragId.current) return;
               e.preventDefault();
               const r = e.currentTarget.getBoundingClientRect();
-              const cote = modeTelephone()
+              const cote = modeTelephone() && (b.largeurMobile || 12) === 12
                 ? (e.clientY < r.top + r.height / 2 ? "avant" : "apres")
                 : (e.clientX < r.left + r.width / 2 ? "avant" : "apres");
               if (!cible || cible.id !== b.id || cible.cote !== cote) setCible({ id: b.id, cote });
@@ -681,7 +731,9 @@ function GrilleEdition({ blocs, onChange, selectionId, setSelectionId, apercuMob
               </span>
               <button onClick={() => deplacer(b.id, -1)} disabled={i === 0} title="Placer avant (vers la gauche / le haut)"><ChevronLeft size={13} /></button>
               <button onClick={() => deplacer(b.id, 1)} disabled={i === blocs.length - 1} title="Placer après (vers la droite / le bas)"><ChevronRight size={13} /></button>
-              <button onClick={() => largeurSuivante(b)} title="Changer la largeur (¼ → ⅓ → ½ → ⅔ → ¾ → pleine)">{libelleLargeur(span)}</button>
+              {modeTelephone()
+                ? <button onClick={() => largeurMobileSuivante(b)} title="Largeur sur téléphone (pleine → ½ → ⅓ → ¼)">📱 {libelleLargeurMobile(b.largeurMobile || 12)}</button>
+                : <button onClick={() => largeurSuivante(b)} title="Changer la largeur (¼ → ⅓ → ½ → ⅔ → ¾ → pleine)">{libelleLargeur(span)}</button>}
               <span className="etiquette">{meta ? meta.label : b.type}</span>
               <span style={{ flex: 1 }} />
               <button onClick={() => setSelectionId(b.id)} title="Modifier le contenu"><Pencil size={12} /></button>
@@ -761,9 +813,23 @@ function PanneauBloc({ bloc, majBloc, fermer }) {
               <input type="range" min={10} max={400} step={10} value={bloc.hauteur || 40} onChange={(e) => majBloc({ hauteur: Number(e.target.value) })} />
             </label>
           )}
-          <div style={{ fontSize: 11.5, color: "#9a9384", lineHeight: 1.45 }}>
-            📱 Sur téléphone, les blocs s'affichent les uns sous les autres, en pleine largeur, dans l'ordre de la page{bloc.type === "espace" ? " (les espaces vides y sont masqués)" : ""}.
-          </div>
+          {bloc.type === "espace" ? (
+            <div style={{ fontSize: 11.5, color: "#9a9384", lineHeight: 1.45 }}>
+              📱 Les espaces vides sont masqués sur téléphone.
+            </div>
+          ) : (
+            <div>
+              <div style={{ fontSize: 12, color: "#6b6656", marginBottom: 6 }}>📱 Largeur sur téléphone</div>
+              <div style={{ display: "flex", gap: 5 }}>
+                {LARGEURS_MOBILE.map((x) => (
+                  <button key={x.v} onClick={() => majBloc({ largeurMobile: x.v })} style={choix((bloc.largeurMobile || 12) === x.v)}>{x.l}</button>
+                ))}
+              </div>
+              <div style={{ fontSize: 11.5, color: "#9a9384", lineHeight: 1.45, marginTop: 6 }}>
+                Pour mettre des blocs côte à côte sur téléphone : deux sur ½, trois sur ⅓ ou quatre sur ¼. Pour plusieurs photos, le bloc « Galerie photos » est plus pratique. Vérifie le rendu avec l'aperçu 📱 de la barre du bas.
+              </div>
+            </div>
+          )}
         </section>
         {bloc.type !== "espace" && (
           <section style={{ display: "grid", gap: 10, borderTop: "1px solid var(--ligne)", paddingTop: 16 }}>
@@ -871,6 +937,77 @@ function EditeurContenuBloc({ bloc, majBloc }) {
           <input value={local.url} onChange={(e) => setLocal({ ...local, url: e.target.value })} onBlur={() => majBloc({ url: local.url })} placeholder="…ou coller une URL" style={champStyle(180)} />
         </div>
         <input value={local.legende} onChange={(e) => setLocal({ ...local, legende: e.target.value })} onBlur={() => majBloc({ legende: local.legende })} placeholder="Légende (optionnel)" style={champStyle("100%")} />
+      </div>
+    );
+  }
+
+  if (bloc.type === "galerie") {
+    const importer = async (files) => {
+      const nouvelles = await Promise.all(Array.from(files).map(async (f) => ({ id: uid(), url: await fichierVersDataUrl(f), legende: "" })));
+      majBloc({ images: [...(bloc.images || []), ...nouvelles] });
+    };
+    const images = bloc.images || [];
+    const majImages = (liste) => majBloc({ images: liste });
+    const deplacer = (i, d) => {
+      const j = i + d;
+      if (j < 0 || j >= images.length) return;
+      const c = [...images];
+      [c[i], c[j]] = [c[j], c[i]];
+      majImages(c);
+    };
+    const choix = (actif) => ({ flex: 1, padding: "7px 0", borderRadius: 7, fontSize: 11.5, fontWeight: 700, cursor: "pointer", border: `1.5px solid ${actif ? "var(--piste)" : "var(--ligne)"}`, background: actif ? "var(--piste)" : "#fff", color: actif ? "#fff" : "#6b6656" });
+    const sousTitre = { fontSize: 12, color: "#6b6656", marginBottom: 6 };
+    return (
+      <div style={{ display: "grid", gap: 14 }}>
+        <div>
+          <div style={sousTitre}>Affichage</div>
+          <div style={{ display: "flex", gap: 5 }}>
+            <button onClick={() => majBloc({ affichage: "grille" })} style={choix((bloc.affichage || "grille") === "grille")}>Grille (photos réduites)</button>
+            <button onClick={() => majBloc({ affichage: "defilement" })} style={choix(bloc.affichage === "defilement")}>Défilement ↔</button>
+          </div>
+          <div style={{ fontSize: 11.5, color: "#9a9384", marginTop: 6, lineHeight: 1.45 }}>
+            {bloc.affichage === "defilement"
+              ? "Les photos restent sur une seule ligne ; on les fait glisser du doigt (ou avec la molette / la barre) pour voir les suivantes."
+              : "Toutes les photos sont visibles, réduites pour tenir côte à côte ; elles passent à la ligne suivante si besoin."}
+          </div>
+        </div>
+        <div>
+          <div style={sousTitre}>🖥️ Photos par ligne sur ordinateur</div>
+          <div style={{ display: "flex", gap: 5 }}>
+            {[1, 2, 3, 4, 5, 6].map((n) => <button key={n} onClick={() => majBloc({ parLigneOrdi: n })} style={choix((bloc.parLigneOrdi || 4) === n)}>{n}</button>)}
+          </div>
+        </div>
+        <div>
+          <div style={sousTitre}>📱 Photos par ligne sur téléphone</div>
+          <div style={{ display: "flex", gap: 5 }}>
+            {[1, 2, 3, 4].map((n) => <button key={n} onClick={() => majBloc({ parLigneTel: n })} style={choix((bloc.parLigneTel || 2) === n)}>{n}</button>)}
+          </div>
+        </div>
+        <div>
+          <div style={sousTitre}>Forme des photos</div>
+          <div style={{ display: "flex", gap: 5 }}>
+            <button onClick={() => majBloc({ recadrage: "uniforme" })} style={choix((bloc.recadrage || "uniforme") === "uniforme")}>Même taille (recadrées)</button>
+            <button onClick={() => majBloc({ recadrage: "entiere" })} style={choix(bloc.recadrage === "entiere")}>Photo entière</button>
+          </div>
+        </div>
+        <div>
+          <div style={sousTitre}>Photos ({images.length})</div>
+          <div style={{ display: "grid", gap: 6 }}>
+            {images.map((img, i) => (
+              <div key={img.id} style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                <img src={img.url} alt="" style={{ width: 48, height: 48, objectFit: "cover", borderRadius: 6, border: "1px solid var(--ligne)", flexShrink: 0 }} />
+                <input defaultValue={img.legende || ""} onBlur={(e) => majImages(images.map((x) => x.id === img.id ? { ...x, legende: e.target.value } : x))} placeholder="Légende (optionnel)" style={{ ...champStyle("100%"), minWidth: 0 }} />
+                <button onClick={() => deplacer(i, -1)} disabled={i === 0} title="Avant" style={iconBtn}><ChevronUp size={13} /></button>
+                <button onClick={() => deplacer(i, 1)} disabled={i === images.length - 1} title="Après" style={iconBtn}><ChevronDown size={13} /></button>
+                <button onClick={() => majImages(images.filter((x) => x.id !== img.id))} title="Retirer" style={{ ...iconBtn, color: "#c24b4b" }}><Trash2 size={12} /></button>
+              </div>
+            ))}
+          </div>
+          <label style={{ display: "inline-flex", alignItems: "center", gap: 5, fontSize: 12, fontWeight: 600, color: "var(--piste)", cursor: "pointer", marginTop: 10 }}>
+            <input type="file" accept="image/*" multiple onChange={(e) => e.target.files.length && importer(e.target.files)} style={{ display: "none" }} />
+            <Upload size={13} /> Ajouter des photos (plusieurs à la fois possible)
+          </label>
+        </div>
       </div>
     );
   }
