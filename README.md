@@ -25,8 +25,9 @@ dans `src/App.jsx`, ligne `useState(() => lsLire("pinAdmin", "1234"))`). Une foi
 déverrouillé, l'espace Administration (menu ☰ → « Administration ») permet de :
 
 - Ajouter / renommer / supprimer / réordonner les rubriques et sous-rubriques
-- Éditer le contenu de chaque page : texte, fond (couleur ou image), photos/vidéos
-  (import de fichier ou URL), liens externes
+- Mettre en page chaque page directement à l'écran (bouton « Modifier cette page ») :
+  grille de 12 colonnes, glisser-déposer, largeur réglable, panneau de réglages
+  (voir CHANGELOG v0.3.0)
 - Gérer les documents à télécharger
 - Gérer les liens affichés sur la page d'accueil
 

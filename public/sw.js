@@ -1,5 +1,5 @@
 // Service worker ASEPS : réseau d'abord, cache en secours (hors connexion).
-const CACHE = "aseps-v0.2.1";
+const CACHE = "aseps-v0.3.0";
 const PRECACHE = ["/", "/index.html", "/manifest.webmanifest", "/icons/icon-192.png", "/icons/icon-512.png"];
 
 self.addEventListener("install", (e) => {

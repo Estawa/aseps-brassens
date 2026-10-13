@@ -3,10 +3,11 @@ import {
   Home, LayoutList, FolderOpen, Lock, Unlock, Plus, Trash2, Pencil,
   ChevronUp, ChevronDown, ChevronRight, ExternalLink, Image as ImageIcon,
   Video, FileText, Upload, X, Link2, ArrowLeft, Menu, Images, Type, LayoutTemplate, GripVertical,
+  ChevronLeft, Copy, Undo2, Monitor, Smartphone, Check, Square,
 } from "lucide-react";
 
 const uid = () => Math.random().toString(36).slice(2, 10);
-const APP_VERSION = "0.2.1";
+const APP_VERSION = "0.3.0";
 
 // ---------- Stockage local persistant ----------
 function lsLire(cle, defaut) {
@@ -22,16 +23,44 @@ function lsEcrire(cle, valeur) {
     localStorage.setItem("aseps_" + cle, JSON.stringify(valeur));
   } catch (e) {
     console.warn("Stockage local plein ou indisponible", e);
+    alert("⚠️ La mémoire du navigateur est pleine : la dernière modification n'a pas pu être enregistrée.\n\nAstuce : supprime des photos/vidéos importées ou utilise plutôt des liens (URL).");
   }
 }
 
-function fichierVersDataUrl(file) {
+function lireDataUrl(file) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onload = () => resolve(reader.result);
     reader.onerror = reject;
     reader.readAsDataURL(file);
   });
+}
+// Les photos importées sont réduites (1600 px max, JPEG) pour ne pas saturer la mémoire du navigateur.
+async function fichierVersDataUrl(file) {
+  const dataUrl = await lireDataUrl(file);
+  if (!file.type || !file.type.startsWith("image/") || file.type === "image/gif" || file.type === "image/svg+xml") return dataUrl;
+  if (file.type === "image/png" && file.size < 300000) return dataUrl; // petits PNG (logos) : transparence conservée
+  try {
+    const img = await new Promise((resolve, reject) => {
+      const i = new Image();
+      i.onload = () => resolve(i);
+      i.onerror = reject;
+      i.src = dataUrl;
+    });
+    const max = 1600;
+    const ratio = Math.min(1, max / Math.max(img.width, img.height));
+    const canvas = document.createElement("canvas");
+    canvas.width = Math.round(img.width * ratio);
+    canvas.height = Math.round(img.height * ratio);
+    const ctx = canvas.getContext("2d");
+    ctx.fillStyle = "#fff";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+    const compresse = canvas.toDataURL("image/jpeg", 0.82);
+    return compresse.length < dataUrl.length ? compresse : dataUrl;
+  } catch (e) {
+    return dataUrl;
+  }
 }
 function estFonce(couleur) {
   if (!couleur) return true;
@@ -113,66 +142,94 @@ function Diaporama({ images, vitesse = 4, style, fondu = true }) {
   );
 }
 
-// ---------- Rendu public des blocs ----------
+// ---------- Mise en page : grille de 12 colonnes ----------
+// Chaque bloc porte sa propre mise en page :
+//   largeur : nombre de colonnes occupées sur 12 (ordinateur/tablette) — 12 = pleine largeur
+//   alignV  : "haut" | "milieu" | "bas" (alignement vertical dans sa ligne)
+// Sur téléphone, tous les blocs passent automatiquement en pleine largeur, dans l'ordre.
+const LARGEURS = [
+  { v: 3, l: "¼" }, { v: 4, l: "⅓" }, { v: 6, l: "½" }, { v: 8, l: "⅔" }, { v: 9, l: "¾" }, { v: 12, l: "Plein" },
+];
+function libelleLargeur(n) {
+  const p = LARGEURS.find((x) => x.v === n);
+  return p ? p.l : `${n}/12`;
+}
+const ALIGN_SELF = { haut: "start", milieu: "center", bas: "end" };
+
 function RenduBlocs({ blocs }) {
   return (
-    <div>
-      {(blocs || []).map((b) => <RenduBloc key={b.id} bloc={b} />)}
+    <div className="grille">
+      {(blocs || []).map((b) => (
+        <div
+          key={b.id}
+          className={"cellule" + (b.type === "espace" ? " espace-bloc" : "")}
+          style={{ "--span": b.largeur || 12, alignSelf: ALIGN_SELF[b.alignV] || "stretch" }}
+        >
+          <RenduBloc bloc={b} />
+        </div>
+      ))}
     </div>
   );
 }
-function RenduBloc({ bloc }) {
+
+function VideEdition({ texte }) {
+  return (
+    <div style={{ border: "2px dashed #d8d3c6", borderRadius: 12, padding: "22px 14px", textAlign: "center", color: "#9a9384", fontSize: 12.5, fontStyle: "italic", background: "rgba(255,255,255,0.6)" }}>
+      {texte}
+    </div>
+  );
+}
+
+function RenduBloc({ bloc, edition = false }) {
   if (bloc.type === "bandeau") {
     const fondImg = bloc.fondType === "image" && bloc.fondImage ? bloc.fondImage : null;
     const clair = !estFonce(bloc.fondType === "couleur" ? bloc.fondCouleur : "#101826");
     return (
-      <div style={{ position: "relative", minHeight: 200, display: "flex", alignItems: "flex-end", overflow: "hidden", background: bloc.fondType === "couleur" ? (bloc.fondCouleur || "#101826") : "#101826" }}>
+      <div style={{ position: "relative", minHeight: 200, height: "100%", display: "flex", alignItems: "flex-end", overflow: "hidden", borderRadius: 14, background: bloc.fondType === "couleur" ? (bloc.fondCouleur || "#101826") : "#101826" }}>
         {fondImg && <img src={fondImg} alt="" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }} />}
         {bloc.fondType === "diaporama" && bloc.diaporamaImages?.length > 0 && (
           <Diaporama images={bloc.diaporamaImages} vitesse={bloc.vitesse} style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }} />
         )}
         {(fondImg || bloc.fondType === "diaporama") && <div style={{ position: "absolute", inset: 0, background: "linear-gradient(180deg, rgba(16,24,38,0.15), rgba(16,24,38,0.75))" }} />}
-        <div style={{ position: "relative", padding: "34px 20px 28px", color: clair ? "#101826" : "#fff" }}>
-          {bloc.titre && <div className="display" style={{ fontSize: 26, fontWeight: 600, lineHeight: 1.15 }}>{bloc.titre}</div>}
-          {bloc.texte && <div style={{ marginTop: 8, fontSize: 13.5, opacity: 0.85, maxWidth: 480 }}>{bloc.texte}</div>}
+        <div style={{ position: "relative", padding: "34px 24px 28px", width: "100%", textAlign: bloc.alignTexte || "left", color: clair ? "#101826" : "#fff" }}>
+          {bloc.titre && <div className="display" style={{ fontSize: 28, fontWeight: 600, lineHeight: 1.15 }}>{bloc.titre}</div>}
+          {bloc.texte && <div style={{ marginTop: 8, fontSize: 14, opacity: 0.85, maxWidth: bloc.alignTexte === "center" ? "none" : 560 }}>{bloc.texte}</div>}
+          {edition && !bloc.titre && !bloc.texte && <div style={{ opacity: 0.6, fontStyle: "italic", fontSize: 13 }}>Bandeau sans titre — clique pour le remplir</div>}
         </div>
       </div>
     );
   }
   if (bloc.type === "texte") {
-    if (!bloc.texte) return null;
-    return <div style={{ padding: "16px 20px 4px", fontSize: 14, lineHeight: 1.6, color: "#101826", whiteSpace: "pre-wrap" }}>{bloc.texte}</div>;
+    if (!bloc.texte) return edition ? <VideEdition texte="Bloc texte vide — clique pour écrire" /> : null;
+    return <div style={{ padding: "4px 2px", fontSize: 14.5, lineHeight: 1.65, color: "#101826", whiteSpace: "pre-wrap", textAlign: bloc.alignTexte || "left" }}>{bloc.texte}</div>;
   }
   if (bloc.type === "image") {
-    if (!bloc.url) return null;
+    if (!bloc.url) return edition ? <VideEdition texte="Photo à choisir — clique pour l'importer" /> : null;
     return (
-      <div style={{ padding: "10px 20px" }}>
+      <figure style={{ margin: 0 }}>
         <img src={bloc.url} alt={bloc.legende || ""} style={{ width: "100%", borderRadius: 12, border: "1px solid var(--ligne)", display: "block" }} />
-        {bloc.legende && <div style={{ fontSize: 11.5, color: "#6b6656", marginTop: 6 }}>{bloc.legende}</div>}
-      </div>
+        {bloc.legende && <figcaption style={{ fontSize: 11.5, color: "#6b6656", marginTop: 6, textAlign: bloc.alignTexte || "left" }}>{bloc.legende}</figcaption>}
+      </figure>
     );
   }
   if (bloc.type === "video") {
-    if (!bloc.url) return null;
+    if (!bloc.url) return edition ? <VideEdition texte="Vidéo à choisir — clique pour l'importer" /> : null;
     return (
-      <div style={{ padding: "10px 20px" }}>
-        <video src={bloc.url} controls style={{ width: "100%", borderRadius: 12, border: "1px solid var(--ligne)", display: "block" }} />
-        {bloc.legende && <div style={{ fontSize: 11.5, color: "#6b6656", marginTop: 6 }}>{bloc.legende}</div>}
-      </div>
+      <figure style={{ margin: 0 }}>
+        <video src={bloc.url} controls style={{ width: "100%", borderRadius: 12, border: "1px solid var(--ligne)", display: "block", background: "#000" }} />
+        {bloc.legende && <figcaption style={{ fontSize: 11.5, color: "#6b6656", marginTop: 6, textAlign: bloc.alignTexte || "left" }}>{bloc.legende}</figcaption>}
+      </figure>
     );
   }
   if (bloc.type === "diaporama") {
-    if (!bloc.images || bloc.images.length === 0) return null;
-    return (
-      <div style={{ padding: "10px 20px" }}>
-        <Diaporama images={bloc.images} vitesse={bloc.vitesse} style={{ width: "100%", aspectRatio: "16/9", borderRadius: 12, border: "1px solid var(--ligne)" }} />
-      </div>
-    );
+    if (!bloc.images || bloc.images.length === 0) return edition ? <VideEdition texte="Diaporama vide — clique pour ajouter des photos" /> : null;
+    return <Diaporama images={bloc.images} vitesse={bloc.vitesse} style={{ width: "100%", aspectRatio: "16/9", borderRadius: 12, border: "1px solid var(--ligne)" }} />;
   }
   if (bloc.type === "liens") {
-    if (!bloc.liens || bloc.liens.length === 0) return null;
+    if (!bloc.liens || bloc.liens.length === 0) return edition ? <VideEdition texte="Aucun lien — clique pour en ajouter" /> : null;
+    const justify = { left: "flex-start", center: "center", right: "flex-end" }[bloc.alignTexte || "left"];
     return (
-      <div style={{ padding: "12px 20px", display: "flex", flexWrap: "wrap", gap: 8 }}>
+      <div style={{ display: "flex", flexWrap: "wrap", gap: 8, justifyContent: justify }}>
         {bloc.liens.map((l) => (
           <a key={l.id} href={l.url} target="_blank" rel="noreferrer" style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 12.5, fontWeight: 600, color: "#101826", background: "#fff", border: "1px solid var(--ligne)", borderRadius: 8, padding: "7px 10px", textDecoration: "none" }}>
             <ExternalLink size={12} /> {l.label}
@@ -180,6 +237,17 @@ function RenduBloc({ bloc }) {
         ))}
       </div>
     );
+  }
+  if (bloc.type === "espace") {
+    const h = bloc.hauteur || 40;
+    if (edition) {
+      return (
+        <div style={{ height: Math.max(h, 44), border: "2px dashed #d8d3c6", borderRadius: 12, display: "flex", alignItems: "center", justifyContent: "center", color: "#b3ac9c", fontSize: 11.5, fontStyle: "italic" }}>
+          Espace vide (invisible pour les visiteurs, ignoré sur téléphone)
+        </div>
+      );
+    }
+    return <div style={{ height: h }} />;
   }
   return null;
 }
@@ -189,7 +257,7 @@ function EnTete({ arbre, ecran, allerA, adminDeverrouille, allerAdmin }) {
   const [menuOuvert, setMenuOuvert] = useState(false);
   return (
     <header style={{ background: "var(--ink)", color: "#fff", position: "sticky", top: 0, zIndex: 20 }}>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 18px" }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 20px", maxWidth: 1140, margin: "0 auto" }}>
         <button onClick={() => { allerA({ type: "accueil" }); setMenuOuvert(false); }} style={{ background: "none", border: "none", color: "#fff", cursor: "pointer", display: "flex", flexDirection: "column", alignItems: "flex-start", padding: 0 }}>
           <span className="display" style={{ fontSize: 20, fontWeight: 600, lineHeight: 1 }}>ASEPS</span>
           <span style={{ fontSize: 10.5, opacity: 0.65, letterSpacing: 0.4 }}>Lycée Georges-Brassens</span>
@@ -199,7 +267,7 @@ function EnTete({ arbre, ecran, allerA, adminDeverrouille, allerAdmin }) {
         </button>
       </div>
       {menuOuvert && (
-        <nav style={{ borderTop: "1px solid rgba(255,255,255,0.12)", padding: "6px 10px 12px" }}>
+        <nav style={{ borderTop: "1px solid rgba(255,255,255,0.12)", padding: "6px 10px 12px", maxWidth: 1140, margin: "0 auto" }}>
           <button onClick={() => { allerA({ type: "accueil" }); setMenuOuvert(false); }} style={navBtnStyle(ecran.type === "accueil")}>
             <Home size={14} /> Accueil
           </button>
@@ -236,15 +304,15 @@ function navBtnStyle(actif) {
 }
 
 // ---------- Page d'accueil publique ----------
-function PageAccueil({ pageAccueil, arbre, liens, allerA }) {
+function PageAccueil({ pageAccueil, arbre, liens, allerA, zoneBlocs }) {
   return (
-    <div>
-      <RenduBlocs blocs={pageAccueil.blocs} />
-      <div style={{ padding: 20 }}>
+    <div className="page-contenu">
+      {zoneBlocs || <RenduBlocs blocs={pageAccueil.blocs} />}
+      <div style={{ paddingTop: 22 }}>
         <div style={{ fontSize: 12.5, fontWeight: 700, color: "#6b6656", textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 10 }}>
           Enseignements
         </div>
-        <div style={{ display: "grid", gap: 10 }}>
+        <div style={{ display: "grid", gap: 10, gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))" }}>
           {arbre.map((r, i) => (
             <button
               key={r.id}
@@ -285,24 +353,24 @@ function PageAccueil({ pageAccueil, arbre, liens, allerA }) {
 const TUILE_COULEURS = ["var(--piste-soft)", "var(--teal-soft)", "#fdeecb", "#e6e6fb"];
 
 // ---------- Page d'une rubrique / sous-rubrique ----------
-function PageRubrique({ rubrique, sousRubriques, allerA, parent }) {
+function PageRubrique({ rubrique, sousRubriques, allerA, parent, zoneBlocs }) {
   return (
-    <div>
+    <div className="page-contenu">
       {parent && (
-        <div style={{ padding: "14px 20px 0" }}>
+        <div style={{ paddingBottom: 4 }}>
           <button onClick={() => allerA({ type: "rubrique", id: parent.id })} style={{ display: "flex", alignItems: "center", gap: 4, background: "none", border: "none", color: "#6b6656", fontSize: 12, cursor: "pointer", padding: 0 }}>
             <ArrowLeft size={13} /> {parent.titre}
           </button>
         </div>
       )}
-      <div style={{ padding: "10px 20px 0" }}>
-        <div className="display" style={{ fontSize: 22, fontWeight: 600 }}>{rubrique.titre}</div>
+      <div style={{ paddingBottom: 14 }}>
+        <div className="display" style={{ fontSize: 24, fontWeight: 600 }}>{rubrique.titre}</div>
       </div>
 
-      <RenduBlocs blocs={rubrique.page.blocs} />
+      {zoneBlocs || <RenduBlocs blocs={rubrique.page.blocs} />}
 
       {sousRubriques.length > 0 && (
-        <div style={{ display: "grid", gap: 8, margin: "6px 20px 18px" }}>
+        <div style={{ display: "grid", gap: 8, marginTop: 18, gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))" }}>
           {sousRubriques.map((s) => (
             <button key={s.id} onClick={() => allerA({ type: "rubrique", id: s.id })} style={{ textAlign: "left", border: "1px solid var(--ligne)", borderRadius: 10, padding: "11px 14px", background: "#fff", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
               <span style={{ fontSize: 13.5, fontWeight: 600 }}>{s.titre}</span>
@@ -312,8 +380,8 @@ function PageRubrique({ rubrique, sousRubriques, allerA, parent }) {
         </div>
       )}
 
-      {(rubrique.page.blocs || []).length === 0 && sousRubriques.length === 0 && (
-        <div style={{ padding: "0 20px 20px", color: "#9a9384", fontSize: 13, fontStyle: "italic" }}>Cette page n'a pas encore de contenu.</div>
+      {!zoneBlocs && (rubrique.page.blocs || []).length === 0 && sousRubriques.length === 0 && (
+        <div style={{ color: "#9a9384", fontSize: 13, fontStyle: "italic" }}>Cette page n'a pas encore de contenu.</div>
       )}
     </div>
   );
@@ -322,7 +390,7 @@ function PageRubrique({ rubrique, sousRubriques, allerA, parent }) {
 // ---------- Page Documents (publique) ----------
 function PageDocuments({ documents }) {
   return (
-    <div style={{ padding: 20 }}>
+    <div className="page-contenu">
       <div className="display" style={{ fontSize: 22, fontWeight: 600, marginBottom: 14 }}>Documents</div>
       {documents.length === 0 ? (
         <div style={{ color: "#9a9384", fontSize: 13, fontStyle: "italic" }}>Aucun document disponible pour le moment.</div>
@@ -469,86 +537,260 @@ const TYPES_BLOC = [
   { id: "video", label: "Vidéo", Icon: Video },
   { id: "diaporama", label: "Diaporama photos", Icon: Images },
   { id: "liens", label: "Liens externes", Icon: Link2 },
+  { id: "espace", label: "Espace vide", Icon: Square },
 ];
 function nouveauBloc(type) {
-  const base = { id: uid(), type };
+  const base = { id: uid(), type, largeur: 12 };
   if (type === "bandeau") return { ...base, fondType: "couleur", fondCouleur: "#101826", fondImage: "", diaporamaImages: [], vitesse: 4, titre: "", texte: "" };
-  if (type === "texte") return { ...base, texte: "" };
-  if (type === "image") return { ...base, url: "", legende: "" };
-  if (type === "video") return { ...base, url: "", legende: "" };
+  if (type === "texte") return { ...base, largeur: 6, texte: "" };
+  if (type === "image") return { ...base, largeur: 6, url: "", legende: "" };
+  if (type === "video") return { ...base, largeur: 6, url: "", legende: "" };
   if (type === "diaporama") return { ...base, images: [], vitesse: 4 };
   if (type === "liens") return { ...base, liens: [] };
+  if (type === "espace") return { ...base, largeur: 4, hauteur: 40 };
   return base;
 }
 
-// ---------- Espace admin : éditeur de blocs (page d'accueil ET rubriques) ----------
-function AdminEditeurBlocs({ page, onChange }) {
-  const blocs = page.blocs || [];
-  const [typeAAjouter, setTypeAAjouter] = useState("texte");
+// ---------- Éditeur visuel : la page elle-même, modifiable ----------
+function GrilleEdition({ blocs, onChange, selectionId, setSelectionId, apercuMobile }) {
+  const grilleRef = useRef(null);
   const dragId = useRef(null);
+  const [cible, setCible] = useState(null); // { id, cote: "avant" | "apres" }
+  const [redim, setRedim] = useState(null); // { id, span } pendant le redimensionnement
 
-  const majBlocs = (nouveaux) => onChange({ ...page, blocs: nouveaux });
-  const majBloc = (id, patch) => majBlocs(blocs.map((b) => b.id === id ? { ...b, ...patch } : b));
-  const supprimerBloc = (id) => majBlocs(blocs.filter((b) => b.id !== id));
-  const deplacerBloc = (id, sens) => {
+  const deplacer = (id, delta) => {
     const idx = blocs.findIndex((b) => b.id === id);
-    const cible = sens === "haut" ? idx - 1 : idx + 1;
-    if (cible < 0 || cible >= blocs.length) return;
+    const dest = idx + delta;
+    if (idx < 0 || dest < 0 || dest >= blocs.length) return;
     const copie = [...blocs];
-    [copie[idx], copie[cible]] = [copie[cible], copie[idx]];
-    majBlocs(copie);
+    [copie[idx], copie[dest]] = [copie[dest], copie[idx]];
+    onChange(copie);
   };
-  const ajouterBloc = () => majBlocs([...blocs, nouveauBloc(typeAAjouter)]);
-
-  // Glisser-déposer (souris/ordinateur) — en complément des flèches (fiables aussi au tactile)
-  const onDragStart = (id) => (e) => { dragId.current = id; e.dataTransfer.effectAllowed = "move"; };
-  const onDragOver = (id) => (e) => { e.preventDefault(); };
-  const onDrop = (id) => (e) => {
-    e.preventDefault();
-    if (!dragId.current || dragId.current === id) return;
-    const idxSrc = blocs.findIndex((b) => b.id === dragId.current);
-    const idxDst = blocs.findIndex((b) => b.id === id);
-    if (idxSrc === -1 || idxDst === -1) return;
+  const placer = (srcId, cibleId, cote) => {
+    if (srcId === cibleId) return;
     const copie = [...blocs];
+    const idxSrc = copie.findIndex((b) => b.id === srcId);
+    if (idxSrc < 0) return;
     const [retire] = copie.splice(idxSrc, 1);
+    let idxDst = copie.findIndex((b) => b.id === cibleId);
+    if (idxDst < 0) return;
+    if (cote === "apres") idxDst += 1;
     copie.splice(idxDst, 0, retire);
-    majBlocs(copie);
-    dragId.current = null;
+    onChange(copie);
   };
+  const dupliquer = (id) => {
+    const idx = blocs.findIndex((b) => b.id === id);
+    const copie = [...blocs];
+    const clone = JSON.parse(JSON.stringify(blocs[idx]));
+    clone.id = uid();
+    copie.splice(idx + 1, 0, clone);
+    onChange(copie);
+    setSelectionId(clone.id);
+  };
+  const supprimer = (id) => {
+    if (!confirm("Supprimer ce bloc ?\n(Tu pourras revenir en arrière avec « Annuler ».)")) return;
+    onChange(blocs.filter((b) => b.id !== id));
+    if (selectionId === id) setSelectionId(null);
+  };
+  const largeurSuivante = (b) => {
+    const actuelle = b.largeur || 12;
+    const suivante = LARGEURS.find((x) => x.v > actuelle);
+    onChange(blocs.map((x) => x.id === b.id ? { ...x, largeur: suivante ? suivante.v : LARGEURS[0].v } : x));
+  };
+
+  // Redimensionnement : on tire la poignée orange à droite du bloc, la largeur s'aimante sur les 12 colonnes.
+  const debutRedim = (b) => (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const grille = grilleRef.current;
+    const rect = grille.getBoundingClientRect();
+    const gap = parseFloat(getComputedStyle(grille).columnGap) || 18;
+    const pas = (rect.width - 11 * gap) / 12 + gap;
+    const x0 = e.clientX;
+    const span0 = b.largeur || 12;
+    let span = span0;
+    setRedim({ id: b.id, span });
+    const bouger = (ev) => {
+      span = Math.max(1, Math.min(12, Math.round(span0 + (ev.clientX - x0) / pas)));
+      setRedim({ id: b.id, span });
+    };
+    const lacher = () => {
+      window.removeEventListener("pointermove", bouger);
+      window.removeEventListener("pointerup", lacher);
+      setRedim(null);
+      if (span !== span0) onChange(blocs.map((x) => x.id === b.id ? { ...x, largeur: span } : x));
+    };
+    window.addEventListener("pointermove", bouger);
+    window.addEventListener("pointerup", lacher);
+  };
+
+  const modeTelephone = () => apercuMobile || window.innerWidth <= 760;
 
   return (
-    <div style={{ display: "grid", gap: 12 }}>
-      {blocs.length === 0 && <div style={{ fontSize: 12.5, color: "#9a9384", fontStyle: "italic" }}>Aucun bloc pour l'instant — ajoute-en un ci-dessous.</div>}
-      {blocs.map((b) => {
+    <div ref={grilleRef} className={"grille" + (apercuMobile ? " apercu-mobile" : "") + (redim ? " en-redim" : "")}>
+      {blocs.length === 0 && (
+        <div className="cellule" style={{ "--span": 12 }}>
+          <VideEdition texte="Page vide — choisis un type de bloc dans la barre en bas puis « Ajouter »." />
+        </div>
+      )}
+      {blocs.map((b, i) => {
+        const span = redim && redim.id === b.id ? redim.span : (b.largeur || 12);
         const meta = TYPES_BLOC.find((t) => t.id === b.type);
+        const classes = ["cellule", "en-edition"];
+        if (b.type === "espace") classes.push("espace-bloc");
+        if (selectionId === b.id) classes.push("selectionne");
+        if (cible && cible.id === b.id) classes.push(cible.cote === "avant" ? "cible-avant" : "cible-apres");
         return (
           <div
             key={b.id}
-            draggable
-            onDragStart={onDragStart(b.id)}
-            onDragOver={onDragOver(b.id)}
-            onDrop={onDrop(b.id)}
-            style={{ border: "1px solid var(--ligne)", borderRadius: 10, padding: 12, background: "#fff" }}
+            data-bloc={b.id}
+            className={classes.join(" ")}
+            style={{ "--span": span, alignSelf: ALIGN_SELF[b.alignV] || "stretch" }}
+            onClick={() => setSelectionId(b.id)}
+            onDragOver={(e) => {
+              if (!dragId.current) return;
+              e.preventDefault();
+              const r = e.currentTarget.getBoundingClientRect();
+              const cote = modeTelephone()
+                ? (e.clientY < r.top + r.height / 2 ? "avant" : "apres")
+                : (e.clientX < r.left + r.width / 2 ? "avant" : "apres");
+              if (!cible || cible.id !== b.id || cible.cote !== cote) setCible({ id: b.id, cote });
+            }}
+            onDrop={(e) => {
+              e.preventDefault();
+              if (dragId.current && dragId.current !== b.id) placer(dragId.current, b.id, (cible && cible.id === b.id && cible.cote) || "avant");
+              dragId.current = null;
+              setCible(null);
+            }}
           >
-            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
-              <GripVertical size={14} color="#c7c1b2" style={{ cursor: "grab" }} />
-              {meta?.Icon && <meta.Icon size={13} color="var(--piste)" />}
-              <span style={{ fontSize: 12, fontWeight: 700, color: "#6b6656", flex: 1 }}>{meta?.label || b.type}</span>
-              <button onClick={() => deplacerBloc(b.id, "haut")} title="Monter" style={iconBtn}><ChevronUp size={13} /></button>
-              <button onClick={() => deplacerBloc(b.id, "bas")} title="Descendre" style={iconBtn}><ChevronDown size={13} /></button>
-              <button onClick={() => supprimerBloc(b.id)} title="Supprimer" style={{ ...iconBtn, color: "#c24b4b" }}><Trash2 size={13} /></button>
+            <div className="barre-bloc" onClick={(e) => e.stopPropagation()}>
+              <span
+                className="poignee"
+                draggable
+                title="Glisser pour déplacer le bloc"
+                onDragStart={(e) => {
+                  dragId.current = b.id;
+                  e.dataTransfer.effectAllowed = "move";
+                  e.dataTransfer.setData("text/plain", b.id);
+                  const cellule = e.currentTarget.closest(".cellule");
+                  if (cellule && e.dataTransfer.setDragImage) e.dataTransfer.setDragImage(cellule, 24, 16);
+                }}
+                onDragEnd={() => { dragId.current = null; setCible(null); }}
+              >
+                <GripVertical size={13} />
+              </span>
+              <button onClick={() => deplacer(b.id, -1)} disabled={i === 0} title="Placer avant (vers la gauche / le haut)"><ChevronLeft size={13} /></button>
+              <button onClick={() => deplacer(b.id, 1)} disabled={i === blocs.length - 1} title="Placer après (vers la droite / le bas)"><ChevronRight size={13} /></button>
+              <button onClick={() => largeurSuivante(b)} title="Changer la largeur (¼ → ⅓ → ½ → ⅔ → ¾ → pleine)">{libelleLargeur(span)}</button>
+              <span className="etiquette">{meta ? meta.label : b.type}</span>
+              <span style={{ flex: 1 }} />
+              <button onClick={() => setSelectionId(b.id)} title="Modifier le contenu"><Pencil size={12} /></button>
+              <button onClick={() => dupliquer(b.id)} title="Dupliquer"><Copy size={12} /></button>
+              <button onClick={() => supprimer(b.id)} title="Supprimer" style={{ color: "#c24b4b" }}><Trash2 size={12} /></button>
             </div>
-            <EditeurContenuBloc bloc={b} majBloc={(patch) => majBloc(b.id, patch)} />
+            <div style={{ pointerEvents: "none", height: b.type === "bandeau" ? "100%" : undefined }}>
+              <RenduBloc bloc={b} edition />
+            </div>
+            <div className="poignee-largeur" title="Tirer pour élargir / rétrécir" onPointerDown={debutRedim(b)} onClick={(e) => e.stopPropagation()} />
+            {redim && redim.id === b.id && <div className="bulle-largeur">{span}/12 · {libelleLargeur(span)}</div>}
           </div>
         );
       })}
+    </div>
+  );
+}
 
-      <div style={{ display: "flex", gap: 6, alignItems: "center", borderTop: blocs.length > 0 ? "1px solid var(--ligne)" : "none", paddingTop: blocs.length > 0 ? 12 : 0 }}>
-        <select value={typeAAjouter} onChange={(e) => setTypeAAjouter(e.target.value)} style={champStyle(190)}>
-          {TYPES_BLOC.map((t) => <option key={t.id} value={t.id}>{t.label}</option>)}
-        </select>
-        <button onClick={ajouterBloc} style={boutonPrimaire}><Plus size={13} /> Ajouter un bloc</button>
+// Panneau latéral : réglages de placement + contenu du bloc sélectionné
+function PanneauBloc({ bloc, majBloc, fermer }) {
+  const meta = TYPES_BLOC.find((t) => t.id === bloc.type);
+  const largeur = bloc.largeur || 12;
+  const choix = (actif) => ({
+    flex: 1, padding: "7px 0", borderRadius: 7, fontSize: 11.5, fontWeight: 700, cursor: "pointer",
+    border: `1.5px solid ${actif ? "var(--piste)" : "var(--ligne)"}`, background: actif ? "var(--piste)" : "#fff", color: actif ? "#fff" : "#6b6656",
+  });
+  const avecAlignTexte = ["bandeau", "texte", "image", "video", "liens"].includes(bloc.type);
+  return (
+    <div className="panneau-bloc" onClick={(e) => e.stopPropagation()}>
+      <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "14px 16px", borderBottom: "1px solid var(--ligne)" }}>
+        {meta && <meta.Icon size={16} color="var(--piste)" />}
+        <div className="display" style={{ fontSize: 17, fontWeight: 600, flex: 1 }}>{meta ? meta.label : "Bloc"}</div>
+        <button onClick={fermer} title="Fermer" style={iconBtn}><X size={14} /></button>
       </div>
+      <div style={{ overflowY: "auto", padding: 16, display: "grid", gap: 18, alignContent: "start" }}>
+        <section style={{ display: "grid", gap: 12 }}>
+          <div style={champLabel}>Place sur la page</div>
+          <div>
+            <div style={{ fontSize: 12, color: "#6b6656", marginBottom: 6 }}>Largeur</div>
+            <div style={{ display: "flex", gap: 5 }}>
+              {LARGEURS.map((x) => (
+                <button key={x.v} onClick={() => majBloc({ largeur: x.v })} style={choix(largeur === x.v)}>{x.l}</button>
+              ))}
+            </div>
+            <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 8 }}>
+              <button onClick={() => majBloc({ largeur: Math.max(1, largeur - 1) })} style={iconBtn} title="Une colonne de moins">−</button>
+              <div style={{ flex: 1, display: "grid", gridTemplateColumns: "repeat(12, 1fr)", gap: 2 }}>
+                {Array.from({ length: 12 }, (_, k) => (
+                  <div key={k} onClick={() => majBloc({ largeur: k + 1 })} title={`${k + 1}/12`} style={{ height: 14, borderRadius: 3, cursor: "pointer", background: k < largeur ? "var(--piste)" : "var(--ligne)" }} />
+                ))}
+              </div>
+              <button onClick={() => majBloc({ largeur: Math.min(12, largeur + 1) })} style={iconBtn} title="Une colonne de plus">+</button>
+              <span style={{ fontSize: 12, fontWeight: 700, width: 38, textAlign: "right" }}>{largeur}/12</span>
+            </div>
+          </div>
+          <div>
+            <div style={{ fontSize: 12, color: "#6b6656", marginBottom: 6 }}>Position verticale dans la ligne</div>
+            <div style={{ display: "flex", gap: 5 }}>
+              {[["", "Étiré"], ["haut", "Haut"], ["milieu", "Milieu"], ["bas", "Bas"]].map(([v, l]) => (
+                <button key={l} onClick={() => majBloc({ alignV: v || undefined })} style={choix((bloc.alignV || "") === v)}>{l}</button>
+              ))}
+            </div>
+          </div>
+          {avecAlignTexte && (
+            <div>
+              <div style={{ fontSize: 12, color: "#6b6656", marginBottom: 6 }}>{bloc.type === "image" || bloc.type === "video" ? "Alignement de la légende" : "Alignement du texte"}</div>
+              <div style={{ display: "flex", gap: 5 }}>
+                {[["left", "Gauche"], ["center", "Centre"], ["right", "Droite"]].map(([v, l]) => (
+                  <button key={v} onClick={() => majBloc({ alignTexte: v })} style={choix((bloc.alignTexte || "left") === v)}>{l}</button>
+                ))}
+              </div>
+            </div>
+          )}
+          {bloc.type === "espace" && (
+            <label style={{ fontSize: 12, color: "#6b6656", display: "grid", gap: 6 }}>
+              Hauteur : {bloc.hauteur || 40} px
+              <input type="range" min={10} max={400} step={10} value={bloc.hauteur || 40} onChange={(e) => majBloc({ hauteur: Number(e.target.value) })} />
+            </label>
+          )}
+          <div style={{ fontSize: 11.5, color: "#9a9384", lineHeight: 1.45 }}>
+            📱 Sur téléphone, les blocs s'affichent les uns sous les autres, en pleine largeur, dans l'ordre de la page{bloc.type === "espace" ? " (les espaces vides y sont masqués)" : ""}.
+          </div>
+        </section>
+        {bloc.type !== "espace" && (
+          <section style={{ display: "grid", gap: 10, borderTop: "1px solid var(--ligne)", paddingTop: 16 }}>
+            <div style={champLabel}>Contenu</div>
+            <EditeurContenuBloc key={bloc.id} bloc={bloc} majBloc={majBloc} />
+          </section>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// Barre flottante du mode édition
+function BarreEdition({ onAjouter, onAnnuler, peutAnnuler, apercuMobile, setApercuMobile, onTerminer, selectionActive }) {
+  const [type, setType] = useState("texte");
+  return (
+    <div className={"barre-edition" + (selectionActive ? " decale" : "")}>
+      <select value={type} onChange={(e) => setType(e.target.value)} title="Type de bloc à ajouter">
+        {TYPES_BLOC.map((t) => <option key={t.id} value={t.id}>{t.label}</option>)}
+      </select>
+      <button className="principal" onClick={() => onAjouter(type)} title={selectionActive ? "Ajouter après le bloc sélectionné" : "Ajouter à la fin de la page"}>
+        <Plus size={14} /> Ajouter
+      </button>
+      <button onClick={onAnnuler} disabled={!peutAnnuler} title="Annuler la dernière modification (Ctrl+Z)"><Undo2 size={14} /> Annuler</button>
+      <button className={apercuMobile ? "" : "actif"} onClick={() => setApercuMobile(false)} title="Aperçu ordinateur"><Monitor size={14} /></button>
+      <button className={apercuMobile ? "actif" : ""} onClick={() => setApercuMobile(true)} title="Aperçu téléphone"><Smartphone size={14} /></button>
+      <button onClick={onTerminer} title="Quitter le mode édition"><Check size={14} /> Terminer</button>
     </div>
   );
 }
@@ -704,7 +946,7 @@ function EditeurLiensBloc({ bloc, majBloc }) {
 // ---------- Espace admin : documents & liens globaux ----------
 function AdminDocuments({ documents, setDocuments }) {
   const importer = async (file) => {
-    const dataUrl = await fichierVersDataUrl(file);
+    const dataUrl = await lireDataUrl(file);
     setDocuments([...documents, { id: uid(), nom: file.name, data: dataUrl, dateAjout: new Date().toISOString() }]);
   };
   const supprimer = (id) => setDocuments(documents.filter((d) => d.id !== id));
@@ -764,13 +1006,24 @@ function AdminLiens({ liens, setLiens }) {
 }
 
 // ---------- Espace admin (racine) ----------
-function EspaceAdmin({ rubriques, setRubriques, pageAccueil, setPageAccueil, documents, setDocuments, liens, setLiens, onVerrouiller }) {
+function BoutonMiseEnPage({ nbBlocs, onClick }) {
+  return (
+    <div style={{ display: "grid", gap: 8 }}>
+      <button onClick={onClick} style={{ ...boutonPrimaire, justifyContent: "center", padding: "12px 14px", fontSize: 13.5 }}>
+        <Pencil size={15} /> Ouvrir la page et la mettre en page
+      </button>
+      <div style={{ fontSize: 12, color: "#6b6656", lineHeight: 1.5 }}>
+        {nbBlocs} bloc{nbBlocs > 1 ? "s" : ""} sur cette page. L'édition se fait directement sur la page : glisse les blocs, tire leur bord droit pour changer la largeur, clique sur un bloc pour modifier son contenu.
+      </div>
+    </div>
+  );
+}
+
+function EspaceAdmin({ rubriques, setRubriques, pageAccueil, setPageAccueil, documents, setDocuments, liens, setLiens, onVerrouiller, ouvrirEditeur }) {
   const [onglet, setOnglet] = useState("rubriques");
   const [rubriqueChoisie, setRubriqueChoisie] = useState(null);
   const [pageAccueilChoisie, setPageAccueilChoisie] = useState(false);
   const rubrique = rubriques.find((r) => r.id === rubriqueChoisie);
-
-  const majPageRubrique = (page) => setRubriques(rubriques.map((r) => r.id === rubrique.id ? { ...r, page } : r));
 
   return (
     <div style={{ padding: 18, maxWidth: 720, margin: "0 auto" }}>
@@ -805,7 +1058,7 @@ function EspaceAdmin({ rubriques, setRubriques, pageAccueil, setPageAccueil, doc
               <div style={{ fontSize: 12.5, fontWeight: 700, color: "#6b6656", textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 10 }}>
                 Contenu de la page d'accueil
               </div>
-              <AdminEditeurBlocs page={pageAccueil} onChange={setPageAccueil} />
+              <BoutonMiseEnPage nbBlocs={(pageAccueil.blocs || []).length} onClick={() => ouvrirEditeur({ type: "accueil" })} />
             </div>
           )}
           {!pageAccueilChoisie && rubrique && (
@@ -813,7 +1066,7 @@ function EspaceAdmin({ rubriques, setRubriques, pageAccueil, setPageAccueil, doc
               <div style={{ fontSize: 12.5, fontWeight: 700, color: "#6b6656", textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 10 }}>
                 Contenu de la page « {rubrique.titre} »
               </div>
-              <AdminEditeurBlocs page={rubrique.page} onChange={majPageRubrique} />
+              <BoutonMiseEnPage nbBlocs={(rubrique.page.blocs || []).length} onClick={() => ouvrirEditeur({ type: "rubrique", id: rubrique.id })} />
             </div>
           )}
         </div>
@@ -833,7 +1086,13 @@ export default function App() {
   const [pinAdmin] = useState(() => lsLire("pinAdmin", "1234"));
   const [adminDeverrouille, setAdminDeverrouille] = useState(false);
   const [cadenasOuvert, setCadenasOuvert] = useState(false);
-  const [ecran, setEcran] = useState({ type: "accueil" });
+  const [ecran, setEcranState] = useState({ type: "accueil" });
+
+  // Mode édition visuelle
+  const [modeEdition, setModeEdition] = useState(false);
+  const [selectionId, setSelectionId] = useState(null);
+  const [apercuMobile, setApercuMobile] = useState(false);
+  const [historique, setHistorique] = useState([]); // états précédents des blocs de la page éditée
 
   const setRubriques = (v) => { setRubriquesState(v); lsEcrire("rubriques", v); };
   const setPageAccueil = (v) => { setPageAccueilState(v); lsEcrire("pageAccueil", v); };
@@ -842,17 +1101,88 @@ export default function App() {
 
   const arbre = useMemo(() => construireArbre(rubriques), [rubriques]);
 
+  const setEcran = (e) => {
+    setEcranState(e);
+    setSelectionId(null);
+    setHistorique([]);
+    if (e.type !== "accueil" && e.type !== "rubrique") setModeEdition(false);
+    window.scrollTo(0, 0);
+  };
   const allerAdmin = () => {
     if (adminDeverrouille) setEcran({ type: "admin" });
     else setCadenasOuvert(true);
   };
 
+  // Blocs de la page affichée (accueil ou rubrique)
+  const rubriqueCourante = ecran.type === "rubrique" ? rubriques.find((x) => x.id === ecran.id) : null;
+  const pageEditable = ecran.type === "accueil" || (ecran.type === "rubrique" && !!rubriqueCourante);
+  const blocsCourants = ecran.type === "accueil" ? (pageAccueil.blocs || []) : rubriqueCourante ? (rubriqueCourante.page.blocs || []) : [];
+
+  const ecrireBlocs = (nouveaux) => {
+    if (ecran.type === "accueil") setPageAccueil({ ...pageAccueil, blocs: nouveaux });
+    else if (rubriqueCourante) setRubriques(rubriques.map((r) => r.id === rubriqueCourante.id ? { ...r, page: { ...r.page, blocs: nouveaux } } : r));
+  };
+  const modifierBlocs = (nouveaux) => {
+    setHistorique((h) => [...h.slice(-49), blocsCourants]);
+    ecrireBlocs(nouveaux);
+  };
+  const annuler = () => {
+    if (historique.length === 0) return;
+    const precedent = historique[historique.length - 1];
+    setHistorique((h) => h.slice(0, -1));
+    ecrireBlocs(precedent);
+    if (selectionId && !precedent.some((b) => b.id === selectionId)) setSelectionId(null);
+  };
+  const ajouterBloc = (type) => {
+    const nouveau = nouveauBloc(type);
+    const idx = selectionId ? blocsCourants.findIndex((b) => b.id === selectionId) : -1;
+    const copie = [...blocsCourants];
+    if (idx >= 0) copie.splice(idx + 1, 0, nouveau); else copie.push(nouveau);
+    modifierBlocs(copie);
+    setSelectionId(nouveau.id);
+    setTimeout(() => {
+      const el = document.querySelector(`[data-bloc="${nouveau.id}"]`);
+      if (el && el.scrollIntoView) el.scrollIntoView({ behavior: "smooth", block: "center" });
+    }, 60);
+  };
+  const ouvrirEditeur = (cibleEcran) => {
+    setEcran(cibleEcran);
+    setModeEdition(true);
+  };
+  const terminerEdition = () => { setModeEdition(false); setSelectionId(null); setApercuMobile(false); setHistorique([]); };
+
+  // Raccourcis clavier en mode édition : Ctrl+Z (annuler), Échap (fermer le panneau)
+  useEffect(() => {
+    if (!modeEdition) return;
+    const touche = (e) => {
+      const champ = e.target && (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA" || e.target.tagName === "SELECT");
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "z" && !champ) { e.preventDefault(); annuler(); }
+      if (e.key === "Escape") setSelectionId(null);
+    };
+    window.addEventListener("keydown", touche);
+    return () => window.removeEventListener("keydown", touche);
+  });
+
+  const edition = modeEdition && adminDeverrouille && pageEditable;
+  const blocSelectionne = edition && selectionId ? blocsCourants.find((b) => b.id === selectionId) : null;
+  const zoneBlocs = edition ? (
+    <div style={apercuMobile ? { maxWidth: 400, margin: "0 auto", border: "1px solid var(--ligne)", borderRadius: 22, padding: "14px 12px", background: "var(--craie)", boxShadow: "0 8px 30px rgba(16,24,38,0.08)" } : undefined}>
+      <GrilleEdition
+        blocs={blocsCourants}
+        onChange={modifierBlocs}
+        selectionId={selectionId}
+        setSelectionId={setSelectionId}
+        apercuMobile={apercuMobile}
+      />
+    </div>
+  ) : null;
+
   let corps;
-  if (ecran.type === "rubrique") {
-    const r = rubriques.find((x) => x.id === ecran.id);
+  if (ecran.type === "rubrique" && rubriqueCourante) {
+    const r = rubriqueCourante;
     const sousRubriques = rubriques.filter((x) => x.parentId === r.id).sort((a, b) => a.ordre - b.ordre);
     const parent = r.parentId ? rubriques.find((x) => x.id === r.parentId) : null;
-    corps = <PageRubrique rubrique={r} sousRubriques={sousRubriques} allerA={setEcran} parent={parent} />;
+    corps = <PageRubrique rubrique={r} sousRubriques={sousRubriques} allerA={setEcran} parent={parent} zoneBlocs={zoneBlocs} />;
   } else if (ecran.type === "documents") {
     corps = <PageDocuments documents={documents} />;
   } else if (ecran.type === "admin" && adminDeverrouille) {
@@ -862,20 +1192,56 @@ export default function App() {
         pageAccueil={pageAccueil} setPageAccueil={setPageAccueil}
         documents={documents} setDocuments={setDocuments}
         liens={liens} setLiens={setLiens}
-        onVerrouiller={() => { setAdminDeverrouille(false); setEcran({ type: "accueil" }); }}
+        ouvrirEditeur={ouvrirEditeur}
+        onVerrouiller={() => { setAdminDeverrouille(false); setModeEdition(false); setEcran({ type: "accueil" }); }}
       />
     );
   } else {
-    corps = <PageAccueil pageAccueil={pageAccueil} arbre={arbre} liens={liens} allerA={setEcran} />;
+    corps = <PageAccueil pageAccueil={pageAccueil} arbre={arbre} liens={liens} allerA={setEcran} zoneBlocs={zoneBlocs} />;
   }
 
   return (
-    <div style={{ minHeight: "100vh", paddingBottom: 30 }}>
+    <div style={{ minHeight: "100vh", paddingBottom: edition ? 110 : 30, paddingRight: blocSelectionne && window.innerWidth > 760 ? 380 : 0 }}>
       <EnTete arbre={arbre} ecran={ecran} allerA={setEcran} adminDeverrouille={adminDeverrouille} allerAdmin={allerAdmin} />
+      {edition && (
+        <div style={{ background: "var(--piste-soft)", borderBottom: "1px solid #f6c9a8", fontSize: 12.5, color: "#7a3a10" }}>
+          <div style={{ maxWidth: 1140, margin: "0 auto", padding: "8px 20px", lineHeight: 1.5 }}>
+            ✏️ <b>Mode édition</b> — glisse un bloc par sa poignée ⠿ pour le déplacer, tire la barre orange à sa droite pour changer sa largeur, clique dessus pour modifier son contenu.
+          </div>
+        </div>
+      )}
       {corps}
       <div style={{ textAlign: "center", fontSize: 10.5, color: "#b3ac9c", marginTop: 30 }}>
         ASEPS by C. Guilhem <span style={{ opacity: 0.6 }}>· v{APP_VERSION}</span>
       </div>
+
+      {adminDeverrouille && pageEditable && !modeEdition && (
+        <button
+          onClick={() => setModeEdition(true)}
+          style={{ position: "fixed", right: 18, bottom: 18, zIndex: 30, ...boutonPrimaire, padding: "11px 16px", fontSize: 13.5, borderRadius: 12, boxShadow: "0 8px 24px rgba(255,122,41,0.35)" }}
+        >
+          <Pencil size={15} /> Modifier cette page
+        </button>
+      )}
+      {edition && (
+        <BarreEdition
+          onAjouter={ajouterBloc}
+          onAnnuler={annuler}
+          peutAnnuler={historique.length > 0}
+          apercuMobile={apercuMobile}
+          setApercuMobile={setApercuMobile}
+          onTerminer={terminerEdition}
+          selectionActive={!!blocSelectionne}
+        />
+      )}
+      {blocSelectionne && (
+        <PanneauBloc
+          bloc={blocSelectionne}
+          majBloc={(patch) => modifierBlocs(blocsCourants.map((b) => b.id === blocSelectionne.id ? { ...b, ...patch } : b))}
+          fermer={() => setSelectionId(null)}
+        />
+      )}
+
       {cadenasOuvert && (
         <CadenasAdmin
           pinAttendu={pinAdmin}

@@ -1,8 +1,29 @@
 # Site EPS — journal des changements
 
-Version actuelle : **0.2.1**
+Version actuelle : **0.3.0**
 
 ---
+
+### v0.3.0 — 13/10/2026
+- **Mise en page libre en grille** : chaque bloc a une largeur (¼, ⅓, ½, ⅔, ¾,
+  pleine, ou 1 à 12 colonnes). Les blocs se placent côte à côte sur ordinateur et
+  passent automatiquement les uns sous les autres sur téléphone.
+- **Éditeur visuel directement sur la page** (bouton « Modifier cette page » une fois
+  l'administration déverrouillée, ou « Ouvrir la page et la mettre en page » depuis
+  l'Administration) :
+  - glisser-déposer des blocs par leur poignée ⠿ (repère turquoise avant/après)
+  - barre orange à droite d'un bloc : tirer pour changer sa largeur (aimantée sur 12 colonnes)
+  - flèches ‹ › (déplacement au tactile), bouton de largeur rapide, dupliquer, supprimer
+  - clic sur un bloc : panneau de réglages (largeur, position verticale, alignement
+    du texte) et contenu du bloc
+  - barre du bas : ajouter un bloc (après le bloc sélectionné), Annuler (Ctrl+Z),
+    aperçu ordinateur / téléphone, Terminer
+- Nouveau bloc **« Espace vide »** pour laisser de la place (masqué sur téléphone).
+- Contenu centré avec une largeur maximale sur grand écran ; tuiles « Enseignements »
+  et sous-rubriques en colonnes sur ordinateur.
+- Photos importées automatiquement réduites (1600 px, JPEG) pour économiser la mémoire.
+- Alerte visible si la mémoire du navigateur est pleine (au lieu d'une perte silencieuse).
+- L'ancien éditeur en liste de l'Administration est remplacé par l'éditeur visuel.
 
 ### v0.2.1 — 13/10/2026
 - **Application installable** (PC, Android, iPhone) : ajout du manifest, des icônes
