@@ -8,7 +8,7 @@ import {
 import { COURS, BlocCours, blocsCoursPourPage } from "./cours.jsx";
 
 const uid = () => Math.random().toString(36).slice(2, 10);
-const APP_VERSION = "0.4.1";
+const APP_VERSION = "0.5.0";
 
 // ---------- Stockage local persistant ----------
 function lsLire(cle, defaut) {
@@ -85,20 +85,37 @@ const PAGE_ACCUEIL_SEED = {
   ],
 };
 
+// Rubrique « Association Sportive du Lycée » (textes de départ à compléter depuis l'éditeur)
+const SEED_AS = [
+  {
+    id: "as", titre: "Association Sportive du Lycée", parentId: null, ordre: 5,
+    page: { blocs: [blocTexte("L'Association Sportive (AS) du lycée Georges-Brassens permet aux élèves de pratiquer des activités sportives en dehors des cours d'EPS, de participer aux compétitions UNSS et de représenter le lycée. Retrouve ici les informations pratiques, les résultats de nos équipes et les photos des rencontres.")] },
+  },
+  { id: "as-presentation", titre: "Présentation et inscriptions", parentId: "as", ordre: 0, page: { blocs: [blocTexte("Activités proposées, horaires des entraînements, enseignants responsables et modalités d'inscription (licence UNSS) : informations à compléter.")] } },
+  { id: "as-resultats", titre: "Résultats sportifs", parentId: "as", ordre: 1, page: { blocs: [blocTexte("Les résultats de nos équipes et de nos élèves en compétitions UNSS (district, départemental, académique, France) seront publiés ici au fil de l'année.")] } },
+  { id: "as-photos", titre: "Photos et vidéos", parentId: "as", ordre: 2, page: { blocs: [blocTexte("Les photos et vidéos des entraînements, rencontres et compétitions de l'AS.")] } },
+];
+
 const SEED_RUBRIQUES = [
   { id: "musculation", titre: "Musculation", parentId: null, ordre: 0, page: { blocs: [] } },
   { id: "musculation-chezsoi", titre: "Muscu chez soi", parentId: "musculation", ordre: 0, page: { blocs: [blocTexte("Séances de musculation à réaliser à la maison, sans matériel.")] } },
   { id: "musculation-hiit", titre: "Entraînement HIIT", parentId: "musculation", ordre: 1, page: { blocs: [blocTexte("Séances d'entraînement fractionné à haute intensité.")] } },
   { id: "musculation-jeu", titre: "Jeu de l'Oie", parentId: "musculation", ordre: 2, page: { blocs: [blocTexte("Version ludique d'une séance de musculation.")] } },
   { id: "musculation-theorie", titre: "Théorie", parentId: "musculation", ordre: 3, page: { blocs: [blocTexte("Les notions théoriques à connaître pour construire ton projet d'entraînement. Clique sur une partie pour l'ouvrir."), ...blocsCoursPourPage("musculation-theorie", uid)] } },
-  { id: "sopra", titre: "Sopra Flashmob", parentId: null, ordre: 1, page: { blocs: [] } },
+  { id: "course-duree", titre: "Course de durée", parentId: null, ordre: 1, page: { blocs: [] } },
+  { id: "course-duree-theorie", titre: "Théorie", parentId: "course-duree", ordre: 0, page: { blocs: [blocTexte("Les notions théoriques pour comprendre comment le corps produit l'énergie, calculer tes allures et construire ton projet de course. Clique sur une partie pour l'ouvrir."), ...blocsCoursPourPage("course-duree-theorie", uid)] } },
+  { id: "escalade", titre: "Escalade", parentId: null, ordre: 2, page: { blocs: [] } },
+  { id: "escalade-theorie", titre: "Théorie", parentId: "escalade", ordre: 0, page: { blocs: [blocTexte("Sécurité, matériel, nœuds, assurage, technique et lecture de voie : tout ce qu'il faut savoir pour grimper et assurer en sécurité. Clique sur une partie pour l'ouvrir."), ...blocsCoursPourPage("escalade-theorie", uid)] } },
+  { id: "escalade-evaluation", titre: "Évaluation et tableau de performance", parentId: "escalade", ordre: 1, page: { blocs: [blocTexte("Comment tu es évalué en escalade et comment lire le tableau de performance."), ...blocsCoursPourPage("escalade-evaluation", uid)] } },
+  { id: "sopra", titre: "Sopra Flashmob", parentId: null, ordre: 3, page: { blocs: [] } },
   {
     id: "sopra-flashmob", titre: "En mode flashmob", parentId: "sopra", ordre: 0,
     page: { blocs: [blocTexte("Chorégraphie collective sur Sopra."), blocLiens([{ label: "Playlist Chorés (YouTube)", url: "https://www.youtube.com/playlist?list=PL7ZFD8B4khX1Iw7hNSVHNJPJZM8U9A4BY" }])] },
   },
-  { id: "sportsante", titre: "Sport & Santé", parentId: null, ordre: 3, page: { blocs: [] } },
+  { id: "sportsante", titre: "Sport & Santé", parentId: null, ordre: 4, page: { blocs: [] } },
   { id: "sportsante-alim", titre: "L'alimentation", parentId: "sportsante", ordre: 0, page: { blocs: [blocTexte("Repères sur l'alimentation du sportif. Clique sur une partie pour l'ouvrir."), ...blocsCoursPourPage("sportsante-alim", uid)] } },
   { id: "echauffement", titre: "L'échauffement", parentId: "sportsante", ordre: 1, page: { blocs: [blocTexte("Comment s'échauffer correctement selon l'activité pratiquée. Commence par les principes communs, puis ouvre la partie de ton activité."), ...blocsCoursPourPage("echauffement", uid)] } },
+  ...SEED_AS,
 ];
 
 const SEED_LIENS = [
@@ -1252,7 +1269,13 @@ const TEXTES_ORIGINE = {
 };
 function migrerCours(rubriques) {
   const etape = lsLire("migrationCours", 0);
-  if (etape >= 2) return rubriques;
+  if (etape >= 3) return rubriques;
+  if (etape === 2) {
+    const r3 = ajouterRubriquesV050(rubriques);
+    lsEcrire("rubriques", r3);
+    lsEcrire("migrationCours", 3);
+    return r3;
+  }
   const seed = Object.fromEntries(SEED_RUBRIQUES.filter((r) => TEXTES_ORIGINE[r.id]).map((r) => [r.id, r]));
   // v0.4.0 : Théorie musculation + Alimentation ; v0.4.1 : Échauffement par activité
   const aMettreAJour = etape >= 1 ? ["echauffement"] : Object.keys(TEXTES_ORIGINE);
@@ -1285,9 +1308,32 @@ function migrerCours(rubriques) {
     let k = 0;
     resultat = resultat.map((r) => (r.parentId === "echauffement" ? { ...r, parentId: null, ordre: nbRacines + k++ } : r));
   }
+  resultat = ajouterRubriquesV050(resultat);
   lsEcrire("rubriques", resultat);
-  lsEcrire("migrationCours", 2);
+  lsEcrire("migrationCours", 3);
   return resultat;
+}
+
+// v0.5.0 : nouvelles rubriques « Course de durée », « Escalade » (après Musculation) et « Association Sportive du Lycée » (en dernier).
+// Une rubrique déjà présente (même identifiant) n'est jamais écrasée.
+function ajouterRubriquesV050(rubriques) {
+  const existe = new Set(rubriques.map((r) => r.id));
+  const nouvelles = SEED_RUBRIQUES.filter((r) => ["course-duree", "escalade", "as"].includes(r.id) || ["course-duree", "escalade", "as"].includes(r.parentId))
+    .filter((r) => !existe.has(r.id))
+    .map((r) => ({ ...JSON.parse(JSON.stringify(r)), page: { blocs: r.page.blocs.map((b) => ({ ...JSON.parse(JSON.stringify(b)), id: uid() })) } }));
+  if (nouvelles.length === 0) return rubriques;
+  let tout = [...rubriques, ...nouvelles];
+  // ordre des rubriques principales : Course de durée et Escalade juste après Musculation, AS à la fin
+  const racines = tout.filter((r) => !r.parentId).sort((a, b) => a.ordre - b.ordre);
+  const autres = racines.filter((r) => !["course-duree", "escalade", "as"].includes(r.id));
+  const idxMuscu = autres.findIndex((r) => r.id === "musculation");
+  const insertion = racines.filter((r) => ["course-duree", "escalade"].includes(r.id)).sort((a, b) => (a.id === "course-duree" ? -1 : 1));
+  const ordre = [...autres];
+  ordre.splice(idxMuscu + 1, 0, ...insertion);
+  const as = racines.find((r) => r.id === "as");
+  if (as) ordre.push(as);
+  const rang = Object.fromEntries(ordre.map((r, i) => [r.id, i]));
+  return tout.map((r) => (!r.parentId && rang[r.id] !== undefined ? { ...r, ordre: rang[r.id] } : r));
 }
 
 // ---------- App racine ----------

@@ -1,4 +1,5 @@
 import React from "react";
+import { COURS_COURSE, COURS_ESCALADE } from "./cours-suite.js";
 
 // =====================================================================
 // Contenus de cours prêts à l'emploi (bloc « Cours »)
@@ -6,7 +7,7 @@ import React from "react";
 //   ### titre · paragraphes · listes « - » ou « 1. » · tableaux « | a | b | » · **gras**
 // =====================================================================
 
-export const COURS = {
+const COURS_BASE = {
   // ------------------------- MUSCULATION : THÉORIE -------------------------
   "muscu-intro": {
     cours: "Musculation — théorie",
@@ -633,10 +634,15 @@ En cas de question sur son poids ou son alimentation, le bon réflexe est d'en p
   },
 };
 
+export const COURS = { ...COURS_BASE, ...COURS_COURSE, ...COURS_ESCALADE };
+
 export const PAGES_COURS = {
   "musculation-theorie": ["muscu-intro", "muscu-anatomie", "muscu-physiologie", "muscu-projets", "muscu-charges", "muscu-methodes", "muscu-seance", "muscu-recuperation", "muscu-connaissances", "muscu-lexique"],
   "sportsante-alim": ["alim-nutriments", "alim-assiette", "alim-seance", "alim-idees"],
   "echauffement": ["echauf-principes", "echauf-course-duree", "echauf-musculation", "echauf-sports-co", "echauf-escalade", "echauf-badminton", "echauf-gymnastique", "echauf-relais"],
+  "course-duree-theorie": Object.keys(COURS_COURSE),
+  "escalade-theorie": Object.keys(COURS_ESCALADE).filter((k) => !k.startsWith("esc-eval")),
+  "escalade-evaluation": Object.keys(COURS_ESCALADE).filter((k) => k.startsWith("esc-eval")),
 };
 
 // ---------- Petit moteur Markdown (titres, listes, tableaux, gras) ----------

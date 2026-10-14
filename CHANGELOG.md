@@ -1,8 +1,24 @@
 # Site EPS — journal des changements
 
-Version actuelle : **0.4.1**
+Version actuelle : **0.5.0**
 
 ---
+
+### v0.5.0 — 14/10/2026
+- **Nouvelle rubrique « Course de durée » › Théorie** (14 parties) : ATP et sa régénération,
+  filières énergétiques, mitochondries, respiration et alvéoles, cœur et fréquence cardiaque
+  (Karvonen), lactate et seuil, VMA (tests et développement), allures et calculs, projet de course,
+  récupération, alimentation/hydratation/gestion du poids, ce sur quoi on peut être interrogé, lexique.
+- **Nouvelle rubrique « Escalade »** :
+  - *Théorie* (8 parties) : sécurité et contrôle croisé, matériel et baudrier, nœuds, assurage
+    (5 temps, descente, moulinette/moulitête/tête), positions du corps et préhensions, lecture et
+    cotation des voies, ce sur quoi on peut être interrogé, lexique ;
+  - *Évaluation et tableau de performance* : construction de la note, codes du tableau (T, MT, M,
+    A, numéro de dégaine) avec exemples.
+- **Nouvelle rubrique « Association Sportive du Lycée »** avec 3 pages à compléter :
+  Présentation et inscriptions, Résultats sportifs, Photos et vidéos.
+- Ordre des rubriques : Course de durée et Escalade juste après Musculation, AS en dernier.
+  Mise à jour automatique sans écraser les rubriques existantes.
 
 ### v0.4.1 — 14/10/2026
 - **Page « L'échauffement » remplie** : principes communs (3 phases, règles d'or) puis
