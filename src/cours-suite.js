@@ -787,3 +787,598 @@ Le barème précis (points par voie, par couleur et par mode) est présenté par
 - Remplis ton tableau de suivi **après chaque montée**, avant d'oublier.`,
   },
 };
+
+// =====================================================================
+// VOLLEY-BALL (4 contre 4, terrain de 7 m × 7 m par camp) — niveau Terminale
+// =====================================================================
+const VB = "Volley-ball — théorie";
+const VBE = "Volley-ball — évaluation";
+
+export const COURS_VOLLEY = {
+  "vb-jeu": {
+    cours: VB,
+    titre: "1. Le 4 contre 4 : terrain, but du jeu et attendus",
+    md: `Le volley-ball est un sport collectif **sans contact** où deux équipes s'opposent de part et d'autre d'un filet. Le but est de **faire tomber le ballon dans le camp adverse** et d'**empêcher qu'il tombe dans le sien**, en **trois touches maximum** par équipe.
+
+### Le cadre de jeu au lycée
+
+| Élément | Règle en cycle |
+| --- | --- |
+| Équipes | 4 joueurs sur le terrain (+ remplaçants éventuels) |
+| Terrain | **7 m × 7 m par camp** (14 m × 7 m au total), lignes comprises dans le terrain |
+| Filet | Hauteur fixée par l'enseignant (environ 2,10 m à 2,24 m en mixte) |
+| Ballon | Ballon de volley taille 5 |
+| Durée | Sets en points (ex. 15 ou 25 points) ou au temps, selon l'organisation du cycle |
+
+### Pourquoi le 4 contre 4 ?
+
+Le terrain réduit et l'effectif à 4 obligent chaque joueur à **toucher beaucoup de ballons**, à **communiquer** et à **occuper un rôle précis** (passeur, attaquant, défenseur), tout en laissant des espaces à exploiter pour gagner le point.
+
+### Ce qu'on attend d'un élève de Terminale
+
+- **Construire** des attaques en 3 touches : réception (ou défense) → passe → attaque, le plus souvent possible.
+- Utiliser une **attaque efficace** : smash ou attaque placée vers les zones libres.
+- **Servir** de façon sûre et utile : service haut (tennis) ou service bas placé dans les zones faibles.
+- **S'organiser** en défense (bloc, défenseurs, couverture) et changer rapidement de statut (attaquant ↔ défenseur).
+- **Analyser le rapport de force** et adapter son projet de jeu à l'adversaire.
+- **Connaître et appliquer le règlement**, assurer l'arbitrage et le rôle de coach ou d'observateur.`,
+  },
+
+  "vb-reglement": {
+    cours: VB,
+    titre: "2. Le règlement",
+    md: `### Marquer les points
+
+- Chaque échange rapporte **un point** à l'équipe qui le gagne, qu'elle ait servi ou non (**tie-break / rally point**).
+- L'équipe qui gagne le point **obtient le service** suivant.
+- Un set se gagne avec **2 points d'écart** (ex. 25-23, 16-14).
+
+### Le service
+
+| Règle | Détail |
+| --- | --- |
+| Lieu | Derrière la **ligne de fond**, sans mordre la ligne au moment de la frappe |
+| Délai | Dans les **8 secondes** après le coup de sifflet de l'arbitre |
+| Geste | Ballon lâché ou lancé, frappé **d'une seule main** ou du bras |
+| Ballon | Peut toucher le filet s'il passe dans le camp adverse (règle actuelle) |
+| Rotation | Quand une équipe **reprend le service**, ses joueurs **tournent d'une place dans le sens des aiguilles d'une montre** ; le nouveau serveur est celui qui arrive à la place de service |
+
+### Les fautes de jeu
+
+| Faute | Définition |
+| --- | --- |
+| Quatre touches | Plus de 3 touches de balle par l'équipe avant de renvoyer (le contre ne compte pas comme une touche) |
+| Double touche | Un joueur touche le ballon deux fois de suite (sauf au contre, et sur la 1re touche d'équipe si l'action est simultanée et non intentionnelle) |
+| Ballon tenu (porté) | Le ballon est bloqué, accompagné ou lancé au lieu d'être frappé |
+| Filet | Un joueur touche le filet (bande du haut) pendant une action de jeu |
+| Pénétration | Le pied dépasse **entièrement** la ligne centrale, ou le joueur gêne l'adversaire dans son camp |
+| Ballon dehors | Le ballon tombe hors des lignes, touche le plafond, un mur, ou passe hors des antennes |
+| Faute de position | Au moment du service, un joueur n'est pas à sa place dans l'ordre de rotation |
+| Contre ou attaque sur le service | Interdit de contrer ou d'attaquer directement le service adverse au-dessus du filet |
+
+### Ce qui est autorisé
+
+- Toucher le ballon avec **n'importe quelle partie du corps**, y compris les pieds.
+- **Passer la main au-dessus du filet** au contre, si l'adversaire a joué son attaque.
+- Aller chercher un ballon **hors du terrain** (sauf dans le camp adverse sous le filet).
+
+### L'arbitrage
+
+L'arbitre siffle le début de chaque échange et chaque faute, puis indique avec le bras le **côté qui gagne le point** et la **faute commise** (gestes à connaître : ballon dedans, dehors, quatre touches, ballon tenu, filet, double touche).`,
+  },
+
+  "vb-technique": {
+    cours: VB,
+    titre: "3. Les gestes techniques",
+    md: `| Geste | Quand l'utiliser | Points clés |
+| --- | --- | --- |
+| **Manchette** | Réception de service, défense sur attaque, ballons bas | Se placer sous et derrière le ballon, **plan de frappe** des avant-bras joints et tendus, jambes fléchies qui poussent, on oriente les épaules vers la cible ; on ne balance pas les bras |
+| **Passe haute (à deux mains)** | 2e touche (passe à l'attaquant), ballons hauts | Mains en « coupe » au-dessus du front, contact du bout des doigts, extension simultanée des jambes et des bras, ballon **haut** et près du filet |
+| **Service bas** | Service sûr | Pied opposé au bras de frappe devant, ballon tenu à hauteur de hanche, frappe avec le talon de la main, bras tendu de bas en haut |
+| **Service haut (tennis)** | Service plus rapide et tendu, plus difficile à recevoir | Lancer **devant l'épaule** de frappe, à environ 1 m au-dessus de la tête ; coude haut, frappe main ouverte et ferme au point le plus haut ; viser une zone |
+| **Attaque / smash** | 3e touche, ballon haut et près du filet | **Course d'élan** de 2 à 3 pas (le dernier pas long, appel deux pieds), bras armés en arrière puis lancés vers le haut, **frappe main ouverte au point le plus haut**, devant soi, poignet qui « enroule » le ballon vers le bas |
+| **Attaque placée (feinte)** | Quand le bloc est en place ou la défense bien placée | Ballon poussé du bout des doigts derrière le bloc ou dans une zone vide, sans le tenir |
+| **Contre (bloc)** | Face à un attaquant adverse au filet | Face au filet, mains à hauteur des épaules, saut **légèrement après** l'attaquant, bras tendus **au-dessus et au-delà du filet**, mains ouvertes et fermes, sans toucher le filet |
+| **Plongeon / roulade** | Ballon de défense éloigné | Réservé aux joueurs à l'aise ; l'important est de jouer le ballon haut vers son camp |
+
+### Les critères de qualité à viser
+
+- **Réception** : ballon haut, au centre du terrain, à environ **1 m du filet**, jouable par le passeur.
+- **Passe** : ballon **haut** (au moins 1 m au-dessus du filet), à **0,5 à 1 m du filet**, dans la zone de l'attaquant.
+- **Attaque** : ballon frappé **au-dessus du filet**, vers le bas, dans une zone libre ou sur un joueur en difficulté.`,
+  },
+
+  "vb-roles": {
+    cours: VB,
+    titre: "4. Les rôles : passeur, attaquants, arrières",
+    md: `En 4 contre 4, chaque joueur a un rôle principal, mais **tout le monde défend et tout le monde peut attaquer**.
+
+| Rôle | Mission | Qualités recherchées |
+| --- | --- | --- |
+| **Passeur** | Joue la **2e touche** : transforme la réception en ballon d'attaque haut et précis ; choisit l'attaquant | Lecture du jeu, déplacements rapides, passe haute précise, communication (« Je prends ! », annonce de l'attaquant) |
+| **Attaquants (avants)** | Jouent la **3e touche** au filet (smash, attaque placée) ; forment le **contre** en défense | Détente, timing, frappe, lecture du contre adverse |
+| **Arrières (défenseurs)** | Assurent la **réception** du service et la **défense** sur les attaques ; peuvent attaquer depuis le fond | Placement, manchette, anticipation, couverture |
+
+### Les dispositions de base
+
+| Phase | Organisation conseillée |
+| --- | --- |
+| **Réception du service** | **3 réceptionneurs** en ligne ou en arc de cercle à environ 3-4 m du filet, le **passeur hors de la réception**, près du filet (centre-droit) |
+| **Attaque** | Le passeur au filet, **1 ou 2 attaquants** prêts à prendre leur élan depuis l'arrière, un joueur en **couverture** de l'attaquant (pour récupérer un ballon contré) |
+| **Défense** | **1 contreur** face à l'attaquant adverse (2 si l'attaque est forte), **2 à 3 défenseurs** répartis dans les zones non couvertes par le contre (fond de court et diagonale) |
+
+### Le passeur pénétrant
+
+Quand le passeur est en position arrière au moment du service, il **« pénètre »** vers le filet dès que le service est frappé, pour être prêt à jouer la 2e touche. Les 3 autres joueurs assurent la réception.
+
+### La communication
+
+- On **annonce** qui prend le ballon (« J'ai ! », « Moi ! ») pour éviter les hésitations.
+- Le passeur annonce son **attaquant** ; les attaquants **appellent** le ballon.
+- Après chaque point, l'équipe se **regroupe** et se rappelle le plan de jeu.`,
+  },
+
+  "vb-tactique": {
+    cours: VB,
+    titre: "5. La tactique : attaquer, défendre, analyser le rapport de force",
+    md: `### Gagner le point en attaque : créer la rupture
+
+- **Viser les espaces libres** : fond de court, zones entre deux joueurs, zone avant si les défenseurs sont reculés.
+- **Viser le joueur en difficulté** (le moins à l'aise en réception) et le **passeur**, pour l'empêcher de jouer la 2e touche.
+- **Varier** : alterner smash puissant et attaque placée derrière le contre.
+- **Attaquer en 3 touches** le plus souvent possible : un renvoi en 1re ou 2e touche n'est utile que s'il surprend l'adversaire (ballon « deuxième main » du passeur, par exemple).
+- **Accélérer** : une passe plus rapide réduit le temps de formation du contre adverse.
+
+### Le service, première arme d'attaque
+
+| Objectif | Moyen |
+| --- | --- |
+| Ne pas faire de faute | Service sûr (bas ou haut maîtrisé) dans les moments importants |
+| Gêner la réception | Viser une **zone faible** (entre deux réceptionneurs, fond de court, le joueur fragile) |
+| Empêcher l'attaque | Servir sur le **meilleur attaquant** ou sur le **passeur pénétrant** pour qu'il doive réceptionner |
+
+### Défendre : protéger son terrain
+
+- **Contre** placé face au bras d'attaque de l'adversaire : il ferme une zone, les défenseurs couvrent les autres.
+- **Défenseurs bas et en appui**, prêts à jouer la manchette vers le **centre du terrain**, haut.
+- **Couverture** de l'attaquant de son équipe : un joueur proche pour récupérer le ballon renvoyé par le contre.
+- **Changement de statut rapide** : dès que l'adversaire renvoie, on se replace en défense ; dès qu'on récupère le ballon, on construit l'attaque.
+
+### Analyser le rapport de force
+
+Avant et pendant le match, l'équipe observe l'adversaire et ajuste son projet de jeu :
+
+| Question | Exemple d'adaptation |
+| --- | --- |
+| Qui est le meilleur attaquant adverse ? | On le contre systématiquement, on lui sert dessus |
+| Où sont les zones faibles adverses ? | On y oriente services et attaques |
+| Quel est notre point fort ? | On construit les attaques pour notre meilleur attaquant |
+| Sommes-nous en difficulté en réception ? | On simplifie : réception haute au centre, passe haute, attaque placée |
+
+Le **temps mort** permet de réajuster le plan : le coach donne **une ou deux consignes simples**.`,
+  },
+
+  "vb-connaissances": {
+    cours: VB,
+    titre: "6. Ce sur quoi tu peux être interrogé",
+    md: `Tu dois être capable de :
+
+### Le règlement et l'arbitrage
+
+- Expliquer le **décompte des points**, le gain d'un set et le principe du **service** et de la **rotation**.
+- Citer et reconnaître les **fautes** (4 touches, double touche, ballon tenu, filet, pénétration, ballon dehors, faute de position).
+- **Arbitrer** un match : coup de sifflet, gestes de l'arbitre, tenue du score.
+
+### La technique
+
+- Décrire les **points clés** de la manchette, de la passe haute, du service bas et haut, de l'attaque (smash) et du contre.
+- Dire **quel geste** utiliser selon la trajectoire et la situation.
+
+### Les rôles et l'organisation
+
+- Expliquer le rôle du **passeur**, des **attaquants** et des **arrières**.
+- Décrire une organisation de **réception**, d'**attaque** (avec couverture) et de **défense** (contre + défenseurs).
+- Expliquer le principe du **passeur pénétrant**.
+
+### La tactique
+
+- Citer des moyens de **créer la rupture** (zones libres, joueur en difficulté, variation des attaques).
+- Expliquer comment utiliser le **service** pour gêner l'adversaire.
+- **Analyser un rapport de force** à partir d'observations et proposer un **projet de jeu** adapté.
+
+### Les rôles sociaux
+
+- Tenir le rôle d'**arbitre**, de **coach** et d'**observateur** (remplir une fiche d'observation, donner des conseils).`,
+  },
+
+  "vb-lexique": {
+    cours: VB,
+    titre: "7. Lexique",
+    md: `| Terme | Définition |
+| --- | --- |
+| Manchette | Frappe du ballon avec les avant-bras joints |
+| Passe haute | Frappe du ballon du bout des doigts, au-dessus du front |
+| Smash | Attaque frappée fort vers le bas, après une course d'élan et un saut |
+| Attaque placée (feinte) | Ballon poussé vers une zone libre au lieu d'être frappé fort |
+| Contre (bloc) | Saut au filet, bras tendus, pour renvoyer ou freiner l'attaque adverse |
+| Couverture | Placement d'un joueur près de son attaquant pour récupérer un ballon contré |
+| Passeur pénétrant | Passeur qui part de l'arrière vers le filet au moment du service adverse |
+| Rotation | Changement de place des joueurs dans le sens des aiguilles d'une montre quand l'équipe reprend le service |
+| Rupture | Action qui déséquilibre l'adversaire et crée une occasion de marquer |
+| Rapport de force | Comparaison des points forts et faibles des deux équipes |
+| Temps mort | Arrêt de jeu demandé par une équipe pour ajuster son organisation |`,
+  },
+
+  // --------------------------- Volley-ball : évaluation ---------------------------
+  "vb-eval-structure": {
+    cours: VBE,
+    titre: "1. L'épreuve du bac : structure de la note",
+    md: `Le volley-ball fait partie du **champ d'apprentissage 4** : « Conduire et maîtriser un affrontement collectif ou interindividuel pour gagner ». La note est sur **20 points**, répartis en trois attendus de fin de lycée (AFL).
+
+| Attendu | Intitulé | Points | Quand |
+| --- | --- | --- | --- |
+| **AFL1** | S'engager pour gagner une rencontre en faisant des choix techniques et tactiques pertinents au regard de l'analyse du rapport de force | **12 points** | Le jour de l'épreuve (fin de cycle) |
+| **AFL2** | Se préparer et s'entraîner, individuellement ou collectivement, pour conduire et maîtriser un affrontement collectif | **2, 4 ou 6 points** | Au fil du cycle |
+| **AFL3** | Choisir et assumer les rôles qui permettent un fonctionnement collectif solidaire | **6, 4 ou 2 points** | Au fil du cycle (et le jour de l'épreuve) |
+
+### Ton choix de répartition (AFL2 / AFL3)
+
+Avant l'épreuve, tu choisis comment répartir les **8 points** restants :
+
+| Choix | AFL2 | AFL3 |
+| --- | --- | --- |
+| a | 2 points | 6 points |
+| b | 4 points | 4 points |
+| c | 6 points | 2 points |
+
+### L'AFL1 en deux éléments
+
+- **Élément 1** : s'engager et réaliser des **actions techniques d'attaque et de défense** efficaces, en lien avec son projet de jeu.
+- **Élément 2** : faire des **choix** pertinents au regard de l'**analyse du rapport de force**.
+
+Les points de chaque élément (entre 4 et 8) et les descripteurs précis sont fixés par le **référentiel de l'établissement**. La note est ensuite ajustée selon la **proportion de rencontres gagnées**.`,
+  },
+
+  "vb-eval-deroulement": {
+    cours: VBE,
+    titre: "2. Le jour de l'épreuve : ce qui est observé",
+    md: `### Le déroulement
+
+- Les équipes de **4 joueurs** sont constituées pour être **homogènes entre elles** et équilibrées (niveau, mixité) selon les règles fixées par l'enseignant.
+- Chaque équipe dispute **plusieurs rencontres** (par exemple en poule), sur le terrain de **7 m × 7 m par camp**.
+- Avant les matchs, chaque équipe présente son **projet de jeu** (organisation, rôles, intentions tactiques).
+- Entre les rencontres, l'équipe **analyse** ses résultats et l'adversaire suivant, et peut **ajuster** son projet.
+
+### Ce que l'enseignant observe (AFL1)
+
+| Domaine | Indicateurs |
+| --- | --- |
+| **Construction de l'attaque** | Part des ballons joués en 3 touches ; qualité de la réception et de la passe (haute, près du filet) |
+| **Efficacité offensive** | Attaques gagnantes (smash, attaque placée), service utile (zones faibles, service haut maîtrisé), peu de fautes directes |
+| **Défense** | Placement, contre, défenseurs, couverture ; ballons défendus et relancés |
+| **Rôle tenu** | Passeur, attaquant, défenseur : efficacité dans son poste choisi |
+| **Choix tactiques** | Exploitation des zones faibles, adaptation à l'adversaire, respect et ajustement du projet de jeu |
+| **Rapport de force** | Résultats obtenus face à des adversaires de niveau proche |
+
+### Ce qui fait la différence en Terminale
+
+- Des attaques **construites** et **variées**, pas seulement des renvois.
+- Un **service haut** maîtrisé ou un service bas **placé**.
+- Un **contre** et une **défense organisés**, pas seulement individuels.
+- Une équipe qui **communique** et **s'adapte** pendant le match.`,
+  },
+
+  "vb-eval-roles": {
+    cours: VBE,
+    titre: "3. AFL2 et AFL3 : s'entraîner et assumer des rôles",
+    md: `### AFL2 : se préparer et s'entraîner
+
+Évalué **tout au long du cycle**, souvent à l'aide d'un **carnet d'entraînement** ou d'un outil de recueil de données.
+
+- **Identifier** ses points forts et ses points faibles (et ceux de l'équipe) à partir d'observations.
+- **Choisir** des exercices adaptés pour progresser (service, réception, attaque, organisation collective).
+- **S'échauffer** de façon complète et spécifique (voir *Sport & Santé › L'échauffement*).
+- **Mesurer** ses progrès (statistiques de service, de réception, d'attaques réussies) et ajuster son entraînement.
+
+### AFL3 : assumer des rôles
+
+Tu choisis **deux rôles** parmi ceux proposés et tu es évalué dans ces rôles :
+
+| Rôle | Ce que l'on attend |
+| --- | --- |
+| **Arbitre** | Siffler juste et sans hésiter, faire les bons gestes, tenir le score, faire respecter les règles avec calme |
+| **Coach** | Observer, donner une à deux consignes claires (temps mort, entre deux sets), encourager |
+| **Observateur** | Remplir une fiche d'observation fiable (statistiques, zones), restituer des informations utiles à l'équipe |
+| **Partenaire d'entraînement** | Proposer des ballons adaptés, s'investir pour faire progresser les autres |
+| **Organisateur** | Mettre en place le matériel, gérer le tableau des rencontres et le temps |
+
+Dans tous les cas, on attend une attitude **solidaire** : respect des partenaires, des adversaires et de l'arbitre, engagement constant.`,
+  },
+};
+
+// =====================================================================
+// BADMINTON (simple) — niveau Terminale
+// =====================================================================
+const BD = "Badminton — théorie";
+const BDE = "Badminton — évaluation";
+
+export const COURS_BADMINTON = {
+  "bd-jeu": {
+    cours: BD,
+    titre: "1. Le badminton : but du jeu et attendus",
+    md: `Le badminton est un sport d'opposition **interindividuel** : deux joueurs (simple) ou deux équipes de deux (double) s'affrontent de part et d'autre d'un filet. Le but est de **faire tomber le volant dans le terrain adverse** ou de **pousser l'adversaire à la faute**.
+
+Le volant est le projectile le plus rapide des sports de raquette au départ du smash, mais il **ralentit très vite** : il faut donc jouer sur les **trajectoires** et les **déplacements**.
+
+### Ce qu'on attend d'un élève de Terminale
+
+- **Construire le point** : déplacer l'adversaire dans les 4 coins du terrain, en alternant jeu long (dégagés) et jeu court (amortis).
+- **Conclure** quand l'occasion se présente : smash ou volant accéléré vers l'espace libre.
+- **Défendre** efficacement : se replacer au centre après chaque frappe, relancer haut et long en difficulté.
+- **Servir** de façon sûre et réglementaire, court ou long selon l'adversaire.
+- **Analyser le rapport de force** et adapter sa tactique (jouer sur le revers, le fond de court, le filet…).
+- **Connaître le règlement**, arbitrer et compter les points, observer et conseiller un partenaire.`,
+  },
+
+  "bd-reglement": {
+    cours: BD,
+    titre: "2. Le règlement",
+    md: `### Le terrain
+
+| Élément | Simple | Double |
+| --- | --- | --- |
+| Largeur | Lignes **intérieures** de côté (5,18 m) | Lignes **extérieures** de côté (6,10 m) |
+| Longueur | Ligne de fond **extérieure** (13,40 m) | Ligne de fond extérieure en jeu, ligne de service long **intérieure** au service |
+| Filet | 1,55 m aux poteaux, 1,524 m au centre | Idem |
+
+Les lignes font partie du terrain : un volant qui touche la ligne est **bon**.
+
+### Le décompte des points
+
+- Chaque échange rapporte **un point** à celui qui le gagne, qu'il ait servi ou non.
+- Un set se joue en **21 points** avec **2 points d'écart** ; à 29-29, le premier à **30** gagne.
+- Un match se joue au meilleur des **3 sets** (au lycée, souvent un set ou un temps limité).
+- Celui qui gagne le point **sert** le point suivant.
+
+### Le service
+
+| Règle | Détail |
+| --- | --- |
+| Côté | Le serveur sert de la **zone droite** quand son score est **pair** (0, 2, 4…), de la **zone gauche** quand il est **impair** |
+| Direction | En **diagonale**, dans la zone de service opposée |
+| Zone en simple | Zone **longue et étroite** : jusqu'à la ligne de fond, limitée par la ligne intérieure de côté |
+| Hauteur | Le volant est frappé **sous 1,15 m** du sol au moment du contact |
+| Geste | Mouvement vers l'avant continu, sans feinte ; les deux pieds restent au sol et immobiles dans la zone |
+| Receveur | Il attend dans la zone opposée en diagonale, pieds au sol, jusqu'à la frappe |
+
+### Les fautes
+
+| Faute | Définition |
+| --- | --- |
+| Volant dehors | Le volant tombe hors des limites du terrain |
+| Volant dans le filet | Le volant ne passe pas le filet ou passe en dessous |
+| Contact du joueur | Le volant touche le corps ou les vêtements du joueur |
+| Double frappe | Le volant est touché deux fois de suite par le même joueur (ou par les deux partenaires en double) |
+| Filet | La raquette, le corps ou les vêtements touchent le filet ou les poteaux pendant l'échange |
+| Envahissement | La raquette passe au-dessus du filet pour frapper le volant dans le camp adverse (l'accompagnement après la frappe est autorisé) |
+| Faute de service | Volant frappé au-dessus de 1,15 m, mauvaise zone, pied qui bouge ou mord la ligne, feinte |
+| Obstruction | Gêner l'adversaire, crier ou faire un geste pour le distraire |
+
+### Le let (point à rejouer)
+
+Le point est rejoué si le receveur n'était pas prêt au service, si un volant d'un autre terrain gêne le jeu, ou si le volant se bloque sur le filet après l'avoir franchi.`,
+  },
+
+  "bd-technique": {
+    cours: BD,
+    titre: "3. Les frappes et les déplacements",
+    md: `### La prise de raquette
+
+- **Prise universelle** (« poignée de main ») : le V formé par le pouce et l'index sur la tranche du manche ; doigts souples, on serre seulement au moment de la frappe.
+- **Prise revers** : le pouce à plat sur le méplat du manche, pour plus de force en revers.
+
+### Les frappes
+
+| Frappe | Trajectoire | Objectif | Points clés |
+| --- | --- | --- | --- |
+| **Dégagé** | Haute et longue, vers le fond de court adverse | Repousser l'adversaire, gagner du temps pour se replacer | Se placer derrière le volant, profil, frappe au-dessus et devant la tête, bras tendu, poignet qui accélère |
+| **Amorti** | Lente et courte, retombant juste derrière le filet | Faire avancer l'adversaire, l'obliger à lever le volant | Même préparation que le dégagé (pour cacher l'intention), frappe freinée |
+| **Smash** | Rapide et descendante | Conclure le point | Volant devant soi, frappe au point le plus haut, vers le bas, à fond ; à jouer en position favorable (mi-court) |
+| **Contre-amorti / filet** | Très courte, frôlant le filet | Gagner le point au filet ou forcer un volant haut | Raquette haute, toucher léger, volant pris le plus haut possible |
+| **Lob** | Haute et longue, depuis le filet | Se dégager d'un amorti, repousser l'adversaire au fond | Fente avant, raquette sous le volant, mouvement vers le haut et l'avant |
+| **Drive** | Tendue, parallèle au sol | Accélérer le jeu à mi-hauteur | Frappe devant soi, coup sec |
+| **Rush** | Volant attaqué vers le bas au filet | Punir un volant trop haut au filet | Raquette haute, frappe courte et sèche |
+
+### Le service
+
+- **Service court** (revers ou coup droit) : volant qui frôle le filet et tombe juste derrière la ligne de service court ; utilisé pour empêcher l'attaque.
+- **Service long** (coup droit) : volant haut qui tombe au fond de la zone de service ; utilisé pour repousser l'adversaire au fond, surtout en simple.
+
+### Les déplacements
+
+- **Position de base** au **centre du terrain** (légèrement en arrière du milieu), pieds écartés, genoux fléchis, raquette devant soi.
+- **Replacement** au centre **après chaque frappe**.
+- Déplacements en **pas chassés** et **pas croisés** ; **fente avant** pour les volants au filet (genou au-dessus du pied, pied dans l'axe).
+- Petit **sursaut d'appui** (« split step ») au moment où l'adversaire frappe, pour réagir plus vite.`,
+  },
+
+  "bd-tactique": {
+    cours: BD,
+    titre: "4. La tactique : construire, conclure, défendre",
+    md: `### Construire le point : déplacer l'adversaire
+
+- **Jouer loin de l'adversaire** : là où il n'est pas, dans les **4 coins** du terrain.
+- **Alterner long et court** : dégagé au fond puis amorti au filet, pour l'obliger à de grands déplacements.
+- **Jouer sur son point faible** : souvent le **fond de court côté revers**.
+- **Cacher ses intentions** : préparer dégagé, amorti et smash de la même façon.
+- **Jouer à contre-pied** : renvoyer le volant là d'où l'adversaire vient de partir.
+
+### Conclure le point
+
+| Situation | Bonne décision |
+| --- | --- |
+| Volant haut et court (mi-court) | **Smash** vers l'espace libre ou sur le corps |
+| Volant haut près du filet | **Rush** vers le bas |
+| Adversaire en retard au fond | **Amorti** ou volant court |
+| Adversaire en retard au filet | **Dégagé** ou lob par-dessus |
+
+### Défendre et se dégager
+
+- En difficulté, jouer **haut et long** (dégagé défensif, lob) pour se donner le temps de se replacer.
+- Face à un smash, **raquette devant soi**, bloquer court ou relancer long.
+- Toujours **revenir au centre** après la frappe.
+
+### Analyser le rapport de force
+
+| Question | Exemple d'adaptation |
+| --- | --- |
+| L'adversaire se déplace-t-il bien vers l'arrière ? | Si non : multiplier les dégagés au fond |
+| Est-il à l'aise au filet ? | Si non : multiplier les amortis et services courts |
+| Son revers est-il faible ? | Orienter le jeu vers son côté revers |
+| Fait-il beaucoup de fautes directes ? | Jouer sûr, faire durer l'échange |
+| Est-il plus fort physiquement ? | Varier les rythmes, chercher la précision plutôt que la vitesse |
+
+### Les deux grands styles de jeu
+
+- **Jeu de construction (patient)** : faire durer l'échange avec des dégagés précis, attendre la faute ou l'occasion de conclure.
+- **Jeu d'attaque (rapide)** : prendre le volant tôt, accélérer, smasher dès que possible.
+
+En Terminale, on choisit son **style de jeu** et on l'adapte à l'adversaire.`,
+  },
+
+  "bd-connaissances": {
+    cours: BD,
+    titre: "5. Ce sur quoi tu peux être interrogé",
+    md: `Tu dois être capable de :
+
+### Le règlement et l'arbitrage
+
+- Décrire les **limites du terrain** en simple et en double, la **hauteur du filet**.
+- Expliquer le **décompte des points** (21 points, 2 points d'écart, 30 maximum).
+- Expliquer les règles du **service** (côté selon le score, diagonale, zone en simple, hauteur de 1,15 m).
+- Citer et reconnaître les **fautes** et les cas de **let**.
+- **Arbitrer** un match et tenir le score à voix haute (score du serveur annoncé en premier).
+
+### La technique
+
+- Décrire les **trajectoires** et l'**objectif** de chaque frappe (dégagé, amorti, smash, contre-amorti, lob, drive, rush).
+- Expliquer le **service court** et le **service long** et quand les utiliser.
+- Décrire la **position de base**, le **replacement** et la **fente avant**.
+
+### La tactique
+
+- Expliquer comment **construire** un point (déplacer l'adversaire, alterner long et court).
+- Choisir la frappe adaptée pour **conclure** selon la situation.
+- Expliquer comment **défendre** et se dégager.
+- **Analyser un rapport de force** et proposer une tactique adaptée à un adversaire décrit.
+- Présenter son **style de jeu**.
+
+### Les rôles sociaux
+
+- Tenir le rôle d'**arbitre**, d'**observateur** (fiche de points gagnés et perdus, zones) et de **coach**.`,
+  },
+
+  "bd-lexique": {
+    cours: BD,
+    titre: "6. Lexique",
+    md: `| Terme | Définition |
+| --- | --- |
+| Dégagé | Frappe haute et longue vers le fond du terrain adverse |
+| Amorti | Frappe lente qui retombe juste derrière le filet |
+| Smash | Frappe rapide et descendante pour conclure |
+| Contre-amorti | Réponse courte au filet sur un amorti adverse |
+| Lob | Volant joué depuis le filet, haut et long |
+| Drive | Frappe tendue à mi-hauteur |
+| Rush | Volant attaqué vers le bas au filet |
+| Fente avant | Grand pas en avant pour atteindre un volant au filet |
+| Replacement | Retour au centre du terrain après chaque frappe |
+| Let | Point à rejouer |
+| Rupture | Action qui met l'adversaire en difficulté et crée une occasion de conclure |
+| Rapport de force | Comparaison des points forts et faibles des deux joueurs |`,
+  },
+
+  // --------------------------- Badminton : évaluation ---------------------------
+  "bd-eval-structure": {
+    cours: BDE,
+    titre: "1. L'épreuve du bac : structure de la note",
+    md: `Le badminton fait partie du **champ d'apprentissage 4** : « Conduire et maîtriser un affrontement collectif ou interindividuel pour gagner ». La note est sur **20 points**, répartis en trois attendus de fin de lycée (AFL).
+
+| Attendu | Intitulé | Points | Quand |
+| --- | --- | --- | --- |
+| **AFL1** | S'engager pour gagner une rencontre en faisant des choix techniques et tactiques pertinents au regard de l'analyse du rapport de force | **12 points** | Le jour de l'épreuve (fin de cycle) |
+| **AFL2** | Se préparer et s'entraîner, individuellement ou collectivement, pour conduire et maîtriser un affrontement interindividuel | **2, 4 ou 6 points** | Au fil du cycle |
+| **AFL3** | Choisir et assumer les rôles qui permettent un fonctionnement collectif solidaire | **6, 4 ou 2 points** | Au fil du cycle (et le jour de l'épreuve) |
+
+### Ton choix de répartition (AFL2 / AFL3)
+
+| Choix | AFL2 | AFL3 |
+| --- | --- | --- |
+| a | 2 points | 6 points |
+| b | 4 points | 4 points |
+| c | 6 points | 2 points |
+
+### L'AFL1 en deux éléments
+
+- **Élément 1** : s'engager et réaliser des **actions techniques d'attaque et de défense** efficaces, en lien avec son projet de jeu.
+- **Élément 2** : faire des **choix** pertinents au regard de l'**analyse du rapport de force**.
+
+Les points de chaque élément (entre 4 et 8) et les descripteurs précis sont fixés par le **référentiel de l'établissement**. La note est ensuite ajustée selon la **proportion de rencontres gagnées**.`,
+  },
+
+  "bd-eval-deroulement": {
+    cours: BDE,
+    titre: "2. Le jour de l'épreuve : ce qui est observé",
+    md: `### Le déroulement
+
+- Les élèves sont répartis en **poules de niveau homogène**, pour que chaque rencontre soit **équilibrée**.
+- Chaque élève dispute **plusieurs matchs en simple** (en points ou au temps, selon l'organisation).
+- Avant l'épreuve, tu présentes ton **projet de jeu** et ton **style de jeu** (construction patiente ou attaque rapide).
+- Entre deux matchs, tu analyses l'adversaire suivant et tu peux **ajuster ta tactique**.
+
+### Ce que l'enseignant observe (AFL1)
+
+| Domaine | Indicateurs |
+| --- | --- |
+| **Construction du point** | Utilisation de la profondeur et de la largeur du terrain, alternance jeu long / jeu court |
+| **Efficacité offensive** | Points gagnés par smash, amorti ou volant placé ; prise de risque adaptée |
+| **Défense et replacement** | Retour au centre, volants défensifs hauts et longs, peu de points perdus sur déplacement |
+| **Service** | Service réglementaire, court ou long selon l'adversaire, peu de fautes |
+| **Fautes directes** | Rapport entre points gagnés et fautes commises |
+| **Choix tactiques** | Jeu sur les points faibles adverses, adaptation au score et à l'adversaire, respect du projet |
+| **Rapport de force** | Résultats obtenus face à des adversaires de niveau proche |
+
+### Ce qui fait la différence en Terminale
+
+- Des points **construits** (au moins 2 ou 3 frappes pour créer la rupture) et pas seulement des échanges au centre.
+- Des frappes de **fond de court** (dégagé) suffisamment longues pour repousser l'adversaire.
+- Un **smash** utilisé au bon moment, dans une position favorable.
+- Une **adaptation visible** à l'adversaire au cours du match.`,
+  },
+
+  "bd-eval-roles": {
+    cours: BDE,
+    titre: "3. AFL2 et AFL3 : s'entraîner et assumer des rôles",
+    md: `### AFL2 : se préparer et s'entraîner
+
+Évalué **tout au long du cycle**, souvent à l'aide d'un **carnet d'entraînement** ou d'un outil de recueil de données.
+
+- **Identifier** ses points forts et ses points faibles à partir d'observations (points gagnés et perdus, zones).
+- **Choisir** des exercices adaptés (précision du dégagé, amortis, service, déplacements, smash).
+- **S'échauffer** de façon complète et spécifique (voir *Sport & Santé › L'échauffement*).
+- **Mesurer** ses progrès et ajuster son entraînement.
+
+### AFL3 : assumer des rôles
+
+Tu choisis **deux rôles** parmi ceux proposés et tu es évalué dans ces rôles :
+
+| Rôle | Ce que l'on attend |
+| --- | --- |
+| **Arbitre** | Annoncer le score à voix haute (score du serveur en premier), juger les volants dedans / dehors, faire respecter les règles du service |
+| **Observateur** | Remplir une fiche d'observation fiable (points gagnés / perdus, frappes, zones) et la restituer |
+| **Coach** | Donner une à deux consignes tactiques claires entre les sets ou les matchs |
+| **Partenaire d'entraînement** | Proposer des volants adaptés, s'investir pour faire progresser l'autre |
+| **Organisateur** | Gérer les poules, le temps et les résultats |
+
+Dans tous les cas, on attend une attitude **solidaire** et respectueuse des partenaires, des adversaires et de l'arbitre.`,
+  },
+};

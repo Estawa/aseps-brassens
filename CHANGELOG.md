@@ -1,8 +1,21 @@
 # Site EPS — journal des changements
 
-Version actuelle : **0.5.0**
+Version actuelle : **0.6.0**
 
 ---
+
+### v0.6.0 — 14/10/2026
+- **Nouvelle rubrique « Volley-ball »** (4 contre 4, terrain de 7 m × 7 m par camp, niveau Terminale) :
+  - *Théorie* (7 parties) : cadre de jeu et attendus, règlement et arbitrage, gestes techniques
+    (manchette, passe, service bas/haut, smash, contre), rôles (passeur, attaquants, arrières,
+    passeur pénétrant), tactique et rapport de force, ce sur quoi on peut être interrogé, lexique ;
+  - *Évaluation de fin de cycle* : structure CA4 (AFL1 12 pts, AFL2/AFL3 au choix 2-6 / 4-4 / 6-2),
+    déroulement et indicateurs observés, rôles.
+- **Nouvelle rubrique « Badminton »** (simple, niveau Terminale) :
+  - *Théorie* (6 parties) : attendus, règlement (terrain, score, service, fautes, let), frappes et
+    déplacements, tactique et styles de jeu, ce sur quoi on peut être interrogé, lexique ;
+  - *Évaluation de fin de cycle* : même structure CA4, indicateurs propres au badminton, rôles.
+- Ordre : Course de durée, Escalade, Volley-ball, Badminton juste après Musculation.
 
 ### v0.5.0 — 14/10/2026
 - **Nouvelle rubrique « Course de durée » › Théorie** (14 parties) : ATP et sa régénération,

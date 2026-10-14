@@ -8,7 +8,7 @@ import {
 import { COURS, BlocCours, blocsCoursPourPage } from "./cours.jsx";
 
 const uid = () => Math.random().toString(36).slice(2, 10);
-const APP_VERSION = "0.5.0";
+const APP_VERSION = "0.6.0";
 
 // ---------- Stockage local persistant ----------
 function lsLire(cle, defaut) {
@@ -88,7 +88,7 @@ const PAGE_ACCUEIL_SEED = {
 // Rubrique « Association Sportive du Lycée » (textes de départ à compléter depuis l'éditeur)
 const SEED_AS = [
   {
-    id: "as", titre: "Association Sportive du Lycée", parentId: null, ordre: 5,
+    id: "as", titre: "Association Sportive du Lycée", parentId: null, ordre: 7,
     page: { blocs: [blocTexte("L'Association Sportive (AS) du lycée Georges-Brassens permet aux élèves de pratiquer des activités sportives en dehors des cours d'EPS, de participer aux compétitions UNSS et de représenter le lycée. Retrouve ici les informations pratiques, les résultats de nos équipes et les photos des rencontres.")] },
   },
   { id: "as-presentation", titre: "Présentation et inscriptions", parentId: "as", ordre: 0, page: { blocs: [blocTexte("Activités proposées, horaires des entraînements, enseignants responsables et modalités d'inscription (licence UNSS) : informations à compléter.")] } },
@@ -107,12 +107,18 @@ const SEED_RUBRIQUES = [
   { id: "escalade", titre: "Escalade", parentId: null, ordre: 2, page: { blocs: [] } },
   { id: "escalade-theorie", titre: "Théorie", parentId: "escalade", ordre: 0, page: { blocs: [blocTexte("Sécurité, matériel, nœuds, assurage, technique et lecture de voie : tout ce qu'il faut savoir pour grimper et assurer en sécurité. Clique sur une partie pour l'ouvrir."), ...blocsCoursPourPage("escalade-theorie", uid)] } },
   { id: "escalade-evaluation", titre: "Évaluation et tableau de performance", parentId: "escalade", ordre: 1, page: { blocs: [blocTexte("Comment tu es évalué en escalade et comment lire le tableau de performance."), ...blocsCoursPourPage("escalade-evaluation", uid)] } },
-  { id: "sopra", titre: "Sopra Flashmob", parentId: null, ordre: 3, page: { blocs: [] } },
+  { id: "volley", titre: "Volley-ball", parentId: null, ordre: 3, page: { blocs: [] } },
+  { id: "volley-theorie", titre: "Théorie", parentId: "volley", ordre: 0, page: { blocs: [blocTexte("Le volley-ball en 4 contre 4 sur un terrain de 7 m × 7 m par camp : ce qu'on attend en Terminale, le règlement, la technique, les rôles et la tactique. Clique sur une partie pour l'ouvrir."), ...blocsCoursPourPage("volley-theorie", uid)] } },
+  { id: "volley-evaluation", titre: "Évaluation de fin de cycle", parentId: "volley", ordre: 1, page: { blocs: [blocTexte("Comment se déroule et se note l'épreuve de volley-ball au bac (champ d'apprentissage 4)."), ...blocsCoursPourPage("volley-evaluation", uid)] } },
+  { id: "badminton", titre: "Badminton", parentId: null, ordre: 4, page: { blocs: [] } },
+  { id: "badminton-theorie", titre: "Théorie", parentId: "badminton", ordre: 0, page: { blocs: [blocTexte("Le badminton en simple : ce qu'on attend en Terminale, le règlement, les frappes, les déplacements et la tactique. Clique sur une partie pour l'ouvrir."), ...blocsCoursPourPage("badminton-theorie", uid)] } },
+  { id: "badminton-evaluation", titre: "Évaluation de fin de cycle", parentId: "badminton", ordre: 1, page: { blocs: [blocTexte("Comment se déroule et se note l'épreuve de badminton au bac (champ d'apprentissage 4)."), ...blocsCoursPourPage("badminton-evaluation", uid)] } },
+  { id: "sopra", titre: "Sopra Flashmob", parentId: null, ordre: 5, page: { blocs: [] } },
   {
     id: "sopra-flashmob", titre: "En mode flashmob", parentId: "sopra", ordre: 0,
     page: { blocs: [blocTexte("Chorégraphie collective sur Sopra."), blocLiens([{ label: "Playlist Chorés (YouTube)", url: "https://www.youtube.com/playlist?list=PL7ZFD8B4khX1Iw7hNSVHNJPJZM8U9A4BY" }])] },
   },
-  { id: "sportsante", titre: "Sport & Santé", parentId: null, ordre: 4, page: { blocs: [] } },
+  { id: "sportsante", titre: "Sport & Santé", parentId: null, ordre: 6, page: { blocs: [] } },
   { id: "sportsante-alim", titre: "L'alimentation", parentId: "sportsante", ordre: 0, page: { blocs: [blocTexte("Repères sur l'alimentation du sportif. Clique sur une partie pour l'ouvrir."), ...blocsCoursPourPage("sportsante-alim", uid)] } },
   { id: "echauffement", titre: "L'échauffement", parentId: "sportsante", ordre: 1, page: { blocs: [blocTexte("Comment s'échauffer correctement selon l'activité pratiquée. Commence par les principes communs, puis ouvre la partie de ton activité."), ...blocsCoursPourPage("echauffement", uid)] } },
   ...SEED_AS,
@@ -1269,11 +1275,11 @@ const TEXTES_ORIGINE = {
 };
 function migrerCours(rubriques) {
   const etape = lsLire("migrationCours", 0);
-  if (etape >= 3) return rubriques;
-  if (etape === 2) {
+  if (etape >= 4) return rubriques;
+  if (etape === 2 || etape === 3) {
     const r3 = ajouterRubriquesV050(rubriques);
     lsEcrire("rubriques", r3);
-    lsEcrire("migrationCours", 3);
+    lsEcrire("migrationCours", 4);
     return r3;
   }
   const seed = Object.fromEntries(SEED_RUBRIQUES.filter((r) => TEXTES_ORIGINE[r.id]).map((r) => [r.id, r]));
@@ -1310,24 +1316,27 @@ function migrerCours(rubriques) {
   }
   resultat = ajouterRubriquesV050(resultat);
   lsEcrire("rubriques", resultat);
-  lsEcrire("migrationCours", 3);
+  lsEcrire("migrationCours", 4);
   return resultat;
 }
 
-// v0.5.0 : nouvelles rubriques « Course de durée », « Escalade » (après Musculation) et « Association Sportive du Lycée » (en dernier).
+// v0.5.0 / v0.6.0 : nouvelles rubriques « Course de durée », « Escalade », « Volley-ball », « Badminton » (après Musculation)
+// et « Association Sportive du Lycée » (en dernier).
 // Une rubrique déjà présente (même identifiant) n'est jamais écrasée.
 function ajouterRubriquesV050(rubriques) {
   const existe = new Set(rubriques.map((r) => r.id));
-  const nouvelles = SEED_RUBRIQUES.filter((r) => ["course-duree", "escalade", "as"].includes(r.id) || ["course-duree", "escalade", "as"].includes(r.parentId))
+  const NOUVELLES = ["course-duree", "escalade", "volley", "badminton", "as"];
+  const nouvelles = SEED_RUBRIQUES.filter((r) => NOUVELLES.includes(r.id) || NOUVELLES.includes(r.parentId))
     .filter((r) => !existe.has(r.id))
     .map((r) => ({ ...JSON.parse(JSON.stringify(r)), page: { blocs: r.page.blocs.map((b) => ({ ...JSON.parse(JSON.stringify(b)), id: uid() })) } }));
   if (nouvelles.length === 0) return rubriques;
   let tout = [...rubriques, ...nouvelles];
   // ordre des rubriques principales : Course de durée et Escalade juste après Musculation, AS à la fin
   const racines = tout.filter((r) => !r.parentId).sort((a, b) => a.ordre - b.ordre);
-  const autres = racines.filter((r) => !["course-duree", "escalade", "as"].includes(r.id));
+  const autres = racines.filter((r) => !NOUVELLES.includes(r.id));
   const idxMuscu = autres.findIndex((r) => r.id === "musculation");
-  const insertion = racines.filter((r) => ["course-duree", "escalade"].includes(r.id)).sort((a, b) => (a.id === "course-duree" ? -1 : 1));
+  const APRES_MUSCU = ["course-duree", "escalade", "volley", "badminton"];
+  const insertion = racines.filter((r) => APRES_MUSCU.includes(r.id)).sort((a, b) => APRES_MUSCU.indexOf(a.id) - APRES_MUSCU.indexOf(b.id));
   const ordre = [...autres];
   ordre.splice(idxMuscu + 1, 0, ...insertion);
   const as = racines.find((r) => r.id === "as");

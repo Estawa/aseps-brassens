@@ -1,5 +1,5 @@
 import React from "react";
-import { COURS_COURSE, COURS_ESCALADE } from "./cours-suite.js";
+import { COURS_COURSE, COURS_ESCALADE, COURS_VOLLEY, COURS_BADMINTON } from "./cours-suite.js";
 
 // =====================================================================
 // Contenus de cours prêts à l'emploi (bloc « Cours »)
@@ -634,7 +634,7 @@ En cas de question sur son poids ou son alimentation, le bon réflexe est d'en p
   },
 };
 
-export const COURS = { ...COURS_BASE, ...COURS_COURSE, ...COURS_ESCALADE };
+export const COURS = { ...COURS_BASE, ...COURS_COURSE, ...COURS_ESCALADE, ...COURS_VOLLEY, ...COURS_BADMINTON };
 
 export const PAGES_COURS = {
   "musculation-theorie": ["muscu-intro", "muscu-anatomie", "muscu-physiologie", "muscu-projets", "muscu-charges", "muscu-methodes", "muscu-seance", "muscu-recuperation", "muscu-connaissances", "muscu-lexique"],
@@ -643,6 +643,10 @@ export const PAGES_COURS = {
   "course-duree-theorie": Object.keys(COURS_COURSE),
   "escalade-theorie": Object.keys(COURS_ESCALADE).filter((k) => !k.startsWith("esc-eval")),
   "escalade-evaluation": Object.keys(COURS_ESCALADE).filter((k) => k.startsWith("esc-eval")),
+  "volley-theorie": Object.keys(COURS_VOLLEY).filter((k) => !k.startsWith("vb-eval")),
+  "volley-evaluation": Object.keys(COURS_VOLLEY).filter((k) => k.startsWith("vb-eval")),
+  "badminton-theorie": Object.keys(COURS_BADMINTON).filter((k) => !k.startsWith("bd-eval")),
+  "badminton-evaluation": Object.keys(COURS_BADMINTON).filter((k) => k.startsWith("bd-eval")),
 };
 
 // ---------- Petit moteur Markdown (titres, listes, tableaux, gras) ----------
