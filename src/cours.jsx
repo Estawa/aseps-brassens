@@ -1,5 +1,5 @@
 import React from "react";
-import { COURS_COURSE, COURS_ESCALADE, COURS_VOLLEY, COURS_BADMINTON, COURS_EVAL_CA5 } from "./cours-suite.js";
+import { COURS_COURSE, COURS_ESCALADE, COURS_VOLLEY, COURS_BADMINTON, COURS_EVAL_CA5, COURS_GYM } from "./cours-suite.js";
 
 // =====================================================================
 // Contenus de cours prêts à l'emploi (bloc « Cours »)
@@ -634,7 +634,7 @@ En cas de question sur son poids ou son alimentation, le bon réflexe est d'en p
   },
 };
 
-export const COURS = { ...COURS_BASE, ...COURS_COURSE, ...COURS_ESCALADE, ...COURS_VOLLEY, ...COURS_BADMINTON, ...COURS_EVAL_CA5 };
+export const COURS = { ...COURS_BASE, ...COURS_COURSE, ...COURS_ESCALADE, ...COURS_VOLLEY, ...COURS_BADMINTON, ...COURS_EVAL_CA5, ...COURS_GYM };
 
 export const PAGES_COURS = {
   "musculation-theorie": ["muscu-intro", "muscu-anatomie", "muscu-physiologie", "muscu-projets", "muscu-charges", "muscu-methodes", "muscu-seance", "muscu-recuperation", "muscu-connaissances", "muscu-lexique"],
@@ -649,6 +649,8 @@ export const PAGES_COURS = {
   "badminton-evaluation": Object.keys(COURS_BADMINTON).filter((k) => k.startsWith("bd-eval")),
   "musculation-evaluation": ["mu-eval-structure", "mu-eval-deroulement", "mu-eval-roles"],
   "course-duree-evaluation": ["cd-eval-structure", "cd-eval-deroulement", "cd-eval-roles"],
+  "gym-theorie": Object.keys(COURS_GYM).filter((k) => !k.startsWith("gy-eval")),
+  "gym-evaluation": Object.keys(COURS_GYM).filter((k) => k.startsWith("gy-eval")),
 };
 
 // ---------- Petit moteur Markdown (titres, listes, tableaux, gras) ----------

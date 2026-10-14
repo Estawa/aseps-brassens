@@ -1565,3 +1565,361 @@ Tu choisis le ou les **rôles** proposés et tu es évalué dans ces rôles :
 Dans tous les cas, on attend une attitude **responsable et bienveillante** : aide aux partenaires, respect des allures de chacun, engagement constant.`,
   },
 };
+
+// =====================================================================
+// GYMNASTIQUE (sol + mini-trampoline, code UNSS 2024-2028, appui Gym Pro)
+// =====================================================================
+const GY = "Gymnastique — théorie";
+const GYE = "Gymnastique — évaluation";
+
+export const COURS_GYM = {
+  "gy-intro": {
+    cours: GY,
+    titre: "1. La gymnastique au lycée : principes et sécurité",
+    md: `En gymnastique, tu **composes** puis tu **présentes** un **enchaînement** d'éléments au sol (et au mini-trampoline), qui est **jugé** sur deux critères : sa **difficulté** et sa **composition** (note D), et la **qualité d'exécution** (note E). La référence est le **code UNSS de gymnastique artistique 2024-2028**, repris dans l'application **Gym Pro**.
+
+### Ce qu'on attend d'un élève de Terminale
+
+- **Composer** un enchaînement qui respecte les **exigences** du code et qui correspond à **son niveau** (prendre des risques mesurés).
+- **Réaliser** l'enchaînement avec **maîtrise** : corps gainé, alignements, amplitude, réceptions stables, enchaînement fluide.
+- **Calculer** la note de son enchaînement (D et E) et **faire des choix** pour l'optimiser.
+- **Juger** l'enchaînement d'un camarade avec le code, et **parer** en sécurité.
+
+### La sécurité
+
+1. **Échauffement articulaire et spécifique** obligatoire, surtout poignets, épaules, nuque et dos (voir *Sport & Santé › L'échauffement*, partie Gymnastique).
+2. On ne tente un élément nouveau qu'**après les éducatifs** et avec une **parade**.
+3. Les **tapis** sont jointifs, sans espace ; on attend que la zone soit libre pour passer.
+4. Pas de bijoux, cheveux attachés, tenue près du corps, pieds nus ou chaussons.
+5. Un élément raté se termine par une **roulade** ou un repli : on ne se réceptionne jamais sur les mains bras tendus ou sur la nuque.`,
+  },
+
+  "gy-elements": {
+    cours: GY,
+    titre: "2. Les familles d'éléments et leur valeur",
+    md: `Chaque élément du code UNSS a une **difficulté** notée de **A** (la plus facile) à **D** (la plus difficile), qui lui donne une **valeur** en points.
+
+| Difficulté | Valeur |
+| --- | --- |
+| A | 0,40 pt |
+| B | 0,60 pt |
+| C | 0,80 pt |
+| D | 1,00 pt |
+
+### Les familles d'éléments
+
+| Famille | Filles | Garçons |
+| --- | --- | --- |
+| **ATR** (appui tendu renversé) | ATR une jambe à la verticale (A), ATR jambes serrées (B), ATR roulade ou ½ tour à l'ATR (C), 1 tour à l'ATR (D) | Placement de dos jusqu'à l'ATR (A), ATR et valse (B), monter jambes tendues serrées à l'ATR (C), ATR en force (D) |
+| **SM** (souplesse et maintien) | Grand battement (A), pont tenu 2 s, chandelle, planche faciale (B), grand écart, Y (C), souplesse avant ou arrière (D) | Planche faciale jambes écartées (A), chandelle (B), planche ou Y sur 1 pied (C), grand écart (D) |
+| **AP** (appui, garçons) | — | ½ tour à l'appui dorsal (A), tour complet à l'appui (B), ½ cercle (C), cercle (D) |
+| **LG** (liaison gymnique : sauts, tours, pas) | Pas chassé, saut vertical (A), saut de chat, saut groupé (B), tour sur 1 pied, saut cosaque (C), grand jeté (D) | — |
+| **Sauts** (garçons) | — | Saut vertical, ciseaux (A), ½ tour, saut groupé (B), 1 tour, saut carpé écarté (C), 1 tour ½ (D) |
+| **AC** (acrobatie : AV, AR, latéral) | Roulade AV, roue (A), roulade AR groupée (B), saut de mains, rondade (C), flic-flac, saltos (D) | Roulade AV, roue (A), ATR roulade AV, rondade (B), saut de mains, flic-flac (C), flip avant, saltos (D) |
+
+### Le mini-trampoline
+
+Au lycée, l'enchaînement peut intégrer un **élément de mini-trampoline** (fiche commune filles et garçons), qui compte avec ceux du sol :
+
+| Élément | Difficulté |
+| --- | --- |
+| Chandelle, saut groupé | A |
+| Saut carpé écarté | B |
+| Salto avant groupé, salto avant carpé | C |
+| Salto avant groupé ou carpé avec ½ tour, salto avant tendu | D |
+
+Le détail de chaque élément (croquis, vidéo, précisions officielles comme « tenu 2 secondes ») est consultable dans **Gym Pro**, onglet Référentiel.`,
+  },
+
+  "gy-composition": {
+    cours: GY,
+    titre: "3. Composer son enchaînement : la note D",
+    md: `La **note D** (difficulté et composition) est sur **10 points**. Elle additionne la **valeur des éléments** et les **exigences de composition**.
+
+### La valeur des difficultés
+
+- On retient les **8 éléments les plus difficiles** de l'enchaînement (au-delà de 8, les autres ne comptent pas).
+- 8 éléments de valeur D donneraient 8 × 1,00 = **8 points maximum**.
+- Un enchaînement de **5 éléments ou moins** est pénalisé de **2 points** (enchaînement trop court).
+
+### Les exigences de composition (0,50 pt chacune, 2 points au total)
+
+| Filles | Garçons |
+| --- | --- |
+| Un élément passant par l'**ATR** | Un élément passant par l'**ATR** |
+| Un élément de **souplesse ou de maintien** | Un élément de **souplesse, de maintien ou d'appui** |
+| Une **liaison gymnique** de 2 éléments dont 1 saut | Un élément **acrobatique vers l'avant** |
+| **Deux éléments acrobatiques** dans des sens différents | Un élément **acrobatique vers l'arrière ou latéral** |
+
+### La règle du lycée : les 3 conditions
+
+Dans notre établissement, les points d'exigences ne sont accordés que si l'enchaînement contient **les 3 conditions** suivantes :
+
+1. Une **rotation arrière** ;
+2. Un **ATR** ;
+3. **Deux changements de direction**.
+
+Si une seule condition manque, les exigences rapportent **0 point**.
+
+### Les autres règles de composition
+
+- Les éléments **« tenus 2 secondes »** (planche, pont, chandelle, grand écart…) ne comptent que s'ils sont réellement tenus.
+- Un élément mal terminé peut être **déclassé** (par exemple un ½ tour non terminé à l'ATR passe de C à B) ou **non comptabilisé** : lis les **précisions** du code.
+- **Filles** : enchaînement en **musique** ; il faut terminer avec elle et utiliser **tout l'espace** du praticable.
+- Les **éléments optionnels** (issus d'autres activités : GR, hip-hop, cirque…) ajoutés dans Gym Pro donnent une **note artistique séparée**, qui ne compte pas dans la note sur 20.
+
+### Bien choisir ses éléments
+
+- Viser des éléments **réussis à chaque essai** : un élément D raté coûte plus en exécution qu'il ne rapporte.
+- Vérifier que les **exigences** et les **3 conditions** sont toutes présentes avant de chercher plus de difficulté.
+- Placer les éléments les plus difficiles quand on est **frais** (début d'enchaînement) et prévoir des **liaisons** fluides entre eux.`,
+  },
+
+  "gy-execution": {
+    cours: GY,
+    titre: "4. L'exécution : la note E",
+    md: `La **note E** (exécution) part de **10 points**. Les juges **retirent des points** pour chaque faute.
+
+### Les fautes générales (0,10 ; 0,30 ou 0,50 pt selon la gravité)
+
+| Faute | Exemple |
+| --- | --- |
+| Bras ou jambes fléchis | Bras fléchis à l'ATR, genoux fléchis dans la roue |
+| Genoux ou jambes écartés | 0,10 si moins que la largeur des épaules, 0,30 au-delà |
+| Amplitude insuffisante | Saut trop bas, écart de jambes insuffisant |
+| Position groupée, carpée ou tendue insuffisante | Salto « ouvert », carpé mal fermé |
+| Corps relâché ou cassé | Ventre relâché à l'ATR, bassin cassé |
+| Mauvais alignement à l'ATR, fautes d'axe | ATR penché, roue qui sort de la ligne |
+| Mouvements pour garder l'équilibre | Bras qui moulinent, pas de rattrapage |
+| Dynamisme insuffisant | Enchaînement lent, sans rythme, sur tout l'exercice |
+| Arrêt dans l'enchaînement | Plus de 2 secondes : 0,30 |
+| Pointes de pieds | Pieds non tendus : 0,10 |
+| Rotation incomplète | 0,30 |
+| Flexion complète en réception | 0,50 |
+| Sortie du praticable | 0,10 ou 0,30 |
+
+### Les fautes qui se répètent (comptées à chaque fois)
+
+| Faute | Pénalité | Maximum |
+| --- | --- | --- |
+| Pas supplémentaire, sursaut, appui d'une main en plus à l'ATR | 0,10 à chaque fois | 0,80 |
+| Grand pas ou saut (environ 50 cm) | 0,30 à chaque fois | 0,80 |
+| Chute (mains, genoux, bassin) | 1,00 à chaque fois | — |
+| Pas de réception sur les pieds au 1er impact | 1,00 et élément non comptabilisé | — |
+
+### Filles uniquement
+
+- Terminer avant ou après la musique : 0,30.
+- Utilisation insuffisante de l'espace : 0,30.
+- Passage proche du sol (le bassin doit toucher le sol) absent : 0,30.
+
+### La note finale
+
+**Note finale = note D + note E − autres pénalités** (durée, sortie, comportement…), sur **20 points**.
+
+### Exemple chiffré
+
+Léo présente 8 éléments : 2 C, 4 B et 2 A, avec les 4 exigences et les 3 conditions.
+
+- Difficultés : 2 × 0,80 + 4 × 0,60 + 2 × 0,40 = 1,60 + 2,40 + 0,80 = **4,80 pts**.
+- Exigences : 4 × 0,50 = **2,00 pts**. Note D = **6,80 / 10**.
+- Fautes : jambes fléchies 0,30, un pas en réception 0,10, une chute 1,00, ATR mal aligné 0,10. Note E = 10 − 1,50 = **8,50 / 10**.
+- Note finale : 6,80 + 8,50 = **15,30 / 20**.
+
+Le **calculateur de Gym Pro** fait ce calcul automatiquement à partir des éléments choisis et des fautes cochées.`,
+  },
+
+  "gy-technique": {
+    cours: GY,
+    titre: "5. Bien exécuter : les principes techniques",
+    md: `### Les principes communs à tous les éléments
+
+| Principe | Ce que ça veut dire |
+| --- | --- |
+| **Gainage** | Abdominaux et fessiers serrés : le corps forme un bloc, l'énergie se transmet sans se perdre |
+| **Alignement** | À l'ATR : mains, épaules, bassin et pieds sur la même verticale, tête neutre entre les bras |
+| **Impulsion** | Une poussée forte et rapide (jambes ou bras) donne la hauteur et le temps de faire l'élément |
+| **Rotation** | Plus on est **groupé**, plus on tourne **vite** ; plus on est **tendu**, plus on tourne **lentement** |
+| **Repères visuels** | Fixer un point au sol ou au mur pour savoir où l'on est pendant la rotation et préparer la réception |
+| **Réception** | Pieds serrés ou décalés, jambes qui amortissent sans fléchir complètement, bras qui fixent l'équilibre |
+| **Finition** | Pointes de pieds tendues, bras placés, regard : c'est ce qui fait la différence en note E |
+
+### Apprendre un élément nouveau
+
+1. Vérifier qu'on maîtrise les **prérequis** (ex. : la roulade avant groupée avant la roulade jambes tendues).
+2. Passer par des **éducatifs** sur plan incliné, tapis épais ou mini-trampoline.
+3. Réaliser l'élément avec **parade**, puis avec parade de plus en plus légère.
+4. Le réaliser **seul**, puis **dans l'enchaînement**, avec ses liaisons.
+
+Les **vidéos d'apprentissage par phases** de Gym Pro montrent ces étapes pour certains éléments.
+
+### Parer en sécurité
+
+- Le pareur se place **près de l'élément**, du côté où il peut intervenir sans gêner.
+- Il **accompagne** le mouvement (main au bassin, au dos ou au bras selon l'élément) sans le réaliser à la place du gymnaste.
+- Il reste **concentré** jusqu'à la réception complète.
+- Gymnaste et pareur se mettent d'accord **avant** le passage sur le placement des mains.`,
+  },
+
+  "gy-juger": {
+    cours: GY,
+    titre: "6. Juger un enchaînement",
+    md: `Au bac comme en compétition UNSS, l'enchaînement est jugé par des **juges** : en classe, ce rôle est tenu par les élèves.
+
+| Rôle | Ce qu'il fait |
+| --- | --- |
+| **Juge D** (difficulté) | Reconnaît chaque élément et sa **lettre**, vérifie qu'il est **comptabilisé** (tenu 2 s, terminé), coche les **exigences** et les **3 conditions**, calcule la note D |
+| **Juge E** (exécution) | Observe la **qualité** de chaque élément et de l'ensemble, relève les **fautes** avec leur pénalité, calcule la note E |
+
+### Bien juger
+
+- Connaître la **fiche** de l'enchaînement à l'avance (éléments prévus dans l'ordre) : Gym Pro la transmet au professeur.
+- Se placer **de côté**, à distance, pour voir les alignements.
+- Noter **pendant** l'enchaînement, avec des abréviations, puis faire le calcul après.
+- Rester **impartial** : on juge ce qu'on voit, pas ce qui était prévu.
+- Expliquer sa note au gymnaste avec les **fautes principales** pour l'aider à progresser.
+
+Dans Gym Pro, un camarade peut coter les fautes pour donner un **aperçu** de la note ; seule la note enregistrée par l'enseignant le jour du passage est officielle.`,
+  },
+
+  "gy-connaissances": {
+    cours: GY,
+    titre: "7. Ce sur quoi tu peux être interrogé",
+    md: `Tu dois être capable de :
+
+### Le code et la composition
+
+- Donner la **valeur** des difficultés A, B, C et D.
+- Classer un élément dans sa **famille** (ATR, SM, AP, LG ou saut, AC avant, arrière ou latéral).
+- Citer les **4 exigences** de composition (filles ou garçons) et la **règle des 3 conditions** du lycée.
+- Expliquer pourquoi on ne retient que les **8 meilleurs éléments** et la pénalité d'un enchaînement **trop court**.
+- Expliquer ce qui rend un élément **non comptabilisé** ou **déclassé**.
+
+### La note
+
+- **Calculer** une note D, une note E et une note finale à partir d'un enchaînement décrit.
+- Citer et reconnaître les principales **fautes d'exécution** et leur pénalité.
+
+### La technique et la sécurité
+
+- Expliquer les principes de **gainage**, d'**alignement**, d'**impulsion** et de **rotation** (groupé / tendu).
+- Décrire la démarche pour **apprendre** un élément nouveau.
+- Expliquer comment **parer** un élément et citer les **règles de sécurité**.
+
+### Le jugement
+
+- Expliquer le rôle du **juge D** et du **juge E**, et **juger** l'enchaînement d'un camarade.`,
+  },
+
+  "gy-lexique": {
+    cours: GY,
+    titre: "8. Lexique",
+    md: `| Terme | Définition |
+| --- | --- |
+| ATR | Appui tendu renversé : équilibre sur les mains, corps aligné à la verticale |
+| Enchaînement | Suite d'éléments liés entre eux, présentée devant des juges |
+| Élément | Figure gymnique répertoriée dans le code, avec une difficulté de A à D |
+| Note D | Note de difficulté et de composition, sur 10 |
+| Note E | Note d'exécution, sur 10, obtenue en retirant les fautes |
+| Exigence de composition | Type d'élément obligatoire dans l'enchaînement (0,50 pt chacune) |
+| Liaison | Enchaînement direct de deux éléments sans arrêt |
+| Groupé / carpé / tendu | Positions du corps : jambes repliées / jambes tendues pliées aux hanches / corps droit |
+| Rondade | Élément latéral avec ½ tour, réception pieds joints face au point de départ |
+| Flic-flac | Saut arrière avec passage par l'appui sur les mains |
+| Salto | Rotation complète du corps en l'air, sans appui des mains |
+| Parade | Aide manuelle d'un partenaire pour sécuriser un élément |
+| Éducatif | Exercice simplifié pour apprendre un élément par étapes |
+| Praticable | Surface de sol dynamique sur laquelle se déroule l'enchaînement |`,
+  },
+
+  // --------------------------- Gymnastique : évaluation ---------------------------
+  "gy-eval-structure": {
+    cours: GYE,
+    titre: "1. L'épreuve du bac : structure de la note",
+    md: `La gymnastique fait partie du **champ d'apprentissage 3** : « Réaliser une prestation corporelle destinée à être vue et appréciée ». La note est sur **20 points**, répartis en trois attendus de fin de lycée (AFL).
+
+| Attendu | Ce qui est attendu | Points | Quand |
+| --- | --- | --- | --- |
+| **AFL1** | S'engager pour composer et réaliser un enchaînement à visée acrobatique destiné à être jugé, individuellement ou collectivement | **12 points** | Le jour de l'épreuve (fin de cycle) |
+| **AFL2** | Se préparer et s'entraîner, individuellement ou collectivement, pour réaliser une prestation | **2, 4 ou 6 points** | Au fil du cycle |
+| **AFL3** | Choisir et assumer les rôles qui permettent un fonctionnement collectif solidaire (juge, pareur…) | **6, 4 ou 2 points** | Au fil du cycle et le jour de l'épreuve |
+
+### Ton choix de répartition (AFL2 / AFL3)
+
+| Choix | AFL2 | AFL3 |
+| --- | --- | --- |
+| a | 2 points | 6 points |
+| b | 4 points | 4 points |
+| c | 6 points | 2 points |
+
+### L'AFL1 en deux éléments
+
+- **La composition et la difficulté** : valeur des éléments retenus, exigences de composition, respect des règles (note D du code).
+- **L'exécution** : maîtrise, amplitude, alignements, réceptions, fluidité de l'enchaînement (note E du code).
+
+La note de l'enchaînement est calculée avec le **code UNSS** (D + E sur 20), comme dans le calculateur de Gym Pro, puis convertie selon le **référentiel de l'établissement**, qui fixe la répartition des points entre les deux éléments et les degrés.
+
+### Ce que tu choisis
+
+- Tes **éléments** et l'**ordre** de ton enchaînement (ta fiche).
+- Ton **niveau de difficulté** : prendre des risques mesurés.
+- La **répartition** des points entre AFL2 et AFL3.`,
+  },
+
+  "gy-eval-deroulement": {
+    cours: GYE,
+    titre: "2. Le jour de l'épreuve : ce qui est observé",
+    md: `### Le déroulement
+
+1. Avant l'épreuve, tu **remets ta fiche d'enchaînement** (éléments dans l'ordre, lettres, exigences) : dans Gym Pro, elle est transmise à ton professeur depuis ton espace élève.
+2. Tu fais un **échauffement** complet et spécifique, avec des **éducatifs** de tes éléments les plus difficiles.
+3. Tu présentes ton **enchaînement** au sol (avec ton élément de mini-trampoline s'il est prévu) devant l'enseignant et les **élèves juges**.
+4. Selon l'organisation, tu peux avoir **deux passages** ; la note retenue est fixée par l'enseignant (meilleur passage, moyenne…).
+5. Tu tiens ensuite ton rôle de **juge** ou de **pareur** pour tes camarades.
+
+### Ce que l'enseignant observe (AFL1)
+
+| Domaine | Indicateurs |
+| --- | --- |
+| **Difficulté** | Valeur des 8 éléments retenus, éléments réellement comptabilisés (tenus 2 s, terminés) |
+| **Composition** | Les 4 exigences présentes, les 3 conditions du lycée (rotation arrière, ATR, 2 changements de direction), enchaînement de plus de 5 éléments, utilisation de l'espace, musique (filles) |
+| **Exécution** | Fautes relevées : jambes ou bras fléchis, alignements, amplitude, réceptions, chutes, arrêts |
+| **Maîtrise et fluidité** | Liaisons sans arrêt, rythme, dynamisme sur tout l'enchaînement |
+| **Pertinence des choix** | Difficulté adaptée à son niveau : un enchaînement maîtrisé plutôt que des éléments ratés |
+
+### Ce qui fait la différence en Terminale
+
+- Un enchaînement **complet** (exigences et conditions), sans **chute**.
+- Des éléments **C ou D maîtrisés** plutôt que tentés.
+- Une **finition** soignée : pieds tendus, alignements, réceptions stables.
+- Un enchaînement **fluide**, sans arrêt, qui occupe tout l'espace.`,
+  },
+
+  "gy-eval-roles": {
+    cours: GYE,
+    titre: "3. AFL2 et AFL3 : s'entraîner et assumer des rôles",
+    md: `### AFL2 : se préparer et s'entraîner
+
+Évalué **tout au long du cycle**, notamment à partir de ton **espace élève Gym Pro** (fiches brouillon, enchaînement, essais).
+
+- **Identifier** les éléments à ta portée et ceux à travailler, avec les vidéos et les croquis du Référentiel.
+- **Construire** ta fiche d'enchaînement et la **faire évoluer** au fil des séances.
+- **Calculer** ta note prévisionnelle avec le calculateur et **ajuster** tes choix (difficulté, exigences, conditions).
+- **S'entraîner** avec méthode : éducatifs, parade, répétition de l'enchaînement complet.
+- S'**engager** régulièrement et en sécurité.
+
+### AFL3 : assumer des rôles
+
+Tu choisis **deux rôles** parmi ceux proposés et tu es évalué dans ces rôles :
+
+| Rôle | Ce que l'on attend |
+| --- | --- |
+| **Juge D** | Reconnaître les éléments et leur lettre, vérifier exigences et conditions, calculer une note D juste |
+| **Juge E** | Relever les fautes d'exécution avec la bonne pénalité, calculer une note E juste |
+| **Pareur** | Parer en sécurité, au bon endroit et au bon moment, sans réaliser l'élément à la place du gymnaste |
+| **Coach / observateur** | Observer un camarade, lui donner des conseils précis pour progresser (vidéo, fiche) |
+| **Partenaire d'entraînement** | Aider à installer le matériel, filmer, encourager |
+
+L'écart entre ta note de juge et celle de l'enseignant est un bon indicateur de la **justesse** de ton jugement.`,
+  },
+};

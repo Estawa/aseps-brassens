@@ -1,8 +1,20 @@
 # Site EPS — journal des changements
 
-Version actuelle : **0.7.0**
+Version actuelle : **0.8.0**
 
 ---
+
+### v0.8.0 — 14/10/2026
+- **Nouvelle rubrique « Gymnastique »** (sol + mini-trampoline, code UNSS 2024-2028, en lien avec Gym Pro) :
+  - *Théorie* (8 parties) : principes et sécurité, familles d'éléments et valeurs A-D (filles,
+    garçons, mini-trampoline), composition et note D (8 éléments retenus, exigences, règle des
+    3 conditions du lycée, enchaînement trop court), exécution et note E (fautes et pénalités),
+    exemple de calcul, principes techniques et parade, jugement (juges D et E), ce sur quoi on peut
+    être interrogé, lexique ;
+  - *Évaluation de fin de cycle* (champ d'apprentissage 3) : structure de la note (AFL1 12 pts,
+    AFL2/AFL3 au choix), déroulement et indicateurs observés, rôles (juge D, juge E, pareur…).
+- Mises à jour automatiques plus sûres : une rubrique ou une page supprimée volontairement
+  n'est plus jamais recréée par une mise à jour ultérieure.
 
 ### v0.7.0 — 14/10/2026
 - **Nouvelle sous-page « Évaluation de fin de cycle » en Musculation et en Course de durée**

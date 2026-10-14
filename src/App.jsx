@@ -8,7 +8,7 @@ import {
 import { COURS, BlocCours, blocsCoursPourPage } from "./cours.jsx";
 
 const uid = () => Math.random().toString(36).slice(2, 10);
-const APP_VERSION = "0.7.0";
+const APP_VERSION = "0.8.0";
 
 // ---------- Stockage local persistant ----------
 function lsLire(cle, defaut) {
@@ -88,7 +88,7 @@ const PAGE_ACCUEIL_SEED = {
 // Rubrique « Association Sportive du Lycée » (textes de départ à compléter depuis l'éditeur)
 const SEED_AS = [
   {
-    id: "as", titre: "Association Sportive du Lycée", parentId: null, ordre: 7,
+    id: "as", titre: "Association Sportive du Lycée", parentId: null, ordre: 8,
     page: { blocs: [blocTexte("L'Association Sportive (AS) du lycée Georges-Brassens permet aux élèves de pratiquer des activités sportives en dehors des cours d'EPS, de participer aux compétitions UNSS et de représenter le lycée. Retrouve ici les informations pratiques, les résultats de nos équipes et les photos des rencontres.")] },
   },
   { id: "as-presentation", titre: "Présentation et inscriptions", parentId: "as", ordre: 0, page: { blocs: [blocTexte("Activités proposées, horaires des entraînements, enseignants responsables et modalités d'inscription (licence UNSS) : informations à compléter.")] } },
@@ -115,12 +115,15 @@ const SEED_RUBRIQUES = [
   { id: "badminton", titre: "Badminton", parentId: null, ordre: 4, page: { blocs: [] } },
   { id: "badminton-theorie", titre: "Théorie", parentId: "badminton", ordre: 0, page: { blocs: [blocTexte("Le badminton en simple : ce qu'on attend en Terminale, le règlement, les frappes, les déplacements et la tactique. Clique sur une partie pour l'ouvrir."), ...blocsCoursPourPage("badminton-theorie", uid)] } },
   { id: "badminton-evaluation", titre: "Évaluation de fin de cycle", parentId: "badminton", ordre: 1, page: { blocs: [blocTexte("Comment se déroule et se note l'épreuve de badminton au bac (champ d'apprentissage 4)."), ...blocsCoursPourPage("badminton-evaluation", uid)] } },
-  { id: "sopra", titre: "Sopra Flashmob", parentId: null, ordre: 5, page: { blocs: [] } },
+  { id: "gymnastique", titre: "Gymnastique", parentId: null, ordre: 5, page: { blocs: [] } },
+  { id: "gym-theorie", titre: "Théorie", parentId: "gymnastique", ordre: 0, page: { blocs: [blocTexte("La gymnastique au sol et au mini-trampoline avec le code UNSS 2024-2028 : éléments, composition (note D), exécution (note E), technique, sécurité et jugement. Les fiches, croquis, vidéos et le calculateur sont dans l'application Gym Pro. Clique sur une partie pour l'ouvrir."), ...blocsCoursPourPage("gym-theorie", uid)] } },
+  { id: "gym-evaluation", titre: "Évaluation de fin de cycle", parentId: "gymnastique", ordre: 1, page: { blocs: [blocTexte("Comment se déroule et se note l'épreuve de gymnastique au bac (champ d'apprentissage 3)."), ...blocsCoursPourPage("gym-evaluation", uid)] } },
+  { id: "sopra", titre: "Sopra Flashmob", parentId: null, ordre: 6, page: { blocs: [] } },
   {
     id: "sopra-flashmob", titre: "En mode flashmob", parentId: "sopra", ordre: 0,
     page: { blocs: [blocTexte("Chorégraphie collective sur Sopra."), blocLiens([{ label: "Playlist Chorés (YouTube)", url: "https://www.youtube.com/playlist?list=PL7ZFD8B4khX1Iw7hNSVHNJPJZM8U9A4BY" }])] },
   },
-  { id: "sportsante", titre: "Sport & Santé", parentId: null, ordre: 6, page: { blocs: [] } },
+  { id: "sportsante", titre: "Sport & Santé", parentId: null, ordre: 7, page: { blocs: [] } },
   { id: "sportsante-alim", titre: "L'alimentation", parentId: "sportsante", ordre: 0, page: { blocs: [blocTexte("Repères sur l'alimentation du sportif. Clique sur une partie pour l'ouvrir."), ...blocsCoursPourPage("sportsante-alim", uid)] } },
   { id: "echauffement", titre: "L'échauffement", parentId: "sportsante", ordre: 1, page: { blocs: [blocTexte("Comment s'échauffer correctement selon l'activité pratiquée. Commence par les principes communs, puis ouvre la partie de ton activité."), ...blocsCoursPourPage("echauffement", uid)] } },
   ...SEED_AS,
@@ -1277,11 +1280,18 @@ const TEXTES_ORIGINE = {
 };
 function migrerCours(rubriques) {
   const etape = lsLire("migrationCours", 0);
-  if (etape >= 5) return rubriques;
+  if (etape >= 6) return rubriques;
   if (etape >= 2) {
-    const r3 = ajouterSousPagesEvaluation(etape === 4 ? rubriques : ajouterRubriquesV050(rubriques));
+    // chaque étape n'ajoute que ce qui est nouveau pour elle : une page supprimée volontairement n'est pas recréée
+    const aCreer = [
+      ...(etape < 3 ? ["course-duree", "escalade", "as"] : []),
+      ...(etape < 4 ? ["volley", "badminton"] : []),
+      "gymnastique",
+    ];
+    let r3 = ajouterRubriquesV050(rubriques, aCreer);
+    if (etape < 5) r3 = ajouterSousPagesEvaluation(r3);
     lsEcrire("rubriques", r3);
-    lsEcrire("migrationCours", 5);
+    lsEcrire("migrationCours", 6);
     return r3;
   }
   const seed = Object.fromEntries(SEED_RUBRIQUES.filter((r) => TEXTES_ORIGINE[r.id]).map((r) => [r.id, r]));
@@ -1318,7 +1328,7 @@ function migrerCours(rubriques) {
   }
   resultat = ajouterSousPagesEvaluation(ajouterRubriquesV050(resultat));
   lsEcrire("rubriques", resultat);
-  lsEcrire("migrationCours", 5);
+  lsEcrire("migrationCours", 6);
   return resultat;
 }
 
@@ -1339,10 +1349,13 @@ function ajouterSousPagesEvaluation(rubriques) {
 // v0.5.0 / v0.6.0 : nouvelles rubriques « Course de durée », « Escalade », « Volley-ball », « Badminton » (après Musculation)
 // et « Association Sportive du Lycée » (en dernier).
 // Une rubrique déjà présente (même identifiant) n'est jamais écrasée.
-function ajouterRubriquesV050(rubriques) {
+function ajouterRubriquesV050(rubriques, aCreer) {
   const existe = new Set(rubriques.map((r) => r.id));
-  const NOUVELLES = ["course-duree", "escalade", "volley", "badminton", "as"];
-  const nouvelles = SEED_RUBRIQUES.filter((r) => NOUVELLES.includes(r.id) || NOUVELLES.includes(r.parentId))
+  const NOUVELLES = ["course-duree", "escalade", "volley", "badminton", "gymnastique", "as"];
+  // seules les rubriques principales absentes sont créées, avec leurs sous-pages ;
+  // les sous-pages d'une rubrique déjà présente ne sont jamais recréées
+  const racinesAjoutees = new Set(NOUVELLES.filter((id) => !existe.has(id) && (!aCreer || aCreer.includes(id))));
+  const nouvelles = SEED_RUBRIQUES.filter((r) => racinesAjoutees.has(r.id) || racinesAjoutees.has(r.parentId))
     .filter((r) => !existe.has(r.id))
     .map((r) => ({ ...JSON.parse(JSON.stringify(r)), page: { blocs: r.page.blocs.map((b) => ({ ...JSON.parse(JSON.stringify(b)), id: uid() })) } }));
   if (nouvelles.length === 0) return rubriques;
@@ -1351,7 +1364,7 @@ function ajouterRubriquesV050(rubriques) {
   const racines = tout.filter((r) => !r.parentId).sort((a, b) => a.ordre - b.ordre);
   const autres = racines.filter((r) => !NOUVELLES.includes(r.id));
   const idxMuscu = autres.findIndex((r) => r.id === "musculation");
-  const APRES_MUSCU = ["course-duree", "escalade", "volley", "badminton"];
+  const APRES_MUSCU = ["course-duree", "escalade", "volley", "badminton", "gymnastique"];
   const insertion = racines.filter((r) => APRES_MUSCU.includes(r.id)).sort((a, b) => APRES_MUSCU.indexOf(a.id) - APRES_MUSCU.indexOf(b.id));
   const ordre = [...autres];
   ordre.splice(idxMuscu + 1, 0, ...insertion);
