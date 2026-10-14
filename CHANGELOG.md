@@ -1,8 +1,22 @@
 # Site EPS — journal des changements
 
-Version actuelle : **0.3.1**
+Version actuelle : **0.4.0**
 
 ---
+
+### v0.4.0 — 14/10/2026
+- **Cours théorique de musculation** intégré dans *Musculation › Théorie* : 10 parties
+  repliables (sécurité et vocabulaire, muscles/fonctions/ateliers/étirements,
+  agonistes-antagonistes, contractions et fibres, projets R6/R10/R15/R20-25, tableau de
+  conversion et calcul de charge, méthodes, construction de séance et projet personnel,
+  échauffement/étirements/récupération, **ce sur quoi les élèves peuvent être interrogés**,
+  lexique). Les questions d'évaluation et leurs corrigés ne sont pas publiés.
+- **Alimentation du sportif** intégrée dans *Sport & Santé › L'alimentation* (4 parties :
+  nutriments, assiette équilibrée, manger autour de la séance, idées reçues).
+- Nouveau type de bloc **« Cours (partie prête) »** dans l'éditeur : choix de la partie,
+  dépliée ou non à l'ouverture. Les tableaux deviennent des fiches lisibles sur téléphone.
+- Mise à jour automatique (une seule fois) : une page encore sur son texte d'origine est
+  remplacée par le cours ; une page déjà retravaillée garde son contenu et reçoit le cours à la suite.
 
 ### v0.3.1 — 13/10/2026
 - **Nouveau bloc « Galerie photos »** : plusieurs photos sur une même ligne, au choix :

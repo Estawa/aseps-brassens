@@ -3,11 +3,12 @@ import {
   Home, LayoutList, FolderOpen, Lock, Unlock, Plus, Trash2, Pencil,
   ChevronUp, ChevronDown, ChevronRight, ExternalLink, Image as ImageIcon,
   Video, FileText, Upload, X, Link2, ArrowLeft, Menu, Images, Type, LayoutTemplate, GripVertical, LayoutGrid,
-  ChevronLeft, Copy, Undo2, Monitor, Smartphone, Check, Square,
+  ChevronLeft, Copy, Undo2, Monitor, Smartphone, Check, Square, BookOpen,
 } from "lucide-react";
+import { COURS, BlocCours, blocsCoursPourPage } from "./cours.jsx";
 
 const uid = () => Math.random().toString(36).slice(2, 10);
-const APP_VERSION = "0.3.1";
+const APP_VERSION = "0.4.0";
 
 // ---------- Stockage local persistant ----------
 function lsLire(cle, defaut) {
@@ -89,7 +90,7 @@ const SEED_RUBRIQUES = [
   { id: "musculation-chezsoi", titre: "Muscu chez soi", parentId: "musculation", ordre: 0, page: { blocs: [blocTexte("Séances de musculation à réaliser à la maison, sans matériel.")] } },
   { id: "musculation-hiit", titre: "Entraînement HIIT", parentId: "musculation", ordre: 1, page: { blocs: [blocTexte("Séances d'entraînement fractionné à haute intensité.")] } },
   { id: "musculation-jeu", titre: "Jeu de l'Oie", parentId: "musculation", ordre: 2, page: { blocs: [blocTexte("Version ludique d'une séance de musculation.")] } },
-  { id: "musculation-theorie", titre: "Théorie", parentId: "musculation", ordre: 3, page: { blocs: [blocTexte("Notions théoriques autour de la musculation.")] } },
+  { id: "musculation-theorie", titre: "Théorie", parentId: "musculation", ordre: 3, page: { blocs: [blocTexte("Les notions théoriques à connaître pour construire ton projet d'entraînement. Clique sur une partie pour l'ouvrir."), ...blocsCoursPourPage("musculation-theorie", uid)] } },
   { id: "sopra", titre: "Sopra Flashmob", parentId: null, ordre: 1, page: { blocs: [] } },
   {
     id: "sopra-flashmob", titre: "En mode flashmob", parentId: "sopra", ordre: 0,
@@ -97,7 +98,7 @@ const SEED_RUBRIQUES = [
   },
   { id: "echauffement", titre: "L'échauffement", parentId: null, ordre: 2, page: { blocs: [blocTexte("Protocoles d'échauffement avant les séances d'EPS.")] } },
   { id: "sportsante", titre: "Sport & Santé", parentId: null, ordre: 3, page: { blocs: [] } },
-  { id: "sportsante-alim", titre: "L'alimentation", parentId: "sportsante", ordre: 0, page: { blocs: [blocTexte("Repères sur l'alimentation du sportif.")] } },
+  { id: "sportsante-alim", titre: "L'alimentation", parentId: "sportsante", ordre: 0, page: { blocs: [blocTexte("Repères sur l'alimentation du sportif. Clique sur une partie pour l'ouvrir."), ...blocsCoursPourPage("sportsante-alim", uid)] } },
 ];
 
 const SEED_LIENS = [
@@ -280,6 +281,7 @@ function RenduBloc({ bloc, edition = false }) {
       </div>
     );
   }
+  if (bloc.type === "cours") return <BlocCours bloc={bloc} edition={edition} />;
   if (bloc.type === "espace") {
     const h = bloc.hauteur || 40;
     if (edition) {
@@ -580,6 +582,7 @@ const TYPES_BLOC = [
   { id: "diaporama", label: "Diaporama photos", Icon: Images },
   { id: "galerie", label: "Galerie photos (plusieurs par ligne)", Icon: LayoutGrid },
   { id: "liens", label: "Liens externes", Icon: Link2 },
+  { id: "cours", label: "Cours (partie prête)", Icon: BookOpen },
   { id: "espace", label: "Espace vide", Icon: Square },
 ];
 function nouveauBloc(type) {
@@ -591,6 +594,7 @@ function nouveauBloc(type) {
   if (type === "diaporama") return { ...base, images: [], vitesse: 4 };
   if (type === "galerie") return { ...base, images: [], affichage: "grille", parLigneOrdi: 4, parLigneTel: 2, recadrage: "uniforme" };
   if (type === "liens") return { ...base, liens: [] };
+  if (type === "cours") return { ...base, partie: "", ouvert: false };
   if (type === "espace") return { ...base, largeur: 4, hauteur: 40 };
   return base;
 }
@@ -919,6 +923,30 @@ function EditeurContenuBloc({ bloc, majBloc }) {
     );
   }
 
+  if (bloc.type === "cours") {
+    const groupes = {};
+    Object.entries(COURS).forEach(([cle, c]) => { (groupes[c.cours] = groupes[c.cours] || []).push([cle, c]); });
+    return (
+      <div style={{ display: "grid", gap: 10 }}>
+        <select value={bloc.partie || ""} onChange={(e) => majBloc({ partie: e.target.value })} style={champStyle("100%")}>
+          <option value="">— Choisir une partie de cours —</option>
+          {Object.entries(groupes).map(([nom, parties]) => (
+            <optgroup key={nom} label={nom}>
+              {parties.map(([cle, c]) => <option key={cle} value={cle}>{c.titre}</option>)}
+            </optgroup>
+          ))}
+        </select>
+        <label style={{ fontSize: 12, color: "#6b6656", display: "flex", alignItems: "center", gap: 6 }}>
+          <input type="checkbox" checked={!!bloc.ouvert} onChange={(e) => majBloc({ ouvert: e.target.checked })} />
+          Partie dépliée à l'ouverture de la page
+        </label>
+        <div style={{ fontSize: 11.5, color: "#9a9384", lineHeight: 1.45 }}>
+          Le texte de ces parties est intégré au site (tableaux compris). Pour le modifier, demande une mise à jour du site ; tu peux en revanche déplacer, retirer ou ajouter des blocs autour (photos, vidéos…).
+        </div>
+      </div>
+    );
+  }
+
   if (bloc.type === "texte") {
     return <textarea value={local.texte} onChange={(e) => setLocal({ ...local, texte: e.target.value })} onBlur={() => majBloc({ texte: local.texte })} rows={4} placeholder="Contenu du texte…" style={{ ...champStyle("100%"), resize: "vertical" }} />;
   }
@@ -1214,9 +1242,32 @@ function EspaceAdmin({ rubriques, setRubriques, pageAccueil, setPageAccueil, doc
   );
 }
 
+// ---------- Mise à jour v0.4.0 : intégration des cours (Théorie musculation + Alimentation) ----------
+// Exécutée une seule fois par navigateur. Une page restée sur son texte d'origine (ou vide) est remplacée
+// par le cours ; une page déjà retravaillée garde son contenu et reçoit le cours à la suite.
+const TEXTES_ORIGINE = {
+  "musculation-theorie": "Notions théoriques autour de la musculation.",
+  "sportsante-alim": "Repères sur l'alimentation du sportif.",
+};
+function migrerCours(rubriques) {
+  if (lsLire("migrationCours", 0) >= 1) return rubriques;
+  const seed = Object.fromEntries(SEED_RUBRIQUES.filter((r) => TEXTES_ORIGINE[r.id]).map((r) => [r.id, r]));
+  const resultat = rubriques.map((r) => {
+    if (!TEXTES_ORIGINE[r.id]) return r;
+    const blocs = r.page?.blocs || [];
+    if (blocs.some((b) => b.type === "cours")) return r;
+    const intact = blocs.length === 0 || (blocs.length === 1 && blocs[0].type === "texte" && blocs[0].texte === TEXTES_ORIGINE[r.id]);
+    const nouveaux = JSON.parse(JSON.stringify(seed[r.id].page.blocs));
+    return { ...r, page: { ...r.page, blocs: intact ? nouveaux : [...blocs, ...nouveaux.slice(1)] } };
+  });
+  lsEcrire("rubriques", resultat);
+  lsEcrire("migrationCours", 1);
+  return resultat;
+}
+
 // ---------- App racine ----------
 export default function App() {
-  const [rubriques, setRubriquesState] = useState(() => lsLire("rubriques", SEED_RUBRIQUES));
+  const [rubriques, setRubriquesState] = useState(() => migrerCours(lsLire("rubriques", SEED_RUBRIQUES)));
   const [pageAccueil, setPageAccueilState] = useState(() => lsLire("pageAccueil", PAGE_ACCUEIL_SEED));
   const [documents, setDocumentsState] = useState(() => lsLire("documents", []));
   const [liens, setLiensState] = useState(() => lsLire("liens", SEED_LIENS));
