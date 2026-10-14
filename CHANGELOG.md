@@ -1,8 +1,16 @@
 # Site EPS — journal des changements
 
-Version actuelle : **0.4.0**
+Version actuelle : **0.4.1**
 
 ---
+
+### v0.4.1 — 14/10/2026
+- **Page « L'échauffement » remplie** : principes communs (3 phases, règles d'or) puis
+  un échauffement détaillé par activité : course de durée, musculation, sports collectifs
+  (basket, volley, foot), escalade, badminton, gymnastique, course de vitesse et relais 2 × 200 m.
+- La page **« L'échauffement » est déplacée dans « Sport & Santé »**, juste sous « L'alimentation ».
+- Mise à jour automatique : si la page avait déjà été retravaillée, son contenu est conservé
+  et les parties d'échauffement s'ajoutent à la suite.
 
 ### v0.4.0 — 14/10/2026
 - **Cours théorique de musculation** intégré dans *Musculation › Théorie* : 10 parties

@@ -447,11 +447,196 @@ Un sportif a besoin d'un peu plus de protéines qu'un sédentaire, mais une alim
 
 En cas de question sur son poids ou son alimentation, le bon réflexe est d'en parler à l'infirmière scolaire ou à son médecin, plutôt que de suivre un régime trouvé sur les réseaux sociaux.`,
   },
+
+  // ------------------------- SPORT & SANTÉ : L'ÉCHAUFFEMENT -------------------------
+  "echauf-principes": {
+    cours: "L'échauffement",
+    titre: "Les principes communs à toutes les activités",
+    md: `Un bon échauffement dure **15 à 20 minutes**, va **du général au spécifique** et **du plus doux au plus intense**. Il se termine dans les conditions réelles de l'activité, juste avant de commencer.
+
+### Pourquoi s'échauffer ?
+
+- **Le corps** : la température des muscles monte, ils deviennent plus élastiques et se contractent plus vite ; les articulations sont mieux lubrifiées.
+- **Le cœur et la respiration** : le cœur accélère progressivement et apporte plus d'oxygène aux muscles.
+- **La tête** : on se concentre, on se rappelle les consignes et les gestes techniques.
+- **Résultat** : moins de blessures et une meilleure performance dès le début.
+
+### Les 3 phases
+
+| Phase | Durée | But | Exemples |
+| --- | --- | --- | --- |
+| 1. Générale | 5 à 8 min | Élever la température et le rythme cardiaque | Footing lent, vélo, rameur, corde à sauter |
+| 2. Articulaire et dynamique | 5 min | Mobiliser les articulations, préparer les muscles | Rotations (chevilles, genoux, hanches, épaules, poignets), montées de genoux, talons-fesses, pas chassés |
+| 3. Spécifique | 5 à 10 min | Préparer les gestes de l'activité | Gestes techniques à vitesse croissante, situations proches de la pratique |
+
+### Les règles d'or
+
+1. **Progressivité** : on termine plus intense qu'on a commencé, sans jamais se mettre « dans le rouge ».
+2. **Étirements dynamiques avant, statiques après** : les étirements longs et immobiles juste avant l'effort diminuent la force et la vitesse.
+3. **Pas de temps mort** : moins de 5 minutes entre la fin de l'échauffement et le début de l'activité, sinon le corps refroidit.
+4. **S'adapter** : plus long quand il fait froid, le matin tôt, ou après une blessure.
+5. **Signes d'un bon échauffement** : légère transpiration, respiration un peu accélérée, sensation de corps « réveillé » mais pas fatigué.`,
+  },
+
+  "echauf-course-duree": {
+    cours: "L'échauffement",
+    titre: "1. Course de durée",
+    md: `En course de durée, l'échauffement prépare surtout **le cœur, la respiration et les appuis**. On part très doucement pour finir proche de l'allure de travail.
+
+| Phase | Durée | Contenu |
+| --- | --- | --- |
+| Footing | 8 à 10 min | Course très lente (environ 50 à 60 % de la VMA) : on doit pouvoir parler sans être essoufflé |
+| Mobilité articulaire | 3 min | Chevilles, genoux, hanches (cercles de jambes), épaules (moulinets de bras) |
+| Gammes athlétiques | 4 min | 2 × 20 m de chaque : montées de genoux, talons-fesses, pas chassés, foulées bondissantes légères, jambes tendues |
+| Accélérations progressives | 3 min | 3 lignes droites de 60 à 80 m en accélérant jusqu'à l'allure de course prévue, retour en marchant |
+
+### Points clés
+
+- Le footing doit rester vraiment lent : un départ trop rapide fatigue avant même la séance.
+- Penser à la **respiration** : souffler franchement, trouver un rythme régulier.
+- Prévoir une tenue adaptée à la météo et l'enlever seulement juste avant de courir.
+- Après la course : 5 min de trot ou de marche, puis étirements doux des mollets, quadriceps, ischio-jambiers et fessiers.`,
+  },
+
+  "echauf-musculation": {
+    cours: "L'échauffement",
+    titre: "2. Musculation",
+    md: `En musculation, l'échauffement protège surtout **les articulations et le dos**. Chaque atelier lourd doit être précédé d'une série légère.
+
+| Phase | Durée | Contenu |
+| --- | --- | --- |
+| Cardio progressif | 8 à 10 min | Rameur, vélo, elliptique ou corde à sauter, intensité croissante |
+| Mobilité articulaire | 3 à 5 min | Épaules (rotations avec bâton ou élastique), coudes, poignets, hanches, genoux, chevilles, enroulé-déroulé du dos |
+| Activation du gainage | 2 min | Planche ventrale 2 × 20 s, gainage latéral 2 × 15 s par côté |
+| Séries d'approche | Sur chaque atelier lourd | 1 série de 15 rép° à environ 50 % de la charge de travail, puis 1 série de 6 à 8 rép° à environ 75 % pour les projets R6 et R10 |
+
+### Points clés
+
+- Les **séries d'approche** servent aussi à vérifier son placement : dos plat, amplitude, respiration.
+- Plus le projet est lourd (R6), plus l'échauffement spécifique doit être progressif.
+- Ne pas s'étirer longuement avant les séries : on garde les étirements statiques pour la fin de séance.
+- Voir aussi *Musculation › Théorie*, partie 8.`,
+  },
+
+  "echauf-sports-co": {
+    cours: "L'échauffement",
+    titre: "3. Sports collectifs (basket, volley, foot)",
+    md: `En sport collectif, l'échauffement prépare aux **changements de direction, aux sauts, aux accélérations** et au jeu avec le ballon. On utilise le ballon le plus tôt possible.
+
+### La base commune
+
+| Phase | Durée | Contenu |
+| --- | --- | --- |
+| Footing avec ballon | 5 min | Course lente en dribblant ou en faisant des passes à deux |
+| Mobilité et gammes | 5 min | Rotations articulaires, pas chassés, course arrière, croisés, montées de genoux, talons-fesses |
+| Appuis et changements de direction | 3 min | Courses en zigzag entre plots, arrêts-départs, petits sauts à pieds joints |
+| Gestes techniques | 5 min | Exercices spécifiques au sport (tableau ci-dessous), à vitesse croissante |
+| Jeu réduit | 5 min | Opposition à effectif réduit (2 contre 2, 3 contre 3) sur un terrain plus petit |
+
+### Le spécifique selon le sport
+
+| Sport | Zones à préparer | Exercices spécifiques |
+| --- | --- | --- |
+| Basket | Chevilles, genoux, poignets, doigts | Dribbles main droite / main gauche, passes à deux, tirs proches puis plus éloignés, double-pas, sauts au rebond |
+| Volley | Épaules, poignets, doigts, chevilles | Manchettes et passes à deux, puis contre le mur ; services progressifs (près du filet puis ligne de fond), sauts d'attaque sans ballon puis avec |
+| Foot | Adducteurs, ischio-jambiers, chevilles, genoux | Conduite de balle, passes courtes puis longues, contrôles, frappes progressives au but, sprints courts avec changement de direction |
+
+### Points clés
+
+- **Doigts et poignets** (basket, volley) : les préparer avant les premiers ballons appuyés, c'est là que surviennent les entorses de doigts.
+- **Volley** : les épaules travaillent beaucoup, faire des moulinets de bras et des lancers légers avant de servir ou d'attaquer.
+- **Foot** : les frappes puissantes arrivent en dernier, quand les adducteurs et les ischio-jambiers sont bien chauds.`,
+  },
+
+  "echauf-escalade": {
+    cours: "L'échauffement",
+    titre: "4. Escalade",
+    md: `En escalade, ce sont **les doigts, les avant-bras et les épaules** qui travaillent le plus. Les tendons des doigts sont fragiles : ils doivent être préparés progressivement.
+
+| Phase | Durée | Contenu |
+| --- | --- | --- |
+| Mise en route | 5 min | Petit footing, corde à sauter ou montées de genoux sur place, moulinets de bras |
+| Mobilité du haut du corps | 4 min | Épaules (rotations, bras croisés), coudes, poignets (cercles), doigts (ouvrir-fermer les mains, chaque doigt mobilisé) |
+| Mobilité du bas du corps | 2 min | Hanches (ouverture de la jambe sur le côté, « fente » écartée), chevilles, genoux |
+| Traversée basse | 5 min | Déplacement horizontal près du sol (pieds à moins d'un mètre), sur grosses prises, en cherchant la précision des pieds |
+| Voie facile | 5 min | 1 ou 2 voies bien en dessous de son niveau, bras tendus, en se relâchant |
+
+### Points clés
+
+- Commencer par les **grosses prises** et garder les petites prises (réglettes) pour plus tard.
+- **Bras tendus** pendant l'échauffement : on économise les avant-bras.
+- L'échauffement inclut aussi la **sécurité** : vérification du baudrier, du nœud de huit, du système d'assurage et contrôle croisé avec son partenaire avant chaque montée.
+- Si les avant-bras sont « durs » et gonflés, on redescend et on récupère avant la voie suivante.`,
+  },
+
+  "echauf-badminton": {
+    cours: "L'échauffement",
+    titre: "5. Badminton",
+    md: `Le badminton sollicite **l'épaule et le poignet du bras qui frappe**, ainsi que les **chevilles et les genoux** lors des déplacements rapides et des fentes.
+
+| Phase | Durée | Contenu |
+| --- | --- | --- |
+| Mise en route | 5 min | Footing léger autour du terrain, pas chassés, course arrière |
+| Mobilité | 4 min | Épaules (grands cercles de bras, en avant et en arrière), poignets, coudes, hanches, chevilles ; fentes avant lentes |
+| Déplacements | 3 min | « Shadow » sans volant : déplacements vers les 4 coins du terrain, retour au centre, fente en avant, pas chassés latéraux |
+| Échanges progressifs | 6 min | Échanges coopératifs : d'abord dégagés en hauteur, puis amortis au filet, puis drives, avec un partenaire |
+| Frappes fortes | 2 min | Smashs progressifs (d'abord à 50 %, puis plus fort), services court et long |
+
+### Points clés
+
+- Ne pas smasher « à froid » : l'épaule doit être bien préparée avant les frappes puissantes.
+- Les **fentes** sollicitent fortement le genou avant : genou au-dessus du pied, jamais vers l'intérieur.
+- Les échanges d'échauffement sont **coopératifs** : on cherche à faire durer, pas à gagner le point.`,
+  },
+
+  "echauf-gymnastique": {
+    cours: "L'échauffement",
+    titre: "6. Gymnastique",
+    md: `En gymnastique, on prépare **les poignets, les épaules, le dos et le gainage**, et on travaille la **souplesse** de façon dynamique. C'est l'activité où l'échauffement articulaire est le plus important.
+
+| Phase | Durée | Contenu |
+| --- | --- | --- |
+| Mise en route | 5 min | Footing, sauts sur place, sauts de cabri, corde à sauter |
+| Mobilité articulaire | 5 min | Poignets (cercles, appui sur les mains au sol doigts vers l'avant puis vers soi), nuque (doucement), épaules, dos (enroulé-déroulé, chat-vache), hanches, chevilles |
+| Gainage et tonicité | 4 min | Planche ventrale et dorsale, position « banane » et « dos creux » au sol, maintien en appui tendu sur les bras |
+| Souplesse dynamique | 3 min | Battements de jambes (avant, côté, arrière), fentes, grand écart progressif sans forcer, pont si maîtrisé |
+| Éducatifs | 5 min | Roulades avant et arrière, équilibre, appui tendu renversé contre le mur, sauts sur le mini-trampoline : en version simple avant les éléments du code |
+
+### Points clés
+
+- Les **poignets** supportent tout le poids du corps à l'appui : ils doivent être mobilisés longuement.
+- Toujours monter en difficulté : éducatif → élément simple → élément de l'enchaînement.
+- La **parade** fait partie de l'échauffement : on rappelle qui pare, comment et où.
+- Les étirements longs et forcés sont réservés à des séances de souplesse à part.`,
+  },
+
+  "echauf-relais": {
+    cours: "L'échauffement",
+    titre: "7. Course de vitesse et relais 2 × 200 m",
+    md: `En vitesse, les muscles travaillent à **intensité maximale** : l'échauffement doit être long, très progressif et se terminer par des sprints. C'est le meilleur moyen d'éviter les déchirures (ischio-jambiers, mollets).
+
+| Phase | Durée | Contenu |
+| --- | --- | --- |
+| Footing | 8 min | Course lente puis un peu plus soutenue, avec quelques courses arrière et pas chassés |
+| Mobilité dynamique | 4 min | Cercles de hanches, balancés de jambes avant-arrière et latéraux, chevilles, épaules et bras |
+| Gammes athlétiques | 5 min | 2 × 20 à 30 m : montées de genoux, talons-fesses, pas de l'oie (jambes tendues), foulées bondissantes, griffés, skipping |
+| Accélérations | 4 min | 3 ou 4 lignes droites de 60 à 80 m à 70 %, 80 %, 90 % puis presque à fond ; retour en marchant |
+| Départs | 3 min | 2 ou 3 départs debout ou en starting-block sur 20 m, au signal |
+| Passages de témoin | 5 min | En marchant, puis en trottinant, puis en vitesse : signal de départ, main de réception, zone de transmission, marque d'élan |
+
+### Spécial relais 2 × 200 m
+
+- **Repérer la zone** de transmission et placer sa **marque** (nombre de pieds) avec son partenaire.
+- Le receveur part sur la marque, **sans se retourner**, et tend la main au signal (« Hop ! »).
+- Répéter au moins 2 passages à vitesse réelle avant la course.
+- Rester couvert et actif entre l'échauffement et le départ : la course doit commencer moins de 5 minutes après les derniers sprints.`,
+  },
 };
 
 export const PAGES_COURS = {
   "musculation-theorie": ["muscu-intro", "muscu-anatomie", "muscu-physiologie", "muscu-projets", "muscu-charges", "muscu-methodes", "muscu-seance", "muscu-recuperation", "muscu-connaissances", "muscu-lexique"],
   "sportsante-alim": ["alim-nutriments", "alim-assiette", "alim-seance", "alim-idees"],
+  "echauffement": ["echauf-principes", "echauf-course-duree", "echauf-musculation", "echauf-sports-co", "echauf-escalade", "echauf-badminton", "echauf-gymnastique", "echauf-relais"],
 };
 
 // ---------- Petit moteur Markdown (titres, listes, tableaux, gras) ----------

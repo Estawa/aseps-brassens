@@ -8,7 +8,7 @@ import {
 import { COURS, BlocCours, blocsCoursPourPage } from "./cours.jsx";
 
 const uid = () => Math.random().toString(36).slice(2, 10);
-const APP_VERSION = "0.4.0";
+const APP_VERSION = "0.4.1";
 
 // ---------- Stockage local persistant ----------
 function lsLire(cle, defaut) {
@@ -96,9 +96,9 @@ const SEED_RUBRIQUES = [
     id: "sopra-flashmob", titre: "En mode flashmob", parentId: "sopra", ordre: 0,
     page: { blocs: [blocTexte("Chorégraphie collective sur Sopra."), blocLiens([{ label: "Playlist Chorés (YouTube)", url: "https://www.youtube.com/playlist?list=PL7ZFD8B4khX1Iw7hNSVHNJPJZM8U9A4BY" }])] },
   },
-  { id: "echauffement", titre: "L'échauffement", parentId: null, ordre: 2, page: { blocs: [blocTexte("Protocoles d'échauffement avant les séances d'EPS.")] } },
   { id: "sportsante", titre: "Sport & Santé", parentId: null, ordre: 3, page: { blocs: [] } },
   { id: "sportsante-alim", titre: "L'alimentation", parentId: "sportsante", ordre: 0, page: { blocs: [blocTexte("Repères sur l'alimentation du sportif. Clique sur une partie pour l'ouvrir."), ...blocsCoursPourPage("sportsante-alim", uid)] } },
+  { id: "echauffement", titre: "L'échauffement", parentId: "sportsante", ordre: 1, page: { blocs: [blocTexte("Comment s'échauffer correctement selon l'activité pratiquée. Commence par les principes communs, puis ouvre la partie de ton activité."), ...blocsCoursPourPage("echauffement", uid)] } },
 ];
 
 const SEED_LIENS = [
@@ -1248,20 +1248,45 @@ function EspaceAdmin({ rubriques, setRubriques, pageAccueil, setPageAccueil, doc
 const TEXTES_ORIGINE = {
   "musculation-theorie": "Notions théoriques autour de la musculation.",
   "sportsante-alim": "Repères sur l'alimentation du sportif.",
+  "echauffement": "Protocoles d'échauffement avant les séances d'EPS.",
 };
 function migrerCours(rubriques) {
-  if (lsLire("migrationCours", 0) >= 1) return rubriques;
+  const etape = lsLire("migrationCours", 0);
+  if (etape >= 2) return rubriques;
   const seed = Object.fromEntries(SEED_RUBRIQUES.filter((r) => TEXTES_ORIGINE[r.id]).map((r) => [r.id, r]));
-  const resultat = rubriques.map((r) => {
-    if (!TEXTES_ORIGINE[r.id]) return r;
+  // v0.4.0 : Théorie musculation + Alimentation ; v0.4.1 : Échauffement par activité
+  const aMettreAJour = etape >= 1 ? ["echauffement"] : Object.keys(TEXTES_ORIGINE);
+  const remplir = (r) => {
     const blocs = r.page?.blocs || [];
     if (blocs.some((b) => b.type === "cours")) return r;
     const intact = blocs.length === 0 || (blocs.length === 1 && blocs[0].type === "texte" && blocs[0].texte === TEXTES_ORIGINE[r.id]);
-    const nouveaux = JSON.parse(JSON.stringify(seed[r.id].page.blocs));
+    const nouveaux = JSON.parse(JSON.stringify(seed[r.id].page.blocs)).map((b) => ({ ...b, id: uid() }));
     return { ...r, page: { ...r.page, blocs: intact ? nouveaux : [...blocs, ...nouveaux.slice(1)] } };
-  });
+  };
+  let resultat = rubriques.map((r) => (aMettreAJour.includes(r.id) ? remplir(r) : r));
+
+  // v0.4.1 : « L'échauffement » passe dans « Sport & Santé », juste sous « L'alimentation »
+  if (etape < 2) {
+    let parent = resultat.find((r) => r.id === "sportsante");
+    if (!parent) {
+      parent = { ...seed["sportsante-alim"], id: "sportsante", titre: "Sport & Santé", parentId: null, ordre: resultat.filter((r) => !r.parentId).length, page: { blocs: [] } };
+      resultat = [...resultat, parent];
+    }
+    if (!resultat.some((r) => r.id === "echauffement")) resultat = [...resultat, remplir({ ...seed["echauffement"], page: { blocs: [] } })];
+    const alim = resultat.find((r) => r.id === "sportsante-alim" && r.parentId === "sportsante");
+    const freres = resultat.filter((r) => r.parentId === "sportsante" && r.id !== "echauffement").sort((a, b) => a.ordre - b.ordre);
+    const idxAlim = alim ? freres.findIndex((r) => r.id === alim.id) : -1;
+    const ordre = [...freres];
+    ordre.splice(idxAlim + 1, 0, { id: "echauffement" });
+    const rang = Object.fromEntries(ordre.map((r, i) => [r.id, i]));
+    resultat = resultat.map((r) => (r.id === "echauffement" ? { ...r, parentId: "sportsante", ordre: rang.echauffement } : rang[r.id] !== undefined && r.parentId === "sportsante" ? { ...r, ordre: rang[r.id] } : r));
+    // les anciennes sous-pages éventuelles de « L'échauffement » remontent au niveau principal (2 niveaux maximum)
+    const nbRacines = resultat.filter((r) => !r.parentId).length;
+    let k = 0;
+    resultat = resultat.map((r) => (r.parentId === "echauffement" ? { ...r, parentId: null, ordre: nbRacines + k++ } : r));
+  }
   lsEcrire("rubriques", resultat);
-  lsEcrire("migrationCours", 1);
+  lsEcrire("migrationCours", 2);
   return resultat;
 }
 
