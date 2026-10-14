@@ -1382,3 +1382,186 @@ Tu choisis **deux rôles** parmi ceux proposés et tu es évalué dans ces rôle
 Dans tous les cas, on attend une attitude **solidaire** et respectueuse des partenaires, des adversaires et de l'arbitre.`,
   },
 };
+
+// =====================================================================
+// ÉVALUATIONS DE FIN DE CYCLE — CA5 : Musculation et Course de durée
+// =====================================================================
+const MUE = "Musculation — évaluation";
+const CDE = "Course de durée — évaluation";
+
+const STRUCTURE_CA5 = (activite, element1, element2) => `La ${activite} fait partie du **champ d'apprentissage 5** : « Réaliser et orienter son activité physique pour développer ses ressources et s'entretenir ». La note est sur **20 points**, répartis en trois attendus de fin de lycée (AFL).
+
+| Attendu | Ce qui est attendu | Points | Quand |
+| --- | --- | --- | --- |
+| **AFL1** | S'engager pour obtenir les effets recherchés selon son projet personnel, en faisant des choix de paramètres d'entraînement cohérents avec le thème retenu | **12 points** | Le jour de l'épreuve (fin de cycle) |
+| **AFL2** | S'entraîner, individuellement et collectivement, pour développer ses ressources et s'entretenir en fonction des effets recherchés | **2, 4 ou 6 points** | Au fil du cycle (carnet d'entraînement) |
+| **AFL3** | Coopérer pour faire progresser : tenir des rôles qui aident les autres à s'entraîner | **6, 4 ou 2 points** | Au fil du cycle (et le jour de l'épreuve) |
+
+### Ton choix de répartition (AFL2 / AFL3)
+
+| Choix | AFL2 | AFL3 |
+| --- | --- | --- |
+| a | 2 points | 6 points |
+| b | 4 points | 4 points |
+| c | 6 points | 2 points |
+
+### L'AFL1 en deux éléments
+
+- **Élément 1 — Produire** : ${element1}
+- **Élément 2 — Analyser** : ${element2}
+
+Chaque élément vaut **au moins 4 points** ; la répartition exacte et les descripteurs des **4 degrés** sont fixés par le **référentiel de l'établissement**.
+
+### Ce que tu choisis
+
+- Ton **projet** et ton **thème d'entraînement** (le mobile : pourquoi tu t'entraînes).
+- Tes **paramètres** d'entraînement (charges, durées, intensités, récupérations…).
+- La **répartition** des points entre AFL2 et AFL3.`;
+
+export const COURS_EVAL_CA5 = {
+  // --------------------------- Musculation ---------------------------
+  "mu-eval-structure": {
+    cours: MUE,
+    titre: "1. L'épreuve du bac : structure de la note",
+    md: STRUCTURE_CA5(
+      "musculation",
+      "réaliser sa séance avec une **exécution sûre et efficace** (placement, trajet, amplitude, rythme, respiration), en respectant les **paramètres** de son projet (charges, répétitions, séries, récupération).",
+      "**justifier** ses choix de paramètres au regard de son mobile, **identifier ses ressentis** (effort, fatigue, effets) et **réguler** sa séance si nécessaire (ajuster une charge, une récupération)."
+    ),
+  },
+
+  "mu-eval-deroulement": {
+    cours: MUE,
+    titre: "2. Le jour de l'épreuve : ce qui est observé",
+    md: `### Le déroulement
+
+1. Tu présentes ton **projet** : ton **mobile** (envie, besoin, nécessité), ton **thème** (puissance R6, masse R10, tonicité R15, endurance R20/25, ou projet mixte) et les **ateliers** choisis.
+2. Tu réalises ton **échauffement** complet et spécifique (séries d'approche).
+3. Tu réalises ta **séance** sur **4 à 6 ateliers** (selon le référentiel), avec les charges, séries, répétitions et récupérations prévues dans ton carnet.
+4. Pendant la séance, tu notes tes **réalisations** et tes **ressentis**, et tu **régules** si besoin.
+5. À la fin, tu fais le **bilan** : effets ressentis, écarts entre le prévu et le réalisé, ce que tu modifierais à la prochaine séance.
+
+### Ce que l'enseignant observe (AFL1)
+
+| Domaine | Indicateurs |
+| --- | --- |
+| **Sécurité** | Dos gainé et plat, placement correct, parade sur les ateliers à barre libre, matériel sécurisé |
+| **Qualité d'exécution** | Trajet et amplitude complets, rythme adapté au projet (explosif en R6, contrôlé en R10…), respiration coordonnée |
+| **Respect des paramètres** | Charges cohérentes avec le % de 1RM du projet, nombre de répétitions et de séries, temps de récupération respectés |
+| **Cohérence du projet** | Choix des ateliers en lien avec le mobile, équilibre agonistes / antagonistes, ordre des ateliers |
+| **Analyse et régulation** | Ressentis identifiés (échelle de 1 à 10, zones de travail), ajustements justifiés pendant la séance, bilan lucide |
+
+### Ce qui fait la différence en Terminale
+
+- Un projet **personnel et argumenté**, pas une séance « copiée ».
+- Des charges **calculées** à partir de sa charge de référence (tableau de conversion), puis **ajustées** à bon escient.
+- Une exécution **irréprochable** sur l'ensemble des séries, même en fin de séance.
+- Un bilan qui relie **ressentis, effets recherchés et choix** pour la suite.
+
+### La partie connaissances
+
+Les connaissances théoriques (muscles, contractions, projets, méthodes, sécurité, alimentation) sont attendues dans la présentation du projet et le bilan, et peuvent faire l'objet de **questions** : voir *Musculation › Théorie*, partie 9.`,
+  },
+
+  "mu-eval-roles": {
+    cours: MUE,
+    titre: "3. AFL2 et AFL3 : s'entraîner et coopérer",
+    md: `### AFL2 : s'entraîner
+
+Évalué **tout au long du cycle**, à partir du **carnet d'entraînement** (papier ou application **Muscu Pro**).
+
+- **Rechercher** sa charge de référence (R15 ou R20) sur chaque atelier et en **déduire** ses charges de travail.
+- **Planifier** ses séances : ateliers, paramètres, progression d'une séance à l'autre.
+- **Noter** à chaque séance les charges, répétitions et ressentis, puis **analyser** l'évolution (série moyenne, tonnage).
+- **Faire évoluer** son projet en fonction des résultats (augmentation de charge, changement de méthode).
+- S'**engager** de façon régulière et sérieuse à chaque séance.
+
+### AFL3 : coopérer pour faire progresser
+
+Tu choisis le ou les **rôles** proposés et tu es évalué dans ces rôles :
+
+| Rôle | Ce que l'on attend |
+| --- | --- |
+| **Pareur / partenaire de sécurité** | Placement correct, attention constante, intervention sans gêner le pratiquant |
+| **Observateur** | Repérer les erreurs d'exécution (dos, amplitude, rythme) et les noter sur une fiche |
+| **Coach** | Donner des conseils précis et bienveillants, encourager, rappeler les paramètres (temps de récupération, nombre de répétitions) |
+| **Gestionnaire du matériel** | Installer, sécuriser et ranger le matériel (colliers, disques) |
+
+Dans tous les cas, on attend une attitude **responsable** : respect de la sécurité des autres, entraide, rangement de la salle.`,
+  },
+
+  // --------------------------- Course de durée ---------------------------
+  "cd-eval-structure": {
+    cours: CDE,
+    titre: "1. L'épreuve du bac : structure de la note",
+    md: STRUCTURE_CA5(
+      "course de durée",
+      "réaliser sa séance en **respectant les allures** prévues (temps de passage, % de VMA), les **durées** et les **récupérations** de son projet, avec une course efficace et économique.",
+      "**identifier ses ressentis** (essoufflement, échelle de Borg, fréquence cardiaque), les **relier aux effets recherchés** et **réguler** sa séance si nécessaire (ralentir, allonger une récupération), puis faire un **bilan** lucide."
+    ),
+  },
+
+  "cd-eval-deroulement": {
+    cours: CDE,
+    titre: "2. Le jour de l'épreuve : ce qui est observé",
+    md: `### Le déroulement
+
+1. Tu présentes ton **projet** : ton **mobile** et ton **thème d'entraînement**, par exemple :
+    - **Entretenir sa santé** : endurance fondamentale (65 à 75 % de VMA) sur une durée longue ;
+    - **Développer sa capacité aérobie** : endurance active et seuil (75 à 90 % de VMA) ;
+    - **Développer sa puissance aérobie (VMA)** : fractionné à 95-105 % de VMA ;
+    - **Gestion du poids / affinement** : efforts longs à intensité modérée.
+2. Tu présentes ta **séance** construite à partir de **ta VMA** : blocs de course, % de VMA, durées ou distances, récupérations, **temps de passage** calculés.
+3. Tu réalises ton **échauffement** (voir *Sport & Santé › L'échauffement*).
+4. Tu réalises ta séance (environ **30 à 45 minutes** de course selon le référentiel), en relevant tes **temps de passage**, ta **fréquence cardiaque** et ton **ressenti** (Borg) après chaque bloc.
+5. Tu **régules** si besoin et tu fais ton **bilan** : écarts entre le prévu et le réalisé, explication, adaptation pour la suite.
+
+### Ce que l'enseignant observe (AFL1)
+
+| Domaine | Indicateurs |
+| --- | --- |
+| **Respect des allures** | Écart entre les temps de passage prévus et réalisés (régularité, pas de départ trop rapide) |
+| **Réalisation du projet** | Durées, distances et récupérations prévues effectivement réalisées |
+| **Cohérence du projet** | Allures et volumes en lien avec le thème et la VMA, calculs justes |
+| **Efficacité de la course** | Foulée économique, posture, respiration régulière |
+| **Analyse et régulation** | Ressentis relevés (FC, Borg, essoufflement), liens avec les effets recherchés, régulations justifiées, bilan lucide |
+
+### Ce qui fait la différence en Terminale
+
+- Des allures **calculées juste** et **tenues** au tour près.
+- Une séance **construite** (échauffement, corps de séance, retour au calme) et cohérente avec le thème choisi.
+- Une **régulation** pertinente plutôt qu'un abandon ou un excès de vitesse.
+- Un bilan qui relie **allure, fréquence cardiaque, ressenti** et **filière énergétique** sollicitée.
+
+### La partie connaissances
+
+Les connaissances théoriques (filières, ATP, cœur, respiration, VMA, allures, récupération, alimentation) sont attendues dans la présentation du projet et le bilan, et peuvent faire l'objet de **questions** : voir *Course de durée › Théorie*, partie 13.`,
+  },
+
+  "cd-eval-roles": {
+    cours: CDE,
+    titre: "3. AFL2 et AFL3 : s'entraîner et coopérer",
+    md: `### AFL2 : s'entraîner
+
+Évalué **tout au long du cycle**, à partir du **carnet d'entraînement** (papier ou application **Course de Durée Pro**).
+
+- Réaliser un **test de VMA** et s'en servir pour **calculer** ses allures.
+- **Planifier** ses séances selon son thème : blocs, % de VMA, durées, récupérations.
+- **Relever** à chaque séance ses temps de passage, sa FC et son ressenti (Borg), et noter si chaque bloc est réussi.
+- **Analyser** l'évolution sur le cycle et **ajuster** ses séances (allures, volumes, récupérations).
+- S'**engager** régulièrement et sérieusement à chaque séance.
+
+### AFL3 : coopérer pour faire progresser
+
+Tu choisis le ou les **rôles** proposés et tu es évalué dans ces rôles :
+
+| Rôle | Ce que l'on attend |
+| --- | --- |
+| **Chronométreur** | Annoncer les temps de passage justes et au bon moment, relever les temps |
+| **Observateur** | Relever les allures, la foulée et les signes de fatigue du coureur sur une fiche |
+| **Coach / lièvre** | Aider un partenaire à tenir son allure (annonces, encouragements, course à ses côtés à l'allure prévue) |
+| **Organisateur** | Installer les plots et repères, gérer le temps et les rotations de groupes |
+
+Dans tous les cas, on attend une attitude **responsable et bienveillante** : aide aux partenaires, respect des allures de chacun, engagement constant.`,
+  },
+};

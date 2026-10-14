@@ -1,8 +1,21 @@
 # Site EPS — journal des changements
 
-Version actuelle : **0.6.0**
+Version actuelle : **0.7.0**
 
 ---
+
+### v0.7.0 — 14/10/2026
+- **Nouvelle sous-page « Évaluation de fin de cycle » en Musculation et en Course de durée**
+  (champ d'apprentissage 5), sur le modèle du volley-ball et du badminton :
+  - structure de la note : AFL1 sur 12 points (élément « Produire » + élément « Analyser »),
+    AFL2 / AFL3 sur 8 points au choix de l'élève (2-6, 4-4, 6-2) ;
+  - déroulement de l'épreuve et indicateurs observés, adaptés à chaque activité (projets R6 à
+    R20/25 et sécurité en musculation ; thèmes d'entraînement, allures et temps de passage,
+    FC et Borg en course de durée) ;
+  - AFL2 (carnet d'entraînement, Muscu Pro / Course de Durée Pro) et AFL3 (rôles : pareur,
+    observateur, coach, chronométreur, lièvre…).
+- Mise en page des cours : les sous-listes et le texte en *italique* s'affichent correctement
+  (les renvois « voir *…* » ne montrent plus d'astérisques).
 
 ### v0.6.0 — 14/10/2026
 - **Nouvelle rubrique « Volley-ball »** (4 contre 4, terrain de 7 m × 7 m par camp, niveau Terminale) :

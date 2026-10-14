@@ -8,7 +8,7 @@ import {
 import { COURS, BlocCours, blocsCoursPourPage } from "./cours.jsx";
 
 const uid = () => Math.random().toString(36).slice(2, 10);
-const APP_VERSION = "0.6.0";
+const APP_VERSION = "0.7.0";
 
 // ---------- Stockage local persistant ----------
 function lsLire(cle, defaut) {
@@ -102,8 +102,10 @@ const SEED_RUBRIQUES = [
   { id: "musculation-hiit", titre: "Entraînement HIIT", parentId: "musculation", ordre: 1, page: { blocs: [blocTexte("Séances d'entraînement fractionné à haute intensité.")] } },
   { id: "musculation-jeu", titre: "Jeu de l'Oie", parentId: "musculation", ordre: 2, page: { blocs: [blocTexte("Version ludique d'une séance de musculation.")] } },
   { id: "musculation-theorie", titre: "Théorie", parentId: "musculation", ordre: 3, page: { blocs: [blocTexte("Les notions théoriques à connaître pour construire ton projet d'entraînement. Clique sur une partie pour l'ouvrir."), ...blocsCoursPourPage("musculation-theorie", uid)] } },
+  { id: "musculation-evaluation", titre: "Évaluation de fin de cycle", parentId: "musculation", ordre: 4, page: { blocs: [blocTexte("Comment se déroule et se note l'épreuve de musculation au bac (champ d'apprentissage 5)."), ...blocsCoursPourPage("musculation-evaluation", uid)] } },
   { id: "course-duree", titre: "Course de durée", parentId: null, ordre: 1, page: { blocs: [] } },
   { id: "course-duree-theorie", titre: "Théorie", parentId: "course-duree", ordre: 0, page: { blocs: [blocTexte("Les notions théoriques pour comprendre comment le corps produit l'énergie, calculer tes allures et construire ton projet de course. Clique sur une partie pour l'ouvrir."), ...blocsCoursPourPage("course-duree-theorie", uid)] } },
+  { id: "course-duree-evaluation", titre: "Évaluation de fin de cycle", parentId: "course-duree", ordre: 1, page: { blocs: [blocTexte("Comment se déroule et se note l'épreuve de course de durée au bac (champ d'apprentissage 5)."), ...blocsCoursPourPage("course-duree-evaluation", uid)] } },
   { id: "escalade", titre: "Escalade", parentId: null, ordre: 2, page: { blocs: [] } },
   { id: "escalade-theorie", titre: "Théorie", parentId: "escalade", ordre: 0, page: { blocs: [blocTexte("Sécurité, matériel, nœuds, assurage, technique et lecture de voie : tout ce qu'il faut savoir pour grimper et assurer en sécurité. Clique sur une partie pour l'ouvrir."), ...blocsCoursPourPage("escalade-theorie", uid)] } },
   { id: "escalade-evaluation", titre: "Évaluation et tableau de performance", parentId: "escalade", ordre: 1, page: { blocs: [blocTexte("Comment tu es évalué en escalade et comment lire le tableau de performance."), ...blocsCoursPourPage("escalade-evaluation", uid)] } },
@@ -1275,11 +1277,11 @@ const TEXTES_ORIGINE = {
 };
 function migrerCours(rubriques) {
   const etape = lsLire("migrationCours", 0);
-  if (etape >= 4) return rubriques;
-  if (etape === 2 || etape === 3) {
-    const r3 = ajouterRubriquesV050(rubriques);
+  if (etape >= 5) return rubriques;
+  if (etape >= 2) {
+    const r3 = ajouterSousPagesEvaluation(etape === 4 ? rubriques : ajouterRubriquesV050(rubriques));
     lsEcrire("rubriques", r3);
-    lsEcrire("migrationCours", 4);
+    lsEcrire("migrationCours", 5);
     return r3;
   }
   const seed = Object.fromEntries(SEED_RUBRIQUES.filter((r) => TEXTES_ORIGINE[r.id]).map((r) => [r.id, r]));
@@ -1314,10 +1316,24 @@ function migrerCours(rubriques) {
     let k = 0;
     resultat = resultat.map((r) => (r.parentId === "echauffement" ? { ...r, parentId: null, ordre: nbRacines + k++ } : r));
   }
-  resultat = ajouterRubriquesV050(resultat);
+  resultat = ajouterSousPagesEvaluation(ajouterRubriquesV050(resultat));
   lsEcrire("rubriques", resultat);
-  lsEcrire("migrationCours", 4);
+  lsEcrire("migrationCours", 5);
   return resultat;
+}
+
+// v0.7.0 : sous-pages « Évaluation de fin de cycle » en Musculation et Course de durée,
+// ajoutées à la fin des sous-pages existantes (si la rubrique parente existe et que la page n'existe pas déjà).
+function ajouterSousPagesEvaluation(rubriques) {
+  let tout = rubriques;
+  ["musculation-evaluation", "course-duree-evaluation"].forEach((id) => {
+    const modele = SEED_RUBRIQUES.find((r) => r.id === id);
+    if (!modele || tout.some((r) => r.id === id) || !tout.some((r) => r.id === modele.parentId)) return;
+    const freres = tout.filter((r) => r.parentId === modele.parentId);
+    const ordre = freres.length ? Math.max(...freres.map((r) => r.ordre)) + 1 : 0;
+    tout = [...tout, { ...modele, ordre, page: { blocs: modele.page.blocs.map((b) => ({ ...JSON.parse(JSON.stringify(b)), id: uid() })) } }];
+  });
+  return tout;
 }
 
 // v0.5.0 / v0.6.0 : nouvelles rubriques « Course de durée », « Escalade », « Volley-ball », « Badminton » (après Musculation)

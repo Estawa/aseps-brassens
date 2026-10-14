@@ -1,5 +1,5 @@
 import React from "react";
-import { COURS_COURSE, COURS_ESCALADE, COURS_VOLLEY, COURS_BADMINTON } from "./cours-suite.js";
+import { COURS_COURSE, COURS_ESCALADE, COURS_VOLLEY, COURS_BADMINTON, COURS_EVAL_CA5 } from "./cours-suite.js";
 
 // =====================================================================
 // Contenus de cours prêts à l'emploi (bloc « Cours »)
@@ -634,7 +634,7 @@ En cas de question sur son poids ou son alimentation, le bon réflexe est d'en p
   },
 };
 
-export const COURS = { ...COURS_BASE, ...COURS_COURSE, ...COURS_ESCALADE, ...COURS_VOLLEY, ...COURS_BADMINTON };
+export const COURS = { ...COURS_BASE, ...COURS_COURSE, ...COURS_ESCALADE, ...COURS_VOLLEY, ...COURS_BADMINTON, ...COURS_EVAL_CA5 };
 
 export const PAGES_COURS = {
   "musculation-theorie": ["muscu-intro", "muscu-anatomie", "muscu-physiologie", "muscu-projets", "muscu-charges", "muscu-methodes", "muscu-seance", "muscu-recuperation", "muscu-connaissances", "muscu-lexique"],
@@ -647,14 +647,18 @@ export const PAGES_COURS = {
   "volley-evaluation": Object.keys(COURS_VOLLEY).filter((k) => k.startsWith("vb-eval")),
   "badminton-theorie": Object.keys(COURS_BADMINTON).filter((k) => !k.startsWith("bd-eval")),
   "badminton-evaluation": Object.keys(COURS_BADMINTON).filter((k) => k.startsWith("bd-eval")),
+  "musculation-evaluation": ["mu-eval-structure", "mu-eval-deroulement", "mu-eval-roles"],
+  "course-duree-evaluation": ["cd-eval-structure", "cd-eval-deroulement", "cd-eval-roles"],
 };
 
 // ---------- Petit moteur Markdown (titres, listes, tableaux, gras) ----------
 function enLigne(texte, cle) {
-  const morceaux = texte.split(/(\*\*[^*]+\*\*)/g);
-  return morceaux.map((m, i) =>
-    m.startsWith("**") && m.endsWith("**") ? <strong key={cle + "-" + i}>{m.slice(2, -2)}</strong> : <React.Fragment key={cle + "-" + i}>{m}</React.Fragment>
-  );
+  const morceaux = texte.split(/(\*\*[^*]+\*\*|\*[^*\s][^*]*\*)/g);
+  return morceaux.map((m, i) => {
+    if (m.startsWith("**") && m.endsWith("**") && m.length > 4) return <strong key={cle + "-" + i}>{m.slice(2, -2)}</strong>;
+    if (m.startsWith("*") && m.endsWith("*") && m.length > 2) return <em key={cle + "-" + i}>{m.slice(1, -1)}</em>;
+    return <React.Fragment key={cle + "-" + i}>{m}</React.Fragment>;
+  });
 }
 function cellules(ligne) {
   return ligne.trim().replace(/^\|/, "").replace(/\|$/, "").split("|").map((c) => c.trim());
@@ -686,19 +690,33 @@ export function Markdown({ md }) {
       );
       continue;
     }
-    if (/^- /.test(l)) {
+    if (/^- /.test(l) || /^\d+\. /.test(l)) {
+      const ordonnee = /^\d+\. /.test(l);
+      const motif = ordonnee ? /^\d+\. / : /^- /;
       const items = [];
-      while (i < lignes.length && /^- /.test(lignes[i])) { items.push(lignes[i].slice(2)); i++; }
-      sortie.push(<ul key={"u" + i} className="cours-liste">{items.map((t, k) => <li key={k}>{enLigne(t, k)}</li>)}</ul>);
+      while (i < lignes.length && motif.test(lignes[i])) {
+        const item = { texte: lignes[i].replace(motif, ""), sous: [] };
+        i++;
+        // sous-liste : lignes indentées « - » sous l'élément
+        while (i < lignes.length && /^\s+- /.test(lignes[i])) { item.sous.push(lignes[i].replace(/^\s+- /, "")); i++; }
+        items.push(item);
+      }
+      const Liste = ordonnee ? "ol" : "ul";
+      sortie.push(
+        <Liste key={"l" + i} className="cours-liste">
+          {items.map((it, k) => (
+            <li key={k}>
+              {enLigne(it.texte, k)}
+              {it.sous.length > 0 && <ul className="cours-liste">{it.sous.map((t, m) => <li key={m}>{enLigne(t, k + "-" + m)}</li>)}</ul>}
+            </li>
+          ))}
+        </Liste>
+      );
       continue;
     }
-    if (/^\d+\. /.test(l)) {
-      const items = [];
-      while (i < lignes.length && /^\d+\. /.test(lignes[i])) { items.push(lignes[i].replace(/^\d+\. /, "")); i++; }
-      sortie.push(<ol key={"o" + i} className="cours-liste">{items.map((t, k) => <li key={k}>{enLigne(t, k)}</li>)}</ol>);
-      continue;
-    }
-    const para = [];
+    // paragraphe (consomme toujours au moins une ligne pour ne jamais bloquer)
+    const para = [l.trim().replace(/^- /, "")];
+    i++;
     while (i < lignes.length && lignes[i].trim() && !/^(### |\||- |\d+\. )/.test(lignes[i].trim())) { para.push(lignes[i]); i++; }
     sortie.push(<p key={"p" + i} className="cours-p">{enLigne(para.join(" "), i)}</p>);
   }
