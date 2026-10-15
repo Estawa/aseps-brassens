@@ -8,7 +8,7 @@ import {
 import { COURS, BlocCours, blocsCoursPourPage } from "./cours.jsx";
 
 const uid = () => Math.random().toString(36).slice(2, 10);
-const APP_VERSION = "0.8.2";
+const APP_VERSION = "0.8.3";
 
 // ---------- Stockage local persistant ----------
 function lsLire(cle, defaut) {
@@ -78,7 +78,7 @@ function blocLiens(liens) { return { id: uid(), type: "liens", liens: liens.map(
 const PAGE_ACCUEIL_SEED = {
   blocs: [
     {
-      id: uid(), type: "bandeau", fondType: "couleur", fondCouleur: "#101826", fondImage: "", diaporamaImages: [],
+      id: uid(), type: "bandeau", fondType: "image", fondCouleur: "#101826", fondImage: "/bandeau-accueil.jpg", diaporamaImages: [],
       titre: "L'EPS au lycée Georges-Brassens",
       texte: "Ressources d'enseignement, actualités de l'Association Sportive et documents utiles, rassemblés par l'équipe EPS.",
     },
@@ -1292,6 +1292,22 @@ const TEXTES_ORIGINE = {
   "sportsante-alim": "Repères sur l'alimentation du sportif.",
   "echauffement": "Protocoles d'échauffement avant les séances d'EPS.",
 };
+// v0.8.3 : la photo du lycée est livrée avec le site (visible sur tous les appareils).
+// Une seule fois : si le bandeau d'accueil est encore sur la couleur par défaut, il prend la photo.
+// Un bandeau déjà personnalisé (photo importée, diaporama, autre couleur) n'est pas touché.
+function migrerBandeauAccueil(page) {
+  if (lsLire("migrationBandeau", 0) >= 1) return page;
+  const blocs = (page.blocs || []).map((b) =>
+    b.type === "bandeau" && b.fondType === "couleur" && (b.fondCouleur || "#101826").toLowerCase() === "#101826" && !b.fondImage
+      ? { ...b, fondType: "image", fondImage: "/bandeau-accueil.jpg" }
+      : b
+  );
+  const nouvelle = { ...page, blocs };
+  lsEcrire("pageAccueil", nouvelle);
+  lsEcrire("migrationBandeau", 1);
+  return nouvelle;
+}
+
 function migrerCours(rubriques) {
   const etape = lsLire("migrationCours", 0);
   if (etape >= 6) return rubriques;
@@ -1391,7 +1407,7 @@ function ajouterRubriquesV050(rubriques, aCreer) {
 // ---------- App racine ----------
 export default function App() {
   const [rubriques, setRubriquesState] = useState(() => migrerCours(lsLire("rubriques", SEED_RUBRIQUES)));
-  const [pageAccueil, setPageAccueilState] = useState(() => lsLire("pageAccueil", PAGE_ACCUEIL_SEED));
+  const [pageAccueil, setPageAccueilState] = useState(() => migrerBandeauAccueil(lsLire("pageAccueil", PAGE_ACCUEIL_SEED)));
   const [documents, setDocumentsState] = useState(() => lsLire("documents", []));
   const [liens, setLiensState] = useState(() => lsLire("liens", SEED_LIENS));
   const [pinAdmin] = useState(() => lsLire("pinAdmin", "1234"));

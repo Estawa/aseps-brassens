@@ -1,8 +1,13 @@
 # Site EPS — journal des changements
 
-Version actuelle : **0.8.2**
+Version actuelle : **0.8.3**
 
 ---
+
+### v0.8.3 — 15/10/2026
+- **Photo du lycée dans le bandeau d'accueil sur tous les appareils** : la photo est désormais
+  livrée avec le site (et non plus seulement stockée dans un téléphone). Un bandeau déjà
+  personnalisé n'est pas modifié.
 
 ### v0.8.2 — 15/10/2026
 - **Ordinateur : couleurs et repères** (téléphone inchangé) : tuiles des rubriques en couleurs
