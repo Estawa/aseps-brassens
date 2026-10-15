@@ -727,7 +727,9 @@ export function Markdown({ md }) {
 
 // ---------- Rendu d'un bloc « Cours » : carte repliable ----------
 export function BlocCours({ bloc, edition }) {
-  const partie = COURS[bloc.partie];
+  const base = COURS[bloc.partie];
+  // texte modifié depuis l'éditeur (sinon texte d'origine)
+  const partie = base && { ...base, titre: bloc.titrePerso ?? base.titre, md: bloc.mdPerso ?? base.md };
   if (!partie) return edition ? <div className="cours-carte" style={{ padding: 14, fontStyle: "italic", color: "#9a9384" }}>Partie de cours à choisir — clique pour la sélectionner</div> : null;
   if (edition) {
     return (

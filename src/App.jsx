@@ -8,7 +8,7 @@ import {
 import { COURS, BlocCours, blocsCoursPourPage } from "./cours.jsx";
 
 const uid = () => Math.random().toString(36).slice(2, 10);
-const APP_VERSION = "0.8.3";
+const APP_VERSION = "0.9.0";
 
 // ---------- Stockage local persistant ----------
 function lsLire(cle, defaut) {
@@ -982,9 +982,28 @@ function EditeurContenuBloc({ bloc, majBloc }) {
           <input type="checkbox" checked={!!bloc.ouvert} onChange={(e) => majBloc({ ouvert: e.target.checked })} />
           Partie dépliée à l'ouverture de la page
         </label>
-        <div style={{ fontSize: 11.5, color: "#9a9384", lineHeight: 1.45 }}>
-          Le texte de ces parties est intégré au site (tableaux compris). Pour le modifier, demande une mise à jour du site ; tu peux en revanche déplacer, retirer ou ajouter des blocs autour (photos, vidéos…).
-        </div>
+        {bloc.partie && COURS[bloc.partie] && (() => {
+          const orig = COURS[bloc.partie];
+          const modifie = bloc.titrePerso != null || bloc.mdPerso != null;
+          const cle = bloc.id + "-" + bloc.partie + "-" + (modifie ? "p" : "o");
+          return (
+            <div key={cle} style={{ display: "grid", gap: 8, borderTop: "1px solid var(--ligne)", paddingTop: 10 }}>
+              <div style={{ fontSize: 12, fontWeight: 700, color: "#4a4636" }}>Titre de la partie</div>
+              <input defaultValue={bloc.titrePerso ?? orig.titre} onBlur={(e) => { const v = e.target.value; if (v !== (bloc.titrePerso ?? orig.titre)) majBloc({ titrePerso: v === orig.titre ? null : v }); }} style={champStyle("100%")} />
+              <div style={{ fontSize: 12, fontWeight: 700, color: "#4a4636" }}>Texte de la partie</div>
+              <textarea defaultValue={bloc.mdPerso ?? orig.md} onBlur={(e) => { const v = e.target.value; if (v !== (bloc.mdPerso ?? orig.md)) majBloc({ mdPerso: v === orig.md ? null : v }); }} rows={16} style={{ ...champStyle("100%"), resize: "vertical", fontFamily: "ui-monospace, Menlo, Consolas, monospace", fontSize: 12.5, lineHeight: 1.5 }} />
+              <div style={{ fontSize: 11.5, color: "#6b6656", lineHeight: 1.55, background: "#faf9f6", border: "1px solid var(--ligne)", borderRadius: 8, padding: "8px 10px" }}>
+                <b>Mise en forme :</b> <code>### Sous-titre</code> · <code>**gras**</code> · <code>*italique*</code> · une ligne qui commence par <code>- </code> = liste à puces, <code>1. </code> = liste numérotée · tableau : <code>| Colonne 1 | Colonne 2 |</code> puis <code>|---|---|</code> puis une ligne par rangée.
+                <br />La modification est enregistrée quand tu cliques en dehors de la zone de texte.
+              </div>
+              {modifie && (
+                <button onClick={() => { if (confirm("Revenir au texte d'origine de cette partie ? Tes modifications seront perdues.")) majBloc({ titrePerso: null, mdPerso: null }); }} style={{ justifySelf: "start", display: "flex", alignItems: "center", gap: 6, background: "#fff", border: "1px solid var(--ligne)", borderRadius: 8, padding: "7px 10px", fontSize: 12, fontWeight: 600, color: "#6b6656", cursor: "pointer" }}>
+                  <Undo2 size={13} /> Revenir au texte d'origine
+                </button>
+              )}
+            </div>
+          );
+        })()}
       </div>
     );
   }

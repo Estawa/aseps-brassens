@@ -1,8 +1,15 @@
 # Site EPS — journal des changements
 
-Version actuelle : **0.8.3**
+Version actuelle : **0.9.0**
 
 ---
+
+### v0.9.0 — 15/10/2026
+- **Textes des cours modifiables depuis l'éditeur** (ordinateur et téléphone) : en cliquant sur
+  une partie de cours, le panneau affiche son titre et son texte complet, modifiables directement
+  (sous-titres, gras, listes, tableaux), avec un bouton « Revenir au texte d'origine ».
+- Rappel : tant que la synchronisation en ligne n'est pas en place, les modifications restent
+  sur l'appareil où elles sont faites.
 
 ### v0.8.3 — 15/10/2026
 - **Photo du lycée dans le bandeau d'accueil sur tous les appareils** : la photo est désormais
