@@ -1,8 +1,13 @@
 # Site EPS — journal des changements
 
-Version actuelle : **1.0.0**
+Version actuelle : **1.0.1**
 
 ---
+
+### v1.0.1 — 15/10/2026
+- Nouvelle photo du lycée, en meilleure qualité (1260 × 708), livrée avec le site.
+- Éditeur du bandeau : bouton « Photo du lycée » pour la remettre en fond en un clic
+  (plus légère pour la base en ligne qu'une photo importée).
 
 ### v1.0.0 — 15/10/2026
 - **Synchronisation en ligne** : le site est enregistré dans un espace séparé (collection

@@ -9,7 +9,7 @@ import { COURS, BlocCours, blocsCoursPourPage } from "./cours.jsx";
 import { ecouterSite, publierSite, syncDisponible } from "./sync.js";
 
 const uid = () => Math.random().toString(36).slice(2, 10);
-const APP_VERSION = "1.0.0";
+const APP_VERSION = "1.0.1";
 
 // ---------- Stockage local persistant ----------
 function lsLire(cle, defaut) {
@@ -938,6 +938,9 @@ function EditeurContenuBloc({ bloc, majBloc }) {
                 <input type="file" accept="image/*" onChange={(e) => e.target.files[0] && importerFond(e.target.files[0])} style={{ display: "none" }} />
                 <Upload size={13} /> Choisir une image
               </label>
+              <button onClick={() => majBloc({ fondImage: "/bandeau-accueil.jpg" })} style={{ display: "inline-flex", alignItems: "center", gap: 5, marginLeft: 12, background: "none", border: "none", padding: 0, fontSize: 12, fontWeight: 600, color: "var(--teal)", cursor: "pointer", fontFamily: "inherit" }}>
+                <ImageIcon size={13} /> Photo du lycée
+              </button>
               {bloc.fondImage && <img src={bloc.fondImage} alt="" style={{ display: "block", marginTop: 8, width: 100, height: 60, objectFit: "cover", borderRadius: 8, border: "1px solid var(--ligne)" }} />}
             </div>
           )}
