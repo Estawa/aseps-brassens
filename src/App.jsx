@@ -8,7 +8,7 @@ import {
 import { COURS, BlocCours, blocsCoursPourPage } from "./cours.jsx";
 
 const uid = () => Math.random().toString(36).slice(2, 10);
-const APP_VERSION = "0.8.0";
+const APP_VERSION = "0.8.1";
 
 // ---------- Stockage local persistant ----------
 function lsLire(cle, defaut) {
@@ -252,15 +252,15 @@ function RenduBloc({ bloc, edition = false }) {
     const fondImg = bloc.fondType === "image" && bloc.fondImage ? bloc.fondImage : null;
     const clair = !estFonce(bloc.fondType === "couleur" ? bloc.fondCouleur : "#101826");
     return (
-      <div style={{ position: "relative", minHeight: 200, height: "100%", display: "flex", alignItems: "flex-end", overflow: "hidden", borderRadius: 14, background: bloc.fondType === "couleur" ? (bloc.fondCouleur || "#101826") : "#101826" }}>
+      <div className="bandeau" style={{ position: "relative", minHeight: 200, height: "100%", display: "flex", alignItems: "flex-end", overflow: "hidden", borderRadius: 14, background: bloc.fondType === "couleur" ? (bloc.fondCouleur || "#101826") : "#101826" }}>
         {fondImg && <img src={fondImg} alt="" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }} />}
         {bloc.fondType === "diaporama" && bloc.diaporamaImages?.length > 0 && (
           <Diaporama images={bloc.diaporamaImages} vitesse={bloc.vitesse} style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }} />
         )}
         {(fondImg || bloc.fondType === "diaporama") && <div style={{ position: "absolute", inset: 0, background: "linear-gradient(180deg, rgba(16,24,38,0.15), rgba(16,24,38,0.75))" }} />}
-        <div style={{ position: "relative", padding: "34px 24px 28px", width: "100%", textAlign: bloc.alignTexte || "left", color: clair ? "#101826" : "#fff" }}>
-          {bloc.titre && <div className="display" style={{ fontSize: 28, fontWeight: 600, lineHeight: 1.15 }}>{bloc.titre}</div>}
-          {bloc.texte && <div style={{ marginTop: 8, fontSize: 14, opacity: 0.85, maxWidth: bloc.alignTexte === "center" ? "none" : 560 }}>{bloc.texte}</div>}
+        <div className="bandeau-int" style={{ position: "relative", padding: "34px 24px 28px", width: "100%", textAlign: bloc.alignTexte || "left", color: clair ? "#101826" : "#fff" }}>
+          {bloc.titre && <div className="display bandeau-titre" style={{ fontSize: 28, fontWeight: 600, lineHeight: 1.15 }}>{bloc.titre}</div>}
+          {bloc.texte && <div className="bandeau-texte" style={{ marginTop: 8, fontSize: 14, opacity: 0.85, maxWidth: bloc.alignTexte === "center" ? "none" : 560 }}>{bloc.texte}</div>}
           {edition && !bloc.titre && !bloc.texte && <div style={{ opacity: 0.6, fontStyle: "italic", fontSize: 13 }}>Bandeau sans titre — clique pour le remplir</div>}
         </div>
       </div>
@@ -268,7 +268,7 @@ function RenduBloc({ bloc, edition = false }) {
   }
   if (bloc.type === "texte") {
     if (!bloc.texte) return edition ? <VideEdition texte="Bloc texte vide — clique pour écrire" /> : null;
-    return <div style={{ padding: "4px 2px", fontSize: 14.5, lineHeight: 1.65, color: "#101826", whiteSpace: "pre-wrap", textAlign: bloc.alignTexte || "left" }}>{bloc.texte}</div>;
+    return <div className="texte-bloc" style={{ padding: "4px 2px", fontSize: 14.5, lineHeight: 1.65, color: "#101826", whiteSpace: "pre-wrap", textAlign: bloc.alignTexte || "left" }}>{bloc.texte}</div>;
   }
   if (bloc.type === "image") {
     if (!bloc.url) return edition ? <VideEdition texte="Photo à choisir — clique pour l'importer" /> : null;
@@ -302,7 +302,7 @@ function RenduBloc({ bloc, edition = false }) {
     return (
       <div style={{ display: "flex", flexWrap: "wrap", gap: 8, justifyContent: justify }}>
         {bloc.liens.map((l) => (
-          <a key={l.id} href={l.url} target="_blank" rel="noreferrer" style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 12.5, fontWeight: 600, color: "#101826", background: "#fff", border: "1px solid var(--ligne)", borderRadius: 8, padding: "7px 10px", textDecoration: "none" }}>
+          <a key={l.id} className="lien-bouton" href={l.url} target="_blank" rel="noreferrer" style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 12.5, fontWeight: 600, color: "#101826", background: "#fff", border: "1px solid var(--ligne)", borderRadius: 8, padding: "7px 10px", textDecoration: "none" }}>
             <ExternalLink size={12} /> {l.label}
           </a>
         ))}
@@ -329,10 +329,10 @@ function EnTete({ arbre, ecran, allerA, adminDeverrouille, allerAdmin }) {
   const [menuOuvert, setMenuOuvert] = useState(false);
   return (
     <header style={{ background: "var(--ink)", color: "#fff", position: "sticky", top: 0, zIndex: 20 }}>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 20px", maxWidth: 1140, margin: "0 auto" }}>
+      <div className="en-tete-int" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 20px", maxWidth: 1140, margin: "0 auto" }}>
         <button onClick={() => { allerA({ type: "accueil" }); setMenuOuvert(false); }} style={{ background: "none", border: "none", color: "#fff", cursor: "pointer", display: "flex", flexDirection: "column", alignItems: "flex-start", padding: 0 }}>
-          <span className="display" style={{ fontSize: 20, fontWeight: 600, lineHeight: 1 }}>ASEPS</span>
-          <span style={{ fontSize: 10.5, opacity: 0.65, letterSpacing: 0.4 }}>Lycée Georges-Brassens</span>
+          <span className="display logo-titre" style={{ fontSize: 20, fontWeight: 600, lineHeight: 1 }}>ASEPS</span>
+          <span className="logo-sous" style={{ fontSize: 10.5, opacity: 0.65, letterSpacing: 0.4 }}>Lycée Georges-Brassens</span>
         </button>
         <button onClick={() => setMenuOuvert((v) => !v)} style={{ background: "none", border: "1px solid rgba(255,255,255,0.25)", borderRadius: 8, color: "#fff", padding: 7, cursor: "pointer" }}>
           <Menu size={18} />
@@ -381,14 +381,15 @@ function PageAccueil({ pageAccueil, arbre, liens, allerA, zoneBlocs }) {
     <div className="page-contenu">
       {zoneBlocs || <RenduBlocs blocs={pageAccueil.blocs} />}
       <div style={{ paddingTop: 22 }}>
-        <div style={{ fontSize: 12.5, fontWeight: 700, color: "#6b6656", textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 10 }}>
+        <div className="titre-section" style={{ fontSize: 12.5, fontWeight: 700, color: "#6b6656", textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 10 }}>
           Enseignements
         </div>
-        <div style={{ display: "grid", gap: 10, gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))" }}>
+        <div className="grille-tuiles" style={{ display: "grid", gap: 10, gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))" }}>
           {arbre.map((r, i) => (
             <button
               key={r.id}
               onClick={() => allerA({ type: "rubrique", id: r.id })}
+              className="tuile"
               style={{
                 textAlign: "left", border: "1px solid var(--ligne)", borderRadius: 12, padding: "14px 16px",
                 background: TUILE_COULEURS[i % TUILE_COULEURS.length], cursor: "pointer",
@@ -396,8 +397,8 @@ function PageAccueil({ pageAccueil, arbre, liens, allerA, zoneBlocs }) {
               }}
             >
               <div>
-                <div className="display" style={{ fontSize: 16, fontWeight: 600, color: "#101826" }}>{r.titre}</div>
-                {r.enfants.length > 0 && <div style={{ fontSize: 11.5, color: "#6b6656", marginTop: 2 }}>{r.enfants.length} page{r.enfants.length > 1 ? "s" : ""}</div>}
+                <div className="display tuile-titre" style={{ fontSize: 16, fontWeight: 600, color: "#101826" }}>{r.titre}</div>
+                {r.enfants.length > 0 && <div className="tuile-sous" style={{ fontSize: 11.5, color: "#6b6656", marginTop: 2 }}>{r.enfants.length} page{r.enfants.length > 1 ? "s" : ""}</div>}
               </div>
               <ChevronRight size={18} color="#101826" />
             </button>
@@ -406,12 +407,12 @@ function PageAccueil({ pageAccueil, arbre, liens, allerA, zoneBlocs }) {
 
         {liens.length > 0 && (
           <>
-            <div style={{ fontSize: 12.5, fontWeight: 700, color: "#6b6656", textTransform: "uppercase", letterSpacing: 0.5, margin: "22px 0 10px" }}>
+            <div className="titre-section" style={{ fontSize: 12.5, fontWeight: 700, color: "#6b6656", textTransform: "uppercase", letterSpacing: 0.5, margin: "22px 0 10px" }}>
               Liens
             </div>
             <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
               {liens.map((l) => (
-                <a key={l.id} href={l.url} target="_blank" rel="noreferrer" style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 12.5, fontWeight: 600, color: "#101826", background: "#fff", border: "1px solid var(--ligne)", borderRadius: 8, padding: "7px 10px", textDecoration: "none" }}>
+                <a key={l.id} className="lien-bouton" href={l.url} target="_blank" rel="noreferrer" style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 12.5, fontWeight: 600, color: "#101826", background: "#fff", border: "1px solid var(--ligne)", borderRadius: 8, padding: "7px 10px", textDecoration: "none" }}>
                   <ExternalLink size={12} /> {l.label}
                 </a>
               ))}
@@ -430,22 +431,22 @@ function PageRubrique({ rubrique, sousRubriques, allerA, parent, zoneBlocs }) {
     <div className="page-contenu">
       {parent && (
         <div style={{ paddingBottom: 4 }}>
-          <button onClick={() => allerA({ type: "rubrique", id: parent.id })} style={{ display: "flex", alignItems: "center", gap: 4, background: "none", border: "none", color: "#6b6656", fontSize: 12, cursor: "pointer", padding: 0 }}>
+          <button className="fil-ariane" onClick={() => allerA({ type: "rubrique", id: parent.id })} style={{ display: "flex", alignItems: "center", gap: 4, background: "none", border: "none", color: "#6b6656", fontSize: 12, cursor: "pointer", padding: 0 }}>
             <ArrowLeft size={13} /> {parent.titre}
           </button>
         </div>
       )}
       <div style={{ paddingBottom: 14 }}>
-        <div className="display" style={{ fontSize: 24, fontWeight: 600 }}>{rubrique.titre}</div>
+        <div className="display titre-page" style={{ fontSize: 24, fontWeight: 600 }}>{rubrique.titre}</div>
       </div>
 
       {zoneBlocs || <RenduBlocs blocs={rubrique.page.blocs} />}
 
       {sousRubriques.length > 0 && (
-        <div style={{ display: "grid", gap: 8, marginTop: 18, gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))" }}>
+        <div className="grille-sous" style={{ display: "grid", gap: 8, marginTop: 18, gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))" }}>
           {sousRubriques.map((s) => (
-            <button key={s.id} onClick={() => allerA({ type: "rubrique", id: s.id })} style={{ textAlign: "left", border: "1px solid var(--ligne)", borderRadius: 10, padding: "11px 14px", background: "#fff", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-              <span style={{ fontSize: 13.5, fontWeight: 600 }}>{s.titre}</span>
+            <button key={s.id} className="carte-sous" onClick={() => allerA({ type: "rubrique", id: s.id })} style={{ textAlign: "left", border: "1px solid var(--ligne)", borderRadius: 10, padding: "11px 14px", background: "#fff", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+              <span className="carte-sous-titre" style={{ fontSize: 13.5, fontWeight: 600 }}>{s.titre}</span>
               <ChevronRight size={16} color="#6b6656" />
             </button>
           ))}
@@ -463,7 +464,7 @@ function PageRubrique({ rubrique, sousRubriques, allerA, parent, zoneBlocs }) {
 function PageDocuments({ documents }) {
   return (
     <div className="page-contenu">
-      <div className="display" style={{ fontSize: 22, fontWeight: 600, marginBottom: 14 }}>Documents</div>
+      <div className="display titre-page" style={{ fontSize: 22, fontWeight: 600, marginBottom: 14 }}>Documents</div>
       {documents.length === 0 ? (
         <div style={{ color: "#9a9384", fontSize: 13, fontStyle: "italic" }}>Aucun document disponible pour le moment.</div>
       ) : (

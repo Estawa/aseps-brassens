@@ -358,3 +358,57 @@ details[open] > .cours-titre { border-bottom: 1px solid var(--ligne); }
     margin-bottom: 1px;
   }
 }
+
+/* ---------- Affichage ordinateur (écrans larges) ----------
+   Le téléphone garde sa mise en page ; sur ordinateur, tout est agrandi
+   et aéré pour remplir l'écran au lieu de rester « en miniature ». */
+.tuile, .carte-sous, .lien-bouton { transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease; }
+
+@media (min-width: 761px) {
+  .page-contenu { padding: 32px 32px 0; }
+  .en-tete-int { padding: 18px 32px !important; }
+  .logo-titre { font-size: 28px !important; }
+  .logo-sous { font-size: 13px !important; margin-top: 3px; }
+
+  /* Bandeau d'accueil */
+  .bandeau { min-height: 340px !important; border-radius: 20px !important; }
+  .bandeau-int { padding: 56px 52px 46px !important; }
+  .bandeau-titre { font-size: 50px !important; line-height: 1.08 !important; }
+  .bandeau-texte { font-size: 18.5px !important; line-height: 1.5; margin-top: 14px !important; max-width: 720px !important; }
+
+  /* Titres de section (« Enseignements », « Liens ») */
+  .titre-section { font-size: 14.5px !important; letter-spacing: 1.2px !important; margin-bottom: 16px !important; }
+
+  /* Tuiles des rubriques : 3 par ligne, grandes et colorées */
+  .grille-tuiles { grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)) !important; gap: 18px !important; }
+  .tuile { min-height: 124px; padding: 26px 28px !important; border-radius: 18px !important; }
+  .tuile:hover { transform: translateY(-3px); box-shadow: 0 12px 26px rgba(16, 24, 38, 0.12); border-color: transparent !important; }
+  .tuile-titre { font-size: 24px !important; }
+  .tuile-sous { font-size: 14.5px !important; margin-top: 6px !important; }
+
+  /* Pages de rubrique */
+  .fil-ariane { font-size: 14.5px !important; margin-bottom: 6px; }
+  .titre-page { font-size: 40px !important; }
+  .grille-sous { grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)) !important; gap: 14px !important; margin-top: 26px !important; }
+  .carte-sous { padding: 22px 24px !important; border-radius: 14px !important; }
+  .carte-sous:hover { transform: translateY(-2px); box-shadow: 0 10px 22px rgba(16, 24, 38, 0.1); border-color: var(--piste) !important; }
+  .carte-sous-titre { font-size: 18px !important; }
+
+  /* Texte et liens */
+  .texte-bloc { font-size: 17px !important; line-height: 1.7 !important; }
+  .lien-bouton { font-size: 14.5px !important; padding: 10px 14px !important; border-radius: 10px !important; }
+  .lien-bouton:hover { border-color: var(--piste) !important; color: var(--piste) !important; }
+
+  /* Cours (parties repliables) */
+  .cours-titre { font-size: 21px; padding: 18px 22px; }
+  .cours-corps { font-size: 16.5px; line-height: 1.7; padding: 10px 26px 24px; }
+  .cours-h { font-size: 19px; margin-top: 24px; }
+  .cours-table { font-size: 15px; }
+  .cours-table th, .cours-table td { padding: 10px 14px; }
+}
+
+/* Très grands écrans */
+@media (min-width: 1400px) {
+  .page-contenu { max-width: 1280px; }
+  .en-tete-int { max-width: 1280px !important; }
+}

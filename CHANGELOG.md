@@ -1,8 +1,14 @@
 # Site EPS — journal des changements
 
-Version actuelle : **0.8.0**
+Version actuelle : **0.8.1**
 
 ---
+
+### v0.8.1 — 15/10/2026
+- **Affichage ordinateur repensé** (le téléphone ne change pas) : en-tête plus grand, bandeau
+  d'accueil haut avec grand titre, tuiles des rubriques larges (3 par ligne) avec effet au survol,
+  titres de pages, cartes des sous-pages, textes, liens et cours agrandis pour remplir l'écran.
+  Sur très grand écran, la largeur utile passe à 1280 px.
 
 ### v0.8.0 — 14/10/2026
 - **Nouvelle rubrique « Gymnastique »** (sol + mini-trampoline, code UNSS 2024-2028, en lien avec Gym Pro) :
