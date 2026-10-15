@@ -8,7 +8,7 @@ import {
 import { COURS, BlocCours, blocsCoursPourPage } from "./cours.jsx";
 
 const uid = () => Math.random().toString(36).slice(2, 10);
-const APP_VERSION = "0.8.1";
+const APP_VERSION = "0.8.2";
 
 // ---------- Stockage local persistant ----------
 function lsLire(cle, defaut) {
@@ -334,9 +334,16 @@ function EnTete({ arbre, ecran, allerA, adminDeverrouille, allerAdmin }) {
           <span className="display logo-titre" style={{ fontSize: 20, fontWeight: 600, lineHeight: 1 }}>ASEPS</span>
           <span className="logo-sous" style={{ fontSize: 10.5, opacity: 0.65, letterSpacing: 0.4 }}>Lycée Georges-Brassens</span>
         </button>
+        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+        {ecran.type !== "accueil" && (
+          <button className="btn-accueil" onClick={() => { allerA({ type: "accueil" }); setMenuOuvert(false); }}>
+            <Home size={17} /> Accueil
+          </button>
+        )}
         <button onClick={() => setMenuOuvert((v) => !v)} style={{ background: "none", border: "1px solid rgba(255,255,255,0.25)", borderRadius: 8, color: "#fff", padding: 7, cursor: "pointer" }}>
           <Menu size={18} />
         </button>
+        </div>
       </div>
       {menuOuvert && (
         <nav style={{ borderTop: "1px solid rgba(255,255,255,0.12)", padding: "6px 10px 12px", maxWidth: 1140, margin: "0 auto" }}>
@@ -429,8 +436,14 @@ const TUILE_COULEURS = ["var(--piste-soft)", "var(--teal-soft)", "#fdeecb", "#e6
 function PageRubrique({ rubrique, sousRubriques, allerA, parent, zoneBlocs }) {
   return (
     <div className="page-contenu">
+      {/* Fil d'Ariane ordinateur : Accueil › Rubrique › Page */}
+      <nav className="fil-ordi">
+        <button onClick={() => allerA({ type: "accueil" })}><Home size={15} /> Accueil</button>
+        {parent && (<><span className="sep">›</span><button onClick={() => allerA({ type: "rubrique", id: parent.id })}>{parent.titre}</button></>)}
+        <span className="sep">›</span><span className="actuel">{rubrique.titre}</span>
+      </nav>
       {parent && (
-        <div style={{ paddingBottom: 4 }}>
+        <div className="fil-tel" style={{ paddingBottom: 4 }}>
           <button className="fil-ariane" onClick={() => allerA({ type: "rubrique", id: parent.id })} style={{ display: "flex", alignItems: "center", gap: 4, background: "none", border: "none", color: "#6b6656", fontSize: 12, cursor: "pointer", padding: 0 }}>
             <ArrowLeft size={13} /> {parent.titre}
           </button>

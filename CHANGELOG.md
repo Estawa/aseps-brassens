@@ -1,8 +1,15 @@
 # Site EPS — journal des changements
 
-Version actuelle : **0.8.1**
+Version actuelle : **0.8.2**
 
 ---
+
+### v0.8.2 — 15/10/2026
+- **Ordinateur : couleurs et repères** (téléphone inchangé) : tuiles des rubriques en couleurs
+  franches avec bande colorée, sous-pages et parties de cours repliables bien identifiables
+  (bordure orange, bouton rond pour ouvrir/fermer), liens en couleur, titres de section en orange.
+- **Retour à l'accueil** : bouton « Accueil » dans l'en-tête et fil d'Ariane
+  (Accueil › Rubrique › Page) en haut de chaque page, sur ordinateur.
 
 ### v0.8.1 — 15/10/2026
 - **Affichage ordinateur repensé** (le téléphone ne change pas) : en-tête plus grand, bandeau

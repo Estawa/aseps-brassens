@@ -412,3 +412,60 @@ details[open] > .cours-titre { border-bottom: 1px solid var(--ligne); }
   .page-contenu { max-width: 1280px; }
   .en-tete-int { max-width: 1280px !important; }
 }
+
+/* ---------- v0.8.2 : couleurs et repères sur ordinateur ---------- */
+.fil-ordi, .btn-accueil { display: none; }
+
+@media (min-width: 761px) {
+  /* Fond légèrement teinté, comme sur le téléphone, mais assez marqué pour un écran de PC */
+  body { background: #f1ede4; }
+  header { border-bottom: 4px solid var(--piste); }
+
+  /* Bouton « Accueil » toujours visible dans l'en-tête */
+  .btn-accueil {
+    display: flex; align-items: center; gap: 8px;
+    background: var(--piste); color: #fff; border: none; border-radius: 10px;
+    padding: 10px 16px; font-size: 15px; font-weight: 700; cursor: pointer; font-family: inherit;
+  }
+  .btn-accueil:hover { background: #ff8f4d; }
+
+  /* Fil d'Ariane : Accueil › Rubrique › Page */
+  .fil-tel { display: none; }
+  .fil-ordi { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; font-size: 15px; }
+  .fil-ordi button {
+    display: flex; align-items: center; gap: 6px; background: #fff; border: 1.5px solid var(--piste);
+    color: var(--ink); border-radius: 999px; padding: 6px 14px; font-weight: 600; cursor: pointer; font-family: inherit; font-size: 14.5px;
+  }
+  .fil-ordi button:hover { background: var(--piste); color: #fff; }
+  .fil-ordi .sep { color: var(--piste); font-weight: 700; font-size: 18px; }
+  .fil-ordi .actuel { color: #6b6656; font-weight: 600; }
+
+  /* Titres de section en orange */
+  .titre-section { color: var(--piste) !important; }
+
+  /* Tuiles : couleurs franches + bande colorée à gauche */
+  .tuile { border: none !important; border-left: 8px solid var(--piste) !important; }
+  .grille-tuiles .tuile:nth-child(4n+1) { background: #ffd6bb !important; border-left-color: #ff7a29 !important; }
+  .grille-tuiles .tuile:nth-child(4n+2) { background: #bdeee6 !important; border-left-color: #12a191 !important; }
+  .grille-tuiles .tuile:nth-child(4n+3) { background: #fbe2a6 !important; border-left-color: #e0a100 !important; }
+  .grille-tuiles .tuile:nth-child(4n+4) { background: #d6d6f8 !important; border-left-color: #6464d6 !important; }
+  .tuile svg { width: 26px; height: 26px; }
+
+  /* Cartes des sous-pages : bien visibles comme des boutons */
+  .carte-sous { background: #fff !important; border: 2px solid #f3c6a6 !important; border-left: 8px solid var(--piste) !important; }
+  .carte-sous svg { color: var(--piste); stroke: var(--piste); width: 22px; height: 22px; }
+  .carte-sous:hover { background: var(--piste-soft) !important; }
+
+  /* Parties de cours repliables : bandeau coloré + bouton rond */
+  .cours-carte { border: 2px solid #f3c6a6; }
+  .cours-titre { background: var(--piste-soft); transition: background 0.15s; }
+  .cours-titre:hover { background: #ffd2b3; }
+  .cours-chevron {
+    display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0;
+    width: 32px; height: 32px; border-radius: 50%; background: var(--piste); color: #fff; font-size: 18px;
+  }
+  details[open] > .cours-titre { background: #ffd2b3; }
+
+  /* Liens externes en couleur */
+  .lien-bouton { border: 1.5px solid var(--teal) !important; background: var(--teal-soft) !important; }
+}
