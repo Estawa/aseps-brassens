@@ -1,8 +1,14 @@
 # Site EPS — journal des changements
 
-Version actuelle : **1.1.0**
+Version actuelle : **1.1.1**
 
 ---
+
+### v1.1.1 — 15/10/2026
+- Bouton « Se déconnecter » en bas à droite, à côté de « Modifier cette page », pour quitter
+  l'administration d'un clic (les boutons disparaissent alors et le site s'affiche comme pour
+  un visiteur).
+- Numéro de version plus lisible en bas de page.
 
 ### v1.1.0 — 15/10/2026
 - **Nouvel onglet « Accès »** dans l'administration :

@@ -9,7 +9,7 @@ import { COURS, BlocCours, blocsCoursPourPage } from "./cours.jsx";
 import { ecouterSite, publierSite, syncDisponible, ecrireAcces, empreintePin } from "./sync.js";
 
 const uid = () => Math.random().toString(36).slice(2, 10);
-const APP_VERSION = "1.1.0";
+const APP_VERSION = "1.1.1";
 
 // ---------- Stockage local persistant ----------
 function lsLire(cle, defaut) {
@@ -1853,13 +1853,24 @@ export default function App() {
         ASEPS by C. Guilhem · v{APP_VERSION}
       </div>
 
-      {adminDeverrouille && pageEditable && !modeEdition && (
-        <button
-          onClick={() => setModeEdition(true)}
-          style={{ position: "fixed", right: 18, bottom: 18, zIndex: 30, ...boutonPrimaire, padding: "11px 16px", fontSize: 13.5, borderRadius: 12, boxShadow: "0 8px 24px rgba(255,122,41,0.35)" }}
-        >
-          <Pencil size={15} /> Modifier cette page
-        </button>
+      {adminDeverrouille && !modeEdition && (
+        <div style={{ position: "fixed", right: 18, bottom: 18, zIndex: 30, display: "flex", gap: 8, alignItems: "center" }}>
+          {pageEditable && (
+            <button
+              onClick={() => setModeEdition(true)}
+              style={{ ...boutonPrimaire, padding: "11px 16px", fontSize: 13.5, borderRadius: 12, boxShadow: "0 8px 24px rgba(255,122,41,0.35)" }}
+            >
+              <Pencil size={15} /> Modifier cette page
+            </button>
+          )}
+          <button
+            onClick={() => { setRole(null); setModeEdition(false); setSelectionId(null); }}
+            title="Se déconnecter (quitter l'administration)"
+            style={{ display: "flex", alignItems: "center", gap: 6, background: "#101826", color: "#fff", border: "none", borderRadius: 12, padding: "11px 14px", fontSize: 13.5, fontWeight: 700, cursor: "pointer", fontFamily: "inherit", boxShadow: "0 8px 24px rgba(16,24,38,0.3)" }}
+          >
+            <Lock size={15} /> Se déconnecter
+          </button>
+        </div>
       )}
       {edition && (
         <BarreEdition
