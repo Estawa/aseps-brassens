@@ -574,7 +574,8 @@ function AdminAcces({ acces, enregistrerAcces }) {
     if (!valide(p)) return alert("Le code doit comporter exactement 4 chiffres.");
     executer(async () => {
       if (await dejaPris(p, c.id)) throw new Error("ce code est déjà utilisé");
-      await enregistrerAcces({ ...acces, collegues: collegues.map((x) => x.id === c.id ? { ...x, pinHash: await empreintePin(p) } : x) });
+      const h = await empreintePin(p);
+      await enregistrerAcces({ ...acces, collegues: collegues.map((x) => x.id === c.id ? { ...x, pinHash: h } : x) });
     }, `✅ Nouveau code de ${c.nom} : ${p}`);
   };
   const retirer = (c) => {

@@ -12,6 +12,7 @@ Version actuelle : **1.1.0**
   que la rubrique « Association Sportive du Lycée » et ses pages (pas l'accueil, les autres
   rubriques, les documents, les liens ni les codes).
 - Les codes ne sont pas enregistrés en clair dans la base en ligne (empreinte SHA-256).
+- Correctif : la version 1.1.0 ne se compilait pas (erreur de syntaxe), elle est maintenant en ligne.
 
 ### v1.0.1 — 15/10/2026
 - Nouvelle photo du lycée, en meilleure qualité (1260 × 708), livrée avec le site.
