@@ -1,8 +1,17 @@
 # Site EPS — journal des changements
 
-Version actuelle : **1.0.1**
+Version actuelle : **1.1.0**
 
 ---
+
+### v1.1.0 — 15/10/2026
+- **Nouvel onglet « Accès »** dans l'administration :
+  - changement du code administrateur (4 chiffres, saisi deux fois), valable sur tous les appareils ;
+  - codes personnels des collègues : ajout (nom + code), nouveau code, retrait de l'accès.
+- **Accès collègue** : avec son code, un collègue arrive sur son espace et ne peut modifier
+  que la rubrique « Association Sportive du Lycée » et ses pages (pas l'accueil, les autres
+  rubriques, les documents, les liens ni les codes).
+- Les codes ne sont pas enregistrés en clair dans la base en ligne (empreinte SHA-256).
 
 ### v1.0.1 — 15/10/2026
 - Nouvelle photo du lycée, en meilleure qualité (1260 × 708), livrée avec le site.

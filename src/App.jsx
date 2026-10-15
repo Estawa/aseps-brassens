@@ -6,10 +6,10 @@ import {
   ChevronLeft, Copy, Undo2, Monitor, Smartphone, Check, Square, BookOpen,
 } from "lucide-react";
 import { COURS, BlocCours, blocsCoursPourPage } from "./cours.jsx";
-import { ecouterSite, publierSite, syncDisponible } from "./sync.js";
+import { ecouterSite, publierSite, syncDisponible, ecrireAcces, empreintePin } from "./sync.js";
 
 const uid = () => Math.random().toString(36).slice(2, 10);
-const APP_VERSION = "1.0.1";
+const APP_VERSION = "1.1.0";
 
 // ---------- Stockage local persistant ----------
 function lsLire(cle, defaut) {
@@ -496,13 +496,15 @@ function PageDocuments({ documents }) {
 }
 
 // ---------- Cadenas d'accès admin ----------
-function CadenasAdmin({ pinAttendu, onDeverrouille, onAnnuler }) {
+function CadenasAdmin({ verifier, onDeverrouille, onAnnuler }) {
   const [pin, setPin] = useState("");
   const [erreur, setErreur] = useState(false);
-  const valider = (val) => {
+  const valider = async (val) => {
     const suivant = pin + val;
     if (suivant.length < 4) { setPin(suivant); return; }
-    if (suivant === pinAttendu) { onDeverrouille(); }
+    setPin(suivant);
+    const role = await verifier(suivant);
+    if (role) { onDeverrouille(role); }
     else { setErreur(true); setTimeout(() => { setPin(""); setErreur(false); }, 450); }
   };
   return (
@@ -511,7 +513,7 @@ function CadenasAdmin({ pinAttendu, onDeverrouille, onAnnuler }) {
         <ArrowLeft size={15} /> Retour
       </button>
       <Lock size={26} style={{ marginBottom: 10 }} />
-      <div style={{ fontSize: 13, opacity: 0.75, marginBottom: 20 }}>Code d'administration</div>
+      <div style={{ fontSize: 13, opacity: 0.75, marginBottom: 20 }}>Code d'accès (administrateur ou collègue)</div>
       <div style={{ display: "flex", gap: 12, marginBottom: 26 }}>
         {[0, 1, 2, 3].map((i) => (
           <div key={i} style={{ width: 13, height: 13, borderRadius: "50%", background: i < pin.length ? "#fff" : "rgba(255,255,255,0.25)", border: erreur ? "1.5px solid var(--piste)" : "none" }} />
@@ -521,6 +523,131 @@ function CadenasAdmin({ pinAttendu, onDeverrouille, onAnnuler }) {
         {["1","2","3","4","5","6","7","8","9","","0","⌫"].map((d, i) => d === "" ? <div key={i} /> : (
           <button key={i} onClick={() => d === "⌫" ? setPin(pin.slice(0, -1)) : valider(d)} style={{ width: 60, height: 60, borderRadius: "50%", border: "1px solid rgba(255,255,255,0.25)", background: "rgba(255,255,255,0.06)", color: "#fff", fontSize: 19, cursor: "pointer" }}>{d}</button>
         ))}
+      </div>
+    </div>
+  );
+}
+
+// ---------- Espace admin : codes d'accès ----------
+function AdminAcces({ acces, enregistrerAcces }) {
+  const [pin1, setPin1] = useState("");
+  const [pin2, setPin2] = useState("");
+  const [nom, setNom] = useState("");
+  const [pinCol, setPinCol] = useState("");
+  const [occupe, setOccupe] = useState(false);
+  const collegues = acces.collegues || [];
+  const valide = (p) => /^\d{4}$/.test(p);
+  const dejaPris = async (p, saufId) => {
+    const h = await empreintePin(p);
+    if (acces.pinAdmin && h === acces.pinAdmin) return true;
+    return collegues.some((c) => c.pinHash === h && c.id !== saufId);
+  };
+  const executer = async (action, succes) => {
+    setOccupe(true);
+    try { await action(); if (succes) alert(succes); }
+    catch (e) { alert("⚠️ Enregistrement impossible : " + (e.message || e) + "\nVérifie la connexion internet."); }
+    setOccupe(false);
+  };
+  const changerPinAdmin = () => {
+    if (!valide(pin1)) return alert("Le code doit comporter exactement 4 chiffres.");
+    if (pin1 !== pin2) return alert("Les deux codes saisis ne sont pas identiques.");
+    executer(async () => {
+      const h = await empreintePin(pin1);
+      if (collegues.some((c) => c.pinHash === h)) throw new Error("ce code est déjà celui d'un collègue");
+      await enregistrerAcces({ ...acces, pinAdmin: h });
+      setPin1(""); setPin2("");
+    }, "✅ Nouveau code administrateur enregistré. Il fonctionne sur tous les appareils (l'ancien code ne marche plus).");
+  };
+  const ajouterCollegue = () => {
+    if (!nom.trim()) return alert("Indique le nom du collègue.");
+    if (!valide(pinCol)) return alert("Le code doit comporter exactement 4 chiffres.");
+    executer(async () => {
+      if (await dejaPris(pinCol)) throw new Error("ce code est déjà utilisé (par toi ou un autre collègue)");
+      const c = { id: uid(), nom: nom.trim(), pinHash: await empreintePin(pinCol) };
+      await enregistrerAcces({ ...acces, collegues: [...collegues, c] });
+      setNom(""); setPinCol("");
+    }, `✅ ${nom.trim()} peut maintenant se connecter avec le code ${pinCol}. Note-le et transmets-le-lui : il n'est plus affiché ensuite.`);
+  };
+  const nouveauCode = (c) => {
+    const p = prompt(`Nouveau code (4 chiffres) pour ${c.nom} :`);
+    if (p == null) return;
+    if (!valide(p)) return alert("Le code doit comporter exactement 4 chiffres.");
+    executer(async () => {
+      if (await dejaPris(p, c.id)) throw new Error("ce code est déjà utilisé");
+      await enregistrerAcces({ ...acces, collegues: collegues.map((x) => x.id === c.id ? { ...x, pinHash: await empreintePin(p) } : x) });
+    }, `✅ Nouveau code de ${c.nom} : ${p}`);
+  };
+  const retirer = (c) => {
+    if (!confirm(`Retirer l'accès de ${c.nom} ?`)) return;
+    executer(() => enregistrerAcces({ ...acces, collegues: collegues.filter((x) => x.id !== c.id) }));
+  };
+  const titre = { fontSize: 12.5, fontWeight: 700, color: "#6b6656", textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 8 };
+  const carte = { background: "#fff", border: "1px solid var(--ligne)", borderRadius: 12, padding: 14 };
+  const champ = { padding: "9px 10px", borderRadius: 8, border: "1px solid var(--ligne)", fontSize: 14, fontFamily: "inherit", width: 120, letterSpacing: 3 };
+  const bouton = { background: "var(--piste)", color: "#fff", border: "none", borderRadius: 8, padding: "9px 13px", fontWeight: 700, fontSize: 13, cursor: "pointer", fontFamily: "inherit" };
+  const petit = { background: "#fff", border: "1px solid var(--ligne)", borderRadius: 7, padding: "6px 9px", fontSize: 12, fontWeight: 600, color: "#6b6656", cursor: "pointer", fontFamily: "inherit" };
+  return (
+    <div style={{ display: "grid", gap: 22 }}>
+      <div>
+        <div style={titre}>Mon code administrateur</div>
+        <div style={carte}>
+          <div style={{ fontSize: 13, color: "#4a4636", marginBottom: 10, lineHeight: 1.5 }}>
+            Accès complet : toutes les pages, la page d'accueil, les documents, les liens et ces codes. {acces.pinAdmin ? "" : "Le code actuel est celui de départ (1234) : change-le."}
+          </div>
+          <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
+            <input type="password" inputMode="numeric" maxLength={4} value={pin1} onChange={(e) => setPin1(e.target.value.replace(/\D/g, ""))} placeholder="Nouveau" style={champ} />
+            <input type="password" inputMode="numeric" maxLength={4} value={pin2} onChange={(e) => setPin2(e.target.value.replace(/\D/g, ""))} placeholder="Confirmer" style={champ} />
+            <button disabled={occupe} onClick={changerPinAdmin} style={bouton}>Changer mon code</button>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div style={titre}>Collègues</div>
+        <div style={carte}>
+          <div style={{ fontSize: 13, color: "#4a4636", marginBottom: 12, lineHeight: 1.5 }}>
+            Chaque collègue a son propre code. Pour l'instant, un collègue peut seulement modifier le contenu de la rubrique <b>« Association Sportive du Lycée »</b> et de ses pages (textes, photos, vidéos). Tu peux retirer ce qu'il publie à tout moment.
+          </div>
+          {collegues.length === 0 && <div style={{ fontSize: 13, color: "#9a9384", fontStyle: "italic", marginBottom: 12 }}>Aucun collègue pour l'instant.</div>}
+          {collegues.map((c) => (
+            <div key={c.id} style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 0", borderTop: "1px solid #f0ede6" }}>
+              <div style={{ flex: 1, fontSize: 14, fontWeight: 600 }}>{c.nom}</div>
+              <button disabled={occupe} onClick={() => nouveauCode(c)} style={petit}>Nouveau code</button>
+              <button disabled={occupe} onClick={() => retirer(c)} style={{ ...petit, color: "#c24b4b" }}><Trash2 size={12} /></button>
+            </div>
+          ))}
+          <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center", borderTop: "1px solid var(--ligne)", paddingTop: 12, marginTop: 4 }}>
+            <input value={nom} onChange={(e) => setNom(e.target.value)} placeholder="Nom du collègue" style={{ ...champ, width: 170, letterSpacing: 0 }} />
+            <input inputMode="numeric" maxLength={4} value={pinCol} onChange={(e) => setPinCol(e.target.value.replace(/\D/g, ""))} placeholder="Code" style={champ} />
+            <button disabled={occupe} onClick={ajouterCollegue} style={bouton}><Plus size={13} style={{ verticalAlign: -2 }} /> Ajouter</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ---------- Espace d'un collègue (accès limité à l'AS) ----------
+function EspaceCollegue({ nom, pagesAS, ouvrirEditeur, etat, onVerrouiller }) {
+  return (
+    <div style={{ padding: 18, maxWidth: 720, margin: "0 auto" }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6 }}>
+        <div className="display" style={{ fontSize: 20, fontWeight: 600 }}>Bonjour {nom} 👋</div>
+        <button onClick={onVerrouiller} style={{ display: "flex", alignItems: "center", gap: 5, border: "1px solid var(--ligne)", background: "#fff", borderRadius: 8, padding: "6px 11px", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>
+          <Lock size={13} /> Se déconnecter
+        </button>
+      </div>
+      <div style={{ fontSize: 13.5, color: "#4a4636", lineHeight: 1.5, marginBottom: 16 }}>
+        Tu peux modifier les pages de l'<b>Association Sportive du Lycée</b> : textes, photos, vidéos, galeries. Tes modifications sont enregistrées en ligne automatiquement. <span style={{ color: "#6b6656" }}>({etat})</span>
+      </div>
+      <div style={{ display: "grid", gap: 8 }}>
+        {pagesAS.map((r) => (
+          <button key={r.id} onClick={() => ouvrirEditeur({ type: "rubrique", id: r.id })} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, textAlign: "left", background: "#fff", border: "1px solid var(--ligne)", borderLeft: "6px solid var(--piste)", borderRadius: 10, padding: "12px 14px", cursor: "pointer", fontFamily: "inherit" }}>
+            <span style={{ fontSize: 14.5, fontWeight: 600 }}>{r.parentId ? r.titre : r.titre + " (page principale)"}</span>
+            <span style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 12.5, fontWeight: 700, color: "var(--piste)" }}><Pencil size={13} /> Modifier</span>
+          </button>
+        ))}
+        {pagesAS.length === 0 && <div style={{ fontSize: 13, color: "#9a9384", fontStyle: "italic" }}>La rubrique AS n'existe pas encore.</div>}
       </div>
     </div>
   );
@@ -1249,7 +1376,7 @@ function BoutonMiseEnPage({ nbBlocs, onClick }) {
   );
 }
 
-function EspaceAdmin({ rubriques, setRubriques, pageAccueil, setPageAccueil, documents, setDocuments, liens, setLiens, onVerrouiller, ouvrirEditeur }) {
+function EspaceAdmin({ rubriques, setRubriques, pageAccueil, setPageAccueil, documents, setDocuments, liens, setLiens, onVerrouiller, ouvrirEditeur, acces, enregistrerAcces }) {
   const [onglet, setOnglet] = useState("rubriques");
   const [rubriqueChoisie, setRubriqueChoisie] = useState(null);
   const [pageAccueilChoisie, setPageAccueilChoisie] = useState(false);
@@ -1269,12 +1396,15 @@ function EspaceAdmin({ rubriques, setRubriques, pageAccueil, setPageAccueil, doc
           { id: "rubriques", label: "Pages" },
           { id: "documents", label: "Documents" },
           { id: "liens", label: "Liens d'accueil" },
+          { id: "acces", label: "Accès" },
         ].map((o) => (
           <button key={o.id} onClick={() => setOnglet(o.id)} style={{ flex: 1, padding: "8px 0", borderRadius: 9, fontWeight: 700, fontSize: 12, cursor: "pointer", border: `1.5px solid ${onglet === o.id ? "var(--piste)" : "var(--ligne)"}`, background: onglet === o.id ? "var(--piste)" : "#fff", color: onglet === o.id ? "#fff" : "#6b6656" }}>
             {o.label}
           </button>
         ))}
       </div>
+
+      {onglet === "acces" && <AdminAcces acces={acces} enregistrerAcces={enregistrerAcces} />}
 
       {onglet === "rubriques" && (
         <div style={{ display: "grid", gap: 20 }}>
@@ -1489,8 +1619,12 @@ export default function App() {
   const [pageAccueil, setPageAccueilState] = useState(() => migrerBandeauAccueil(lsLire("pageAccueil", PAGE_ACCUEIL_SEED)));
   const [documents, setDocumentsState] = useState(() => lsLire("documents", []));
   const [liens, setLiensState] = useState(() => lsLire("liens", SEED_LIENS));
-  const [pinAdmin] = useState(() => lsLire("pinAdmin", "1234"));
-  const [adminDeverrouille, setAdminDeverrouille] = useState(false);
+  const [pinAdmin] = useState(() => lsLire("pinAdmin", "1234")); // ancien code local, utilisé tant qu'aucun code n'est enregistré en ligne
+  // role : null (visiteur) | { type: "admin" } | { type: "collegue", id, nom }
+  const [role, setRole] = useState(null);
+  const adminDeverrouille = !!role;
+  const estAdmin = role?.type === "admin";
+  const [acces, setAccesState] = useState(() => lsLire("acces", { pinAdmin: null, collegues: [] }));
   const [cadenasOuvert, setCadenasOuvert] = useState(false);
   const [ecran, setEcranState] = useState({ type: "accueil" });
 
@@ -1513,6 +1647,7 @@ export default function App() {
   useEffect(() => {
     const arreter = ecouterSite(
       (d) => {
+        if (d.acces) { setAccesState(d.acces); lsEcrire("acces", d.acces); }
         if (!d.existe) { setSiteEnLigne(false); setEtatSync("ok"); return; }
         setSiteEnLigne(true);
         setEtatSync((e) => (e === "envoi" ? e : "ok"));
@@ -1563,6 +1698,20 @@ export default function App() {
     return ok;
   };
 
+  // Vérifie un code : administrateur ou collègue
+  const verifierPin = async (pin) => {
+    const h = await empreintePin(pin);
+    if (acces.pinAdmin ? h === acces.pinAdmin : pin === pinAdmin) return { type: "admin" };
+    const c = (acces.collegues || []).find((x) => x.pinHash === h);
+    if (c) return { type: "collegue", id: c.id, nom: c.nom };
+    return null;
+  };
+  const enregistrerAcces = async (nouveau) => {
+    await ecrireAcces(nouveau);
+    setAccesState(nouveau);
+    lsEcrire("acces", nouveau);
+  };
+
   const setRubriques = (v) => { setRubriquesState(v); lsEcrire("rubriques", v); etatRef.current = { ...etatRef.current, rubriques: v }; signalerModif(); };
   const setPageAccueil = (v) => { setPageAccueilState(v); lsEcrire("pageAccueil", v); etatRef.current = { ...etatRef.current, pageAccueil: v }; signalerModif(); };
   const setDocuments = (v) => { setDocumentsState(v); lsEcrire("documents", v); etatRef.current = { ...etatRef.current, documents: v }; signalerModif(); };
@@ -1584,7 +1733,11 @@ export default function App() {
 
   // Blocs de la page affichée (accueil ou rubrique)
   const rubriqueCourante = ecran.type === "rubrique" ? rubriques.find((x) => x.id === ecran.id) : null;
-  const pageEditable = ecran.type === "accueil" || (ecran.type === "rubrique" && !!rubriqueCourante);
+  // Les collègues ne peuvent modifier que la rubrique « Association Sportive du Lycée » et ses pages
+  const estPageAS = !!rubriqueCourante && (rubriqueCourante.id === "as" || rubriqueCourante.parentId === "as");
+  const pageEditable = estAdmin
+    ? (ecran.type === "accueil" || (ecran.type === "rubrique" && !!rubriqueCourante))
+    : (role?.type === "collegue" && ecran.type === "rubrique" && estPageAS);
   const blocsCourants = ecran.type === "accueil" ? (pageAccueil.blocs || []) : rubriqueCourante ? (rubriqueCourante.page.blocs || []) : [];
 
   const ecrireBlocs = (nouveaux) => {
@@ -1654,7 +1807,17 @@ export default function App() {
     corps = <PageRubrique rubrique={r} sousRubriques={sousRubriques} allerA={setEcran} parent={parent} zoneBlocs={zoneBlocs} />;
   } else if (ecran.type === "documents") {
     corps = <PageDocuments documents={documents} />;
-  } else if (ecran.type === "admin" && adminDeverrouille) {
+  } else if (ecran.type === "admin" && role?.type === "collegue") {
+    corps = (
+      <EspaceCollegue
+        nom={role.nom}
+        pagesAS={rubriques.filter((r) => r.id === "as" || r.parentId === "as").sort((a, b) => (a.parentId ? 1 : 0) - (b.parentId ? 1 : 0) || a.ordre - b.ordre)}
+        ouvrirEditeur={ouvrirEditeur}
+        etat={libelleSync(siteEnLigne, etatSync)}
+        onVerrouiller={() => { setRole(null); setModeEdition(false); setEcran({ type: "accueil" }); }}
+      />
+    );
+  } else if (ecran.type === "admin" && estAdmin) {
     corps = (
       <>
       <PanneauSync siteEnLigne={siteEnLigne} etatSync={etatSync} erreurSync={erreurSync} publier={publierDepuisCetAppareil} reessayer={() => envoyerMaintenant(false)} />
@@ -1664,7 +1827,8 @@ export default function App() {
         documents={documents} setDocuments={setDocuments}
         liens={liens} setLiens={setLiens}
         ouvrirEditeur={ouvrirEditeur}
-        onVerrouiller={() => { setAdminDeverrouille(false); setModeEdition(false); setEcran({ type: "accueil" }); }}
+        onVerrouiller={() => { setRole(null); setModeEdition(false); setEcran({ type: "accueil" }); }}
+        acces={acces} enregistrerAcces={enregistrerAcces}
       />
       </>
     );
@@ -1717,9 +1881,9 @@ export default function App() {
 
       {cadenasOuvert && (
         <CadenasAdmin
-          pinAttendu={pinAdmin}
+          verifier={verifierPin}
           onAnnuler={() => setCadenasOuvert(false)}
-          onDeverrouille={() => { setAdminDeverrouille(true); setCadenasOuvert(false); setEcran({ type: "admin" }); }}
+          onDeverrouille={(r) => { setRole(r); setCadenasOuvert(false); setEcran({ type: "admin" }); }}
         />
       )}
     </div>

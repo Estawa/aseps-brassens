@@ -53,7 +53,7 @@ export function ecouterSite(rappel, erreur) {
         dernier.set(d.id, data.json);
       });
       if (!docs.index) {
-        rappel({ existe: false });
+        rappel({ existe: false, acces: docs.acces ? JSON.parse(docs.acces) : null });
         return;
       }
       try {
@@ -61,6 +61,7 @@ export function ecouterSite(rappel, erreur) {
         const rubriques = ids.filter((id) => docs["rub_" + id]).map((id) => JSON.parse(docs["rub_" + id]));
         rappel({
           existe: true,
+          acces: docs.acces ? JSON.parse(docs.acces) : null,
           rubriques,
           pageAccueil: docs.accueil ? JSON.parse(docs.accueil) : null,
           liens: docs.liens ? JSON.parse(docs.liens) : null,
@@ -110,4 +111,19 @@ export async function publierSite({ rubriques, pageAccueil, liens, documents }, 
   voulu.forEach((json, id) => dernier.set(id, json));
   [...dernier.keys()].filter((id) => id.startsWith("rub_") && !voulu.has(id)).forEach((id) => dernier.delete(id));
   return n;
+}
+
+// Codes d'accès (administrateur + collègues), enregistrés à part dans « aseps/acces ».
+// Les codes ne sont jamais stockés en clair : seule leur empreinte (SHA-256) est enregistrée.
+export async function ecrireAcces(acces) {
+  if (!db) throw new Error("Connexion à la base en ligne impossible.");
+  const json = JSON.stringify(acces);
+  await writeBatch(db).set(doc(db, COLLECTION, "acces"), { json, maj: Date.now() }).commit();
+  dernier.set("acces", json);
+}
+
+export async function empreintePin(pin) {
+  const donnees = new TextEncoder().encode("aseps-brassens:" + pin);
+  const h = await crypto.subtle.digest("SHA-256", donnees);
+  return Array.from(new Uint8Array(h)).map((b) => b.toString(16).padStart(2, "0")).join("");
 }
