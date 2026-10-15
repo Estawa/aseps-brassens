@@ -6,9 +6,10 @@ import {
   ChevronLeft, Copy, Undo2, Monitor, Smartphone, Check, Square, BookOpen,
 } from "lucide-react";
 import { COURS, BlocCours, blocsCoursPourPage } from "./cours.jsx";
+import { ecouterSite, publierSite, syncDisponible } from "./sync.js";
 
 const uid = () => Math.random().toString(36).slice(2, 10);
-const APP_VERSION = "0.9.0";
+const APP_VERSION = "1.0.0";
 
 // ---------- Stockage local persistant ----------
 function lsLire(cle, defaut) {
@@ -1423,6 +1424,62 @@ function ajouterRubriquesV050(rubriques, aCreer) {
   return tout.map((r) => (!r.parentId && rang[r.id] !== undefined ? { ...r, ordre: rang[r.id] } : r));
 }
 
+// ---------- Synchronisation : affichage de l'état ----------
+function messageErreurSync(e) {
+  const m = String((e && (e.code || e.message)) || e);
+  if (m.includes("permission")) return "La base en ligne refuse l'accès (règles Firestore à autoriser pour la collection « aseps »).";
+  if (m.includes("unavailable") || m.includes("network") || m.includes("offline")) return "Pas de connexion internet : les modifications seront envoyées au retour du réseau.";
+  return e && e.message ? e.message : m;
+}
+function libelleSync(siteEnLigne, etat) {
+  if (etat === "indisponible") return "⚠️ Hors ligne";
+  if (etat === "erreur") return "⚠️ Non enregistré en ligne";
+  if (siteEnLigne === false) return "📱 Enregistré sur cet appareil seulement";
+  if (etat === "envoi") return "⏳ Enregistrement en ligne…";
+  if (etat === "connexion") return "⏳ Connexion…";
+  return "☁️ Enregistré en ligne";
+}
+function PanneauSync({ siteEnLigne, etatSync, erreurSync, publier, reessayer }) {
+  const [enCours, setEnCours] = useState(false);
+  const lancer = async (message) => {
+    if (!confirm(message)) return;
+    setEnCours(true);
+    const ok = await publier();
+    setEnCours(false);
+    if (ok) alert("✅ C'est en ligne : le site est maintenant identique sur tous les appareils.");
+  };
+  const carte = { maxWidth: 1140, margin: "14px auto 0", padding: "0 20px" };
+  const boite = (fond, bord) => ({ background: fond, border: `1.5px solid ${bord}`, borderRadius: 12, padding: "12px 14px", fontSize: 13.5, lineHeight: 1.5, color: "#101826" });
+  const bouton = { marginTop: 10, background: "var(--piste)", color: "#fff", border: "none", borderRadius: 9, padding: "9px 14px", fontWeight: 700, fontSize: 13, cursor: "pointer", fontFamily: "inherit" };
+  const boutonDiscret = { ...bouton, background: "#fff", color: "#6b6656", border: "1px solid var(--ligne)", fontWeight: 600 };
+  return (
+    <div style={carte}>
+      {etatSync === "erreur" && (
+        <div style={{ ...boite("#fdecec", "#e8a5a5"), marginBottom: 10 }}>
+          <b>⚠️ Problème d'enregistrement en ligne.</b> {erreurSync}
+          {siteEnLigne && <div><button style={boutonDiscret} onClick={reessayer}>Réessayer</button></div>}
+        </div>
+      )}
+      {siteEnLigne === false && (
+        <div style={boite("var(--piste-soft)", "#f3c6a6")}>
+          <b>📱 Le site n'est pas encore en ligne.</b> Pour l'instant, chaque appareil garde sa propre version.
+          Fais-le depuis l'appareil qui a la bonne version (photos, textes, ordre des rubriques) : elle deviendra la version unique, visible partout, et tes modifications suivantes seront enregistrées en ligne automatiquement.
+          <div><button disabled={enCours} style={bouton} onClick={() => lancer("Mettre en ligne la version de CET appareil ? Elle deviendra la version visible sur tous les appareils.")}>{enCours ? "Envoi en cours…" : "Mettre le site en ligne depuis cet appareil"}</button></div>
+        </div>
+      )}
+      {siteEnLigne === true && (
+        <div style={boite("var(--teal-soft)", "#9edfd6")}>
+          <b>☁️ Site en ligne.</b> Tes modifications, sur ordinateur comme sur téléphone, sont enregistrées automatiquement et visibles par tout le monde. État : {libelleSync(siteEnLigne, etatSync)}
+          <div><button disabled={enCours} style={boutonDiscret} onClick={() => lancer("Remplacer la version en ligne par celle de CET appareil ? Les modifications faites ailleurs et absentes ici seront perdues.")}>{enCours ? "Envoi en cours…" : "Republier la version de cet appareil"}</button></div>
+        </div>
+      )}
+      {siteEnLigne === null && etatSync !== "erreur" && (
+        <div style={boite("#faf9f6", "var(--ligne)")}>⏳ Connexion à la base en ligne…</div>
+      )}
+    </div>
+  );
+}
+
 // ---------- App racine ----------
 export default function App() {
   const [rubriques, setRubriquesState] = useState(() => migrerCours(lsLire("rubriques", SEED_RUBRIQUES)));
@@ -1440,10 +1497,73 @@ export default function App() {
   const [apercuMobile, setApercuMobile] = useState(false);
   const [historique, setHistorique] = useState([]); // états précédents des blocs de la page éditée
 
-  const setRubriques = (v) => { setRubriquesState(v); lsEcrire("rubriques", v); };
-  const setPageAccueil = (v) => { setPageAccueilState(v); lsEcrire("pageAccueil", v); };
-  const setDocuments = (v) => { setDocumentsState(v); lsEcrire("documents", v); };
-  const setLiens = (v) => { setLiensState(v); lsEcrire("liens", v); };
+  // ---------- Synchronisation en ligne ----------
+  // siteEnLigne : null = on ne sait pas encore, false = jamais publié, true = la version en ligne fait foi
+  const [siteEnLigne, setSiteEnLigne] = useState(null);
+  const [etatSync, setEtatSync] = useState(syncDisponible() ? "connexion" : "indisponible"); // connexion | ok | envoi | erreur | indisponible
+  const [erreurSync, setErreurSync] = useState("");
+  const modifEnAttente = useRef(false);
+  const minuteurSync = useRef(null);
+  const etatRef = useRef({});
+  etatRef.current = { rubriques, pageAccueil, liens, documents };
+
+  useEffect(() => {
+    const arreter = ecouterSite(
+      (d) => {
+        if (!d.existe) { setSiteEnLigne(false); setEtatSync("ok"); return; }
+        setSiteEnLigne(true);
+        setEtatSync((e) => (e === "envoi" ? e : "ok"));
+        if (modifEnAttente.current) return; // une modification locale part bientôt : on ne l'écrase pas
+        const cur = etatRef.current;
+        const appliquer = (val, actuel, setState, cle) => {
+          if (val == null || JSON.stringify(val) === JSON.stringify(actuel)) return;
+          setState(val);
+          lsEcrire(cle, val);
+        };
+        appliquer(d.rubriques, cur.rubriques, setRubriquesState, "rubriques");
+        appliquer(d.pageAccueil, cur.pageAccueil, setPageAccueilState, "pageAccueil");
+        appliquer(d.liens, cur.liens, setLiensState, "liens");
+        appliquer(d.documents, cur.documents, setDocumentsState, "documents");
+      },
+      (e) => { console.warn(e); setEtatSync("erreur"); setErreurSync(messageErreurSync(e)); }
+    );
+    return arreter;
+  }, []);
+
+  const envoyerMaintenant = async (force = false) => {
+    clearTimeout(minuteurSync.current);
+    setEtatSync("envoi");
+    try {
+      await publierSite(etatRef.current, force);
+      modifEnAttente.current = false;
+      setEtatSync("ok");
+      setErreurSync("");
+      return true;
+    } catch (e) {
+      console.warn(e);
+      setEtatSync("erreur");
+      setErreurSync(messageErreurSync(e));
+      return false;
+    }
+  };
+  // Après chaque modification faite par l'administrateur : envoi en ligne (regroupé, 1,5 s plus tard)
+  const signalerModif = () => {
+    if (!siteEnLigne) return;
+    modifEnAttente.current = true;
+    setEtatSync("envoi");
+    clearTimeout(minuteurSync.current);
+    minuteurSync.current = setTimeout(() => envoyerMaintenant(false), 1500);
+  };
+  const publierDepuisCetAppareil = async () => {
+    const ok = await envoyerMaintenant(true);
+    if (ok) setSiteEnLigne(true);
+    return ok;
+  };
+
+  const setRubriques = (v) => { setRubriquesState(v); lsEcrire("rubriques", v); etatRef.current = { ...etatRef.current, rubriques: v }; signalerModif(); };
+  const setPageAccueil = (v) => { setPageAccueilState(v); lsEcrire("pageAccueil", v); etatRef.current = { ...etatRef.current, pageAccueil: v }; signalerModif(); };
+  const setDocuments = (v) => { setDocumentsState(v); lsEcrire("documents", v); etatRef.current = { ...etatRef.current, documents: v }; signalerModif(); };
+  const setLiens = (v) => { setLiensState(v); lsEcrire("liens", v); etatRef.current = { ...etatRef.current, liens: v }; signalerModif(); };
 
   const arbre = useMemo(() => construireArbre(rubriques), [rubriques]);
 
@@ -1533,6 +1653,8 @@ export default function App() {
     corps = <PageDocuments documents={documents} />;
   } else if (ecran.type === "admin" && adminDeverrouille) {
     corps = (
+      <>
+      <PanneauSync siteEnLigne={siteEnLigne} etatSync={etatSync} erreurSync={erreurSync} publier={publierDepuisCetAppareil} reessayer={() => envoyerMaintenant(false)} />
       <EspaceAdmin
         rubriques={rubriques} setRubriques={setRubriques}
         pageAccueil={pageAccueil} setPageAccueil={setPageAccueil}
@@ -1541,6 +1663,7 @@ export default function App() {
         ouvrirEditeur={ouvrirEditeur}
         onVerrouiller={() => { setAdminDeverrouille(false); setModeEdition(false); setEcran({ type: "accueil" }); }}
       />
+      </>
     );
   } else {
     corps = <PageAccueil pageAccueil={pageAccueil} arbre={arbre} liens={liens} allerA={setEcran} zoneBlocs={zoneBlocs} />;
@@ -1552,6 +1675,7 @@ export default function App() {
       {edition && (
         <div style={{ background: "var(--piste-soft)", borderBottom: "1px solid #f6c9a8", fontSize: 12.5, color: "#7a3a10" }}>
           <div style={{ maxWidth: 1140, margin: "0 auto", padding: "8px 20px", lineHeight: 1.5 }}>
+            <span style={{ float: "right", fontWeight: 700, marginLeft: 10 }}>{libelleSync(siteEnLigne, etatSync)}</span>
             ✏️ <b>Mode édition</b> — glisse un bloc par sa poignée ⠿ pour le déplacer, tire la barre orange à sa droite pour changer sa largeur, clique dessus pour modifier son contenu.
           </div>
         </div>

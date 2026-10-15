@@ -1,8 +1,20 @@
 # Site EPS — journal des changements
 
-Version actuelle : **0.9.0**
+Version actuelle : **1.0.0**
 
 ---
+
+### v1.0.0 — 15/10/2026
+- **Synchronisation en ligne** : le site est enregistré dans un espace séparé (collection
+  « aseps ») du projet Firebase d'EPS Pro, sans toucher aux données d'EPS Pro.
+  - Première mise en ligne : depuis l'espace Administration de l'appareil qui a la bonne version,
+    bouton « Mettre le site en ligne depuis cet appareil ».
+  - Ensuite, chaque modification faite par l'administrateur (ordinateur ou téléphone) est
+    enregistrée en ligne automatiquement et apparaît sur tous les appareils, y compris chez
+    les visiteurs, sans recharger la page.
+  - État affiché dans le bandeau du mode édition (enregistré en ligne / enregistrement…) et dans
+    l'administration, avec un bouton « Republier la version de cet appareil » en secours.
+  - Sans connexion, le site reste consultable avec la dernière version reçue.
 
 ### v0.9.0 — 15/10/2026
 - **Textes des cours modifiables depuis l'éditeur** (ordinateur et téléphone) : en cliquant sur
