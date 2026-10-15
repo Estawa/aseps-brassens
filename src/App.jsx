@@ -1849,8 +1849,8 @@ export default function App() {
         </div>
       )}
       {corps}
-      <div style={{ textAlign: "center", fontSize: 10.5, color: "#b3ac9c", marginTop: 30 }}>
-        ASEPS by C. Guilhem <span style={{ opacity: 0.6 }}>· v{APP_VERSION}</span>
+      <div className="pied-version" style={{ textAlign: "center", fontSize: 12, color: "#8a8372", marginTop: 30 }}>
+        ASEPS by C. Guilhem · v{APP_VERSION}
       </div>
 
       {adminDeverrouille && pageEditable && !modeEdition && (

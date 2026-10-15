@@ -469,3 +469,8 @@ details[open] > .cours-titre { border-bottom: 1px solid var(--ligne); }
   /* Liens externes en couleur */
   .lien-bouton { border: 1.5px solid var(--teal) !important; background: var(--teal-soft) !important; }
 }
+
+/* Pied de page avec la version, lisible sur ordinateur */
+@media (min-width: 761px) {
+  .pied-version { font-size: 13.5px !important; padding-bottom: 10px; }
+}
