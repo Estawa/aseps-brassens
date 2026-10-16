@@ -3,13 +3,14 @@ import {
   Home, LayoutList, FolderOpen, Lock, Unlock, Plus, Trash2, Pencil,
   ChevronUp, ChevronDown, ChevronRight, ExternalLink, Image as ImageIcon,
   Video, FileText, Upload, X, Link2, ArrowLeft, Menu, Images, Type, LayoutTemplate, GripVertical, LayoutGrid,
-  ChevronLeft, Copy, Undo2, Monitor, Smartphone, Check, Square, BookOpen,
+  ChevronLeft, Copy, Undo2, Monitor, Smartphone, Check, Square, BookOpen, Wand, ListCollapse,
 } from "lucide-react";
 import { COURS, BlocCours, blocsCoursPourPage } from "./cours.jsx";
+import { AssistantPage, ZoneTexteMd, EXEMPLE_PARTIE } from "./modele.jsx";
 import { ecouterSite, publierSite, syncDisponible, ecrireAcces, empreintePin } from "./sync.js";
 
 const uid = () => Math.random().toString(36).slice(2, 10);
-const APP_VERSION = "1.1.1";
+const APP_VERSION = "1.2.0";
 
 // ---------- Stockage local persistant ----------
 function lsLire(cle, defaut) {
@@ -629,7 +630,8 @@ function AdminAcces({ acces, enregistrerAcces }) {
 }
 
 // ---------- Espace d'un collègue (accès limité à l'AS) ----------
-function EspaceCollegue({ nom, pagesAS, ouvrirEditeur, etat, onVerrouiller }) {
+function EspaceCollegue({ nom, idCollegue, pagesAS, ouvrirEditeur, etat, onVerrouiller, onNouvellePage, renommerPage, supprimerPage }) {
+  const petit = { border: "1px solid var(--ligne)", background: "#fff", borderRadius: 7, width: 32, height: 32, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", color: "#6b6656", flexShrink: 0 };
   return (
     <div style={{ padding: 18, maxWidth: 720, margin: "0 auto" }}>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6 }}>
@@ -639,15 +641,33 @@ function EspaceCollegue({ nom, pagesAS, ouvrirEditeur, etat, onVerrouiller }) {
         </button>
       </div>
       <div style={{ fontSize: 13.5, color: "#4a4636", lineHeight: 1.5, marginBottom: 16 }}>
-        Tu peux modifier les pages de l'<b>Association Sportive du Lycée</b> : textes, photos, vidéos, galeries. Tes modifications sont enregistrées en ligne automatiquement. <span style={{ color: "#6b6656" }}>({etat})</span>
+        Tu peux modifier les pages de l'<b>Association Sportive du Lycée</b> : textes, photos, vidéos, galeries, et créer de nouvelles pages. Tes modifications sont enregistrées en ligne automatiquement. <span style={{ color: "#6b6656" }}>({etat})</span>
+      </div>
+      {pagesAS.some((r) => r.id === "as") && (
+        <button onClick={onNouvellePage} style={{ ...boutonPrimaire, width: "100%", justifyContent: "center", padding: "12px 14px", fontSize: 14, marginBottom: 6 }}>
+          <Wand size={15} /> Créer une nouvelle page AS (modèle)
+        </button>
+      )}
+      <div style={{ fontSize: 12, color: "#6b6656", lineHeight: 1.5, marginBottom: 14 }}>
+        Le modèle crée une page avec une introduction, des parties dépliables (titres, sous-titres, listes, tableaux) et une galerie photos : toutes les pages de l'AS ont ainsi la même présentation.
       </div>
       <div style={{ display: "grid", gap: 8 }}>
-        {pagesAS.map((r) => (
-          <button key={r.id} onClick={() => ouvrirEditeur({ type: "rubrique", id: r.id })} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, textAlign: "left", background: "#fff", border: "1px solid var(--ligne)", borderLeft: "6px solid var(--piste)", borderRadius: 10, padding: "12px 14px", cursor: "pointer", fontFamily: "inherit" }}>
-            <span style={{ fontSize: 14.5, fontWeight: 600 }}>{r.parentId ? r.titre : r.titre + " (page principale)"}</span>
-            <span style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 12.5, fontWeight: 700, color: "var(--piste)" }}><Pencil size={13} /> Modifier</span>
-          </button>
-        ))}
+        {pagesAS.map((r) => {
+          const mienne = r.auteur && r.auteur.id === idCollegue;
+          return (
+            <div key={r.id} style={{ display: "flex", alignItems: "center", gap: 6 }}>
+              <button onClick={() => ouvrirEditeur({ type: "rubrique", id: r.id })} style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, textAlign: "left", background: "#fff", border: "1px solid var(--ligne)", borderLeft: "6px solid var(--piste)", borderRadius: 10, padding: "12px 14px", cursor: "pointer", fontFamily: "inherit" }}>
+                <span style={{ fontSize: 14.5, fontWeight: 600 }}>
+                  {r.parentId ? r.titre : r.titre + " (page principale)"}
+                  {r.auteur && <span style={{ display: "block", fontSize: 11.5, fontWeight: 500, color: "#9a9384" }}>créée par {mienne ? "toi" : r.auteur.nom}</span>}
+                </span>
+                <span style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 12.5, fontWeight: 700, color: "var(--piste)" }}><Pencil size={13} /> Modifier</span>
+              </button>
+              {mienne && <button onClick={() => renommerPage(r.id)} title="Renommer" style={petit}><Type size={13} /></button>}
+              {mienne && <button onClick={() => supprimerPage(r.id)} title="Supprimer la page" style={{ ...petit, color: "#c24b4b" }}><Trash2 size={13} /></button>}
+            </div>
+          );
+        })}
         {pagesAS.length === 0 && <div style={{ fontSize: 13, color: "#9a9384", fontStyle: "italic" }}>La rubrique AS n'existe pas encore.</div>}
       </div>
     </div>
@@ -655,7 +675,7 @@ function EspaceCollegue({ nom, pagesAS, ouvrirEditeur, etat, onVerrouiller }) {
 }
 
 // ---------- Espace admin : gestion des rubriques ----------
-function AdminRubriques({ rubriques, setRubriques, ongletChoisi, setOngletChoisi, pageAccueilChoisie, setPageAccueilChoisie }) {
+function AdminRubriques({ rubriques, setRubriques, ongletChoisi, setOngletChoisi, pageAccueilChoisie, setPageAccueilChoisie, onNouvellePage }) {
   const arbre = useMemo(() => construireArbre(rubriques), [rubriques]);
 
   const ajouterRubrique = (parentId) => {
@@ -692,9 +712,17 @@ function AdminRubriques({ rubriques, setRubriques, ongletChoisi, setOngletChoisi
     <div>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
         <div style={{ fontSize: 12.5, fontWeight: 700, color: "#6b6656", textTransform: "uppercase", letterSpacing: 0.5 }}>Pages du site</div>
-        <button onClick={() => ajouterRubrique(null)} style={boutonPrimaire}>
-          <Plus size={13} /> Rubrique
-        </button>
+        <div style={{ display: "flex", gap: 6 }}>
+          <button onClick={() => ajouterRubrique(null)} style={{ ...boutonPrimaire, background: "#fff", color: "var(--piste)", border: "1.5px solid var(--piste)" }} title="Rubrique vide (sans contenu)">
+            <Plus size={13} /> Rubrique vide
+          </button>
+          <button onClick={onNouvellePage} style={boutonPrimaire} title="Page avec introduction et parties dépliables, comme « L'alimentation »">
+            <Wand size={13} /> Nouvelle page (modèle)
+          </button>
+        </div>
+      </div>
+      <div style={{ fontSize: 12, color: "#6b6656", lineHeight: 1.5, margin: "-2px 0 12px" }}>
+        <b>Nouvelle page (modèle)</b> crée une page comme « L'alimentation » ou « L'échauffement » (introduction + parties dépliables avec sous-titres), dans une rubrique existante ou une nouvelle rubrique. Dans une page déjà créée, le bloc « Partie dépliable (à écrire) » ajoute une partie de plus.
       </div>
 
       <button
@@ -753,6 +781,7 @@ const TYPES_BLOC = [
   { id: "diaporama", label: "Diaporama photos", Icon: Images },
   { id: "galerie", label: "Galerie photos (plusieurs par ligne)", Icon: LayoutGrid },
   { id: "liens", label: "Liens externes", Icon: Link2 },
+  { id: "partie", label: "Partie dépliable (à écrire)", Icon: ListCollapse },
   { id: "cours", label: "Cours (partie prête)", Icon: BookOpen },
   { id: "espace", label: "Espace vide", Icon: Square },
 ];
@@ -766,6 +795,8 @@ function nouveauBloc(type) {
   if (type === "galerie") return { ...base, images: [], affichage: "grille", parLigneOrdi: 4, parLigneTel: 2, recadrage: "uniforme" };
   if (type === "liens") return { ...base, liens: [] };
   if (type === "cours") return { ...base, partie: "", ouvert: false };
+  // « partie » : une partie dépliable dont on écrit soi-même le titre et le texte (bloc « cours » libre)
+  if (type === "partie") return { ...base, type: "cours", partie: "libre", titrePerso: "", mdPerso: "", ouvert: false };
   if (type === "espace") return { ...base, largeur: 4, hauteur: 40 };
   return base;
 }
@@ -1100,10 +1131,22 @@ function EditeurContenuBloc({ bloc, majBloc }) {
   if (bloc.type === "cours") {
     const groupes = {};
     Object.entries(COURS).forEach(([cle, c]) => { (groupes[c.cours] = groupes[c.cours] || []).push([cle, c]); });
+    const libre = bloc.partie === "libre";
+    const orig = libre ? { titre: "", md: "" } : COURS[bloc.partie];
+    const modifie = !libre && (bloc.titrePerso != null || bloc.mdPerso != null);
     return (
       <div style={{ display: "grid", gap: 10 }}>
-        <select value={bloc.partie || ""} onChange={(e) => majBloc({ partie: e.target.value })} style={champStyle("100%")}>
+        <select
+          value={bloc.partie || ""}
+          onChange={(e) => {
+            const v = e.target.value;
+            if (v === "libre") majBloc({ partie: "libre", titrePerso: bloc.titrePerso ?? (orig ? orig.titre : ""), mdPerso: bloc.mdPerso ?? (orig ? orig.md : "") });
+            else majBloc({ partie: v, titrePerso: null, mdPerso: null });
+          }}
+          style={champStyle("100%")}
+        >
           <option value="">— Choisir une partie de cours —</option>
+          <option value="libre">✍️ Partie écrite moi-même</option>
           {Object.entries(groupes).map(([nom, parties]) => (
             <optgroup key={nom} label={nom}>
               {parties.map(([cle, c]) => <option key={cle} value={cle}>{c.titre}</option>)}
@@ -1114,28 +1157,36 @@ function EditeurContenuBloc({ bloc, majBloc }) {
           <input type="checkbox" checked={!!bloc.ouvert} onChange={(e) => majBloc({ ouvert: e.target.checked })} />
           Partie dépliée à l'ouverture de la page
         </label>
-        {bloc.partie && COURS[bloc.partie] && (() => {
-          const orig = COURS[bloc.partie];
-          const modifie = bloc.titrePerso != null || bloc.mdPerso != null;
-          const cle = bloc.id + "-" + bloc.partie + "-" + (modifie ? "p" : "o");
-          return (
-            <div key={cle} style={{ display: "grid", gap: 8, borderTop: "1px solid var(--ligne)", paddingTop: 10 }}>
-              <div style={{ fontSize: 12, fontWeight: 700, color: "#4a4636" }}>Titre de la partie</div>
-              <input defaultValue={bloc.titrePerso ?? orig.titre} onBlur={(e) => { const v = e.target.value; if (v !== (bloc.titrePerso ?? orig.titre)) majBloc({ titrePerso: v === orig.titre ? null : v }); }} style={champStyle("100%")} />
-              <div style={{ fontSize: 12, fontWeight: 700, color: "#4a4636" }}>Texte de la partie</div>
-              <textarea defaultValue={bloc.mdPerso ?? orig.md} onBlur={(e) => { const v = e.target.value; if (v !== (bloc.mdPerso ?? orig.md)) majBloc({ mdPerso: v === orig.md ? null : v }); }} rows={16} style={{ ...champStyle("100%"), resize: "vertical", fontFamily: "ui-monospace, Menlo, Consolas, monospace", fontSize: 12.5, lineHeight: 1.5 }} />
-              <div style={{ fontSize: 11.5, color: "#6b6656", lineHeight: 1.55, background: "#faf9f6", border: "1px solid var(--ligne)", borderRadius: 8, padding: "8px 10px" }}>
-                <b>Mise en forme :</b> <code>### Sous-titre</code> · <code>**gras**</code> · <code>*italique*</code> · une ligne qui commence par <code>- </code> = liste à puces, <code>1. </code> = liste numérotée · tableau : <code>| Colonne 1 | Colonne 2 |</code> puis <code>|---|---|</code> puis une ligne par rangée.
-                <br />La modification est enregistrée quand tu cliques en dehors de la zone de texte.
-              </div>
-              {modifie && (
-                <button onClick={() => { if (confirm("Revenir au texte d'origine de cette partie ? Tes modifications seront perdues.")) majBloc({ titrePerso: null, mdPerso: null }); }} style={{ justifySelf: "start", display: "flex", alignItems: "center", gap: 6, background: "#fff", border: "1px solid var(--ligne)", borderRadius: 8, padding: "7px 10px", fontSize: 12, fontWeight: 600, color: "#6b6656", cursor: "pointer" }}>
-                  <Undo2 size={13} /> Revenir au texte d'origine
-                </button>
-              )}
+        {orig && (
+          <div key={bloc.id + "-" + bloc.partie + "-" + (modifie ? "p" : "o")} style={{ display: "grid", gap: 8, borderTop: "1px solid var(--ligne)", paddingTop: 10 }}>
+            <div style={{ fontSize: 12, fontWeight: 700, color: "#4a4636" }}>Titre de la partie</div>
+            <input
+              defaultValue={bloc.titrePerso ?? orig.titre}
+              placeholder="Ex. 3. Les erreurs à éviter"
+              onBlur={(e) => { const v = e.target.value; if (v !== (bloc.titrePerso ?? orig.titre)) majBloc({ titrePerso: !libre && v === orig.titre ? null : v }); }}
+              style={champStyle("100%")}
+            />
+            <div style={{ fontSize: 12, fontWeight: 700, color: "#4a4636" }}>Texte de la partie</div>
+            <ZoneTexteMd
+              value={bloc.mdPerso ?? orig.md}
+              rows={16}
+              onCommit={(v) => { if (v !== (bloc.mdPerso ?? orig.md)) majBloc({ mdPerso: !libre && v === orig.md ? null : v }); }}
+            />
+            {libre && !(bloc.mdPerso || "").trim() && (
+              <button onClick={() => majBloc({ mdPerso: EXEMPLE_PARTIE })} style={{ justifySelf: "start", background: "none", border: "none", padding: 0, color: "var(--teal)", fontWeight: 700, fontSize: 12, cursor: "pointer", fontFamily: "inherit" }}>
+                Insérer un exemple de structure (sous-titres, liste, tableau)
+              </button>
+            )}
+            <div style={{ fontSize: 11.5, color: "#6b6656", lineHeight: 1.55, background: "#faf9f6", border: "1px solid var(--ligne)", borderRadius: 8, padding: "8px 10px" }}>
+              La modification est enregistrée quand tu cliques en dehors de la zone de texte (ou après chaque bouton de mise en forme).
             </div>
-          );
-        })()}
+            {modifie && (
+              <button onClick={() => { if (confirm("Revenir au texte d'origine de cette partie ? Tes modifications seront perdues.")) majBloc({ titrePerso: null, mdPerso: null }); }} style={{ justifySelf: "start", display: "flex", alignItems: "center", gap: 6, background: "#fff", border: "1px solid var(--ligne)", borderRadius: 8, padding: "7px 10px", fontSize: 12, fontWeight: 600, color: "#6b6656", cursor: "pointer" }}>
+                <Undo2 size={13} /> Revenir au texte d'origine
+              </button>
+            )}
+          </div>
+        )}
       </div>
     );
   }
@@ -1377,7 +1428,7 @@ function BoutonMiseEnPage({ nbBlocs, onClick }) {
   );
 }
 
-function EspaceAdmin({ rubriques, setRubriques, pageAccueil, setPageAccueil, documents, setDocuments, liens, setLiens, onVerrouiller, ouvrirEditeur, acces, enregistrerAcces }) {
+function EspaceAdmin({ rubriques, setRubriques, pageAccueil, setPageAccueil, documents, setDocuments, liens, setLiens, onVerrouiller, ouvrirEditeur, acces, enregistrerAcces, onNouvellePage }) {
   const [onglet, setOnglet] = useState("rubriques");
   const [rubriqueChoisie, setRubriqueChoisie] = useState(null);
   const [pageAccueilChoisie, setPageAccueilChoisie] = useState(false);
@@ -1413,6 +1464,7 @@ function EspaceAdmin({ rubriques, setRubriques, pageAccueil, setPageAccueil, doc
             rubriques={rubriques} setRubriques={setRubriques}
             ongletChoisi={rubriqueChoisie} setOngletChoisi={setRubriqueChoisie}
             pageAccueilChoisie={pageAccueilChoisie} setPageAccueilChoisie={setPageAccueilChoisie}
+            onNouvellePage={onNouvellePage}
           />
           {pageAccueilChoisie && (
             <div style={{ borderTop: "1px solid var(--ligne)", paddingTop: 16 }}>
@@ -1634,6 +1686,7 @@ export default function App() {
   const [selectionId, setSelectionId] = useState(null);
   const [apercuMobile, setApercuMobile] = useState(false);
   const [historique, setHistorique] = useState([]); // états précédents des blocs de la page éditée
+  const [assistant, setAssistant] = useState(null); // null | { parentImpose, auteur } : assistant « Nouvelle page »
 
   // ---------- Synchronisation en ligne ----------
   // siteEnLigne : null = on ne sait pas encore, false = jamais publié, true = la version en ligne fait foi
@@ -1812,6 +1865,17 @@ export default function App() {
     corps = (
       <EspaceCollegue
         nom={role.nom}
+        idCollegue={role.id}
+        onNouvellePage={() => setAssistant({ parentImpose: "as", auteur: { id: role.id, nom: role.nom } })}
+        renommerPage={(id) => {
+          const r = rubriques.find((x) => x.id === id);
+          const t = prompt("Nouveau titre de la page :", r.titre);
+          if (t && t.trim()) setRubriques(rubriques.map((x) => (x.id === id ? { ...x, titre: t.trim() } : x)));
+        }}
+        supprimerPage={(id) => {
+          const r = rubriques.find((x) => x.id === id);
+          if (confirm(`Supprimer la page « ${r.titre} » ? Cette action est définitive.`)) setRubriques(rubriques.filter((x) => x.id !== id));
+        }}
         pagesAS={rubriques.filter((r) => r.id === "as" || r.parentId === "as").sort((a, b) => (a.parentId ? 1 : 0) - (b.parentId ? 1 : 0) || a.ordre - b.ordre)}
         ouvrirEditeur={ouvrirEditeur}
         etat={libelleSync(siteEnLigne, etatSync)}
@@ -1830,6 +1894,7 @@ export default function App() {
         ouvrirEditeur={ouvrirEditeur}
         onVerrouiller={() => { setRole(null); setModeEdition(false); setEcran({ type: "accueil" }); }}
         acces={acces} enregistrerAcces={enregistrerAcces}
+        onNouvellePage={() => setAssistant({})}
       />
       </>
     );
@@ -1888,6 +1953,20 @@ export default function App() {
           bloc={blocSelectionne}
           majBloc={(patch) => modifierBlocs(blocsCourants.map((b) => b.id === blocSelectionne.id ? { ...b, ...patch } : b))}
           fermer={() => setSelectionId(null)}
+        />
+      )}
+
+      {assistant && adminDeverrouille && (
+        <AssistantPage
+          rubriques={rubriques}
+          parentImpose={assistant.parentImpose}
+          auteur={assistant.auteur}
+          onFermer={() => setAssistant(null)}
+          onCreer={(ajouts, idPage) => {
+            setRubriques([...rubriques, ...ajouts]);
+            setAssistant(null);
+            ouvrirEditeur({ type: "rubrique", id: idPage });
+          }}
         />
       )}
 

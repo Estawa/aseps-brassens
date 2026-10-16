@@ -1,8 +1,28 @@
 # Site EPS — journal des changements
 
-Version actuelle : **1.1.1**
+Version actuelle : **1.2.0**
 
 ---
+
+### v1.2.0 — 16/10/2026
+- **Nouvelle page (modèle)** dans Administration › Pages : crée en une fois une page sur le
+  modèle de « L'alimentation » ou « L'échauffement » :
+  - emplacement : dans une rubrique existante, ou dans une **nouvelle rubrique principale**
+    créée en même temps (ex. « Sport & Santé » › « Le sommeil ») ;
+  - titre, phrase d'introduction, puis autant de **parties dépliables** que voulu
+    (titre + texte), à réordonner ou supprimer ;
+  - options : numérotation automatique (1., 2., 3.…), première partie dépliée,
+    galerie photos, vidéo et bloc de liens à remplir ensuite ;
+  - la page s'ouvre directement en mode édition une fois créée.
+- **Barre de mise en forme** au-dessus du texte des parties : Sous-titre, Gras, Italique,
+  Liste, Liste numérotée, Tableau, et bouton **Aperçu** pour voir le rendu avant d'enregistrer.
+  Bouton « Insérer un exemple de structure » pour partir d'une trame.
+- Nouveau type de bloc **« Partie dépliable (à écrire) »** pour ajouter une partie à
+  n'importe quelle page ; un bloc « Cours » peut aussi passer en « Partie écrite moi-même ».
+- **Collègues (AS)** : bouton « Créer une nouvelle page AS (modèle) » dans leur espace
+  (galerie photos ajoutée par défaut), pour que toutes les pages de l'AS aient la même
+  présentation. Chaque collègue peut renommer ou supprimer les pages qu'il a créées
+  (indiqué « créée par … »), pas celles des autres.
 
 ### v1.1.1 — 15/10/2026
 - Bouton « Se déconnecter » en bas à droite, à côté de « Modifier cette page », pour quitter

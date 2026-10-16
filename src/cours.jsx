@@ -727,14 +727,16 @@ export function Markdown({ md }) {
 
 // ---------- Rendu d'un bloc « Cours » : carte repliable ----------
 export function BlocCours({ bloc, edition }) {
-  const base = COURS[bloc.partie];
+  // partie « libre » : titre et texte écrits directement dans le bloc (pages créées avec le modèle)
+  const base = bloc.partie === "libre" ? { cours: "Partie écrite sur le site", titre: "", md: "" } : COURS[bloc.partie];
   // texte modifié depuis l'éditeur (sinon texte d'origine)
   const partie = base && { ...base, titre: bloc.titrePerso ?? base.titre, md: bloc.mdPerso ?? base.md };
+  if (partie && bloc.partie === "libre" && !partie.titre && !edition) return null;
   if (!partie) return edition ? <div className="cours-carte" style={{ padding: 14, fontStyle: "italic", color: "#9a9384" }}>Partie de cours à choisir — clique pour la sélectionner</div> : null;
   if (edition) {
     return (
       <div className="cours-carte">
-        <div className="cours-titre"><span>{partie.titre}</span><span style={{ fontSize: 11, color: "#9a9384", fontWeight: 500 }}>{partie.cours}</span></div>
+        <div className="cours-titre"><span>{partie.titre || "Partie sans titre — clique pour l'écrire"}</span><span style={{ fontSize: 11, color: "#9a9384", fontWeight: 500 }}>{partie.cours}</span></div>
       </div>
     );
   }
