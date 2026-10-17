@@ -26,7 +26,7 @@ const REPARTITION = (moment) => `### Ta répartition des 8 points (AFL2 / AFL3)
 
 Ce choix se fait **${moment}**.`;
 
-const LIEN_PDF = "Le protocole complet est disponible en PDF en bas de cette page.";
+const LIEN_PDF = "Les protocoles complets (Bac général et technologique, Bac professionnel) sont disponibles en PDF en bas de cette page. Cette page présente l'évaluation du **Bac général et technologique**.";
 
 // =====================================================================
 // RELAIS 2 × 200 m — CA1
@@ -1354,4 +1354,17 @@ export const PROTOCOLES_PDF = {
   "relais": "/protocoles/relais-2x200m-bac-gt.pdf",
   "football": "/protocoles/football-bac-gt.pdf",
   "basket": "/protocoles/basket-ball-bac-gt.pdf",
+};
+
+// v1.4.2 : protocoles Bac professionnel (convertis en PDF depuis les documents fournis)
+export const PROTOCOLES_PDF_PRO = {
+  "musculation": "/protocoles/musculation-bac-pro.pdf",
+  "course-duree": "/protocoles/course-de-duree-bac-pro.pdf",
+  "escalade": "/protocoles/escalade-bac-pro.pdf",
+  "volley": "/protocoles/volley-ball-bac-pro.pdf",
+  "badminton": "/protocoles/badminton-bac-pro.pdf",
+  "gymnastique": "/protocoles/gymnastique-sol-bac-pro.pdf",
+  "relais": "/protocoles/relais-2x200m-bac-pro.pdf",
+  "football": "/protocoles/football-bac-pro.pdf",
+  "basket": "/protocoles/basket-ball-bac-pro.pdf",
 };

@@ -8,10 +8,10 @@ import {
 import { COURS, BlocCours, blocsCoursPourPage } from "./cours.jsx";
 import { AssistantPage, ZoneTexteMd, EXEMPLE_PARTIE } from "./modele.jsx";
 import { ecouterSite, publierSite, syncDisponible, ecrireAcces, ecrireMigrations, empreintePin } from "./sync.js";
-import { PAGES_EVAL_GT, PROTOCOLES_PDF } from "./evaluations-gt.js";
+import { PAGES_EVAL_GT, PROTOCOLES_PDF, PROTOCOLES_PDF_PRO } from "./evaluations-gt.js";
 
 const uid = () => Math.random().toString(36).slice(2, 10);
-const APP_VERSION = "1.4.1";
+const APP_VERSION = "1.4.2";
 
 // ---------- Stockage local persistant ----------
 function lsLire(cle, defaut) {
@@ -482,14 +482,26 @@ function PageRubrique({ rubrique, sousRubriques, allerA, parent, zoneBlocs }) {
         <div style={{ color: "#9a9384", fontSize: 13, fontStyle: "italic" }}>Cette page n'a pas encore de contenu.</div>
       )}
 
-      {/* v1.4.0 : protocole d'évaluation officiel de l'APSA, lien discret en tout bas de page */}
-      {PROTOCOLES_PDF[parent ? parent.id : rubrique.id] && (
-        <div className="lien-protocole" style={{ marginTop: 34, textAlign: "center", fontSize: 11.5 }}>
-          <a href={PROTOCOLES_PDF[parent ? parent.id : rubrique.id]} target="_blank" rel="noopener noreferrer" style={{ color: "#8a8372", textDecoration: "underline", textUnderlineOffset: 2 }}>
-            Protocole d'évaluation — Bac général et technologique (PDF)
-          </a>
-        </div>
-      )}
+      {/* Protocoles d'évaluation officiels de l'APSA (Bac GT v1.4.0, Bac Pro v1.4.2) : liens discrets en tout bas de page */}
+      {(() => {
+        const cle = parent ? parent.id : rubrique.id;
+        const liensPdf = [
+          PROTOCOLES_PDF[cle] && { href: PROTOCOLES_PDF[cle], label: "Bac général et technologique" },
+          PROTOCOLES_PDF_PRO[cle] && { href: PROTOCOLES_PDF_PRO[cle], label: "Bac professionnel" },
+        ].filter(Boolean);
+        if (!liensPdf.length) return null;
+        return (
+          <div className="lien-protocole" style={{ marginTop: 34, textAlign: "center", fontSize: 11.5, color: "#8a8372" }}>
+            Protocoles d'évaluation (PDF) :{" "}
+            {liensPdf.map((l, i) => (
+              <span key={l.href}>
+                {i > 0 && " · "}
+                <a href={l.href} target="_blank" rel="noopener noreferrer" style={{ color: "#8a8372", textDecoration: "underline", textUnderlineOffset: 2 }}>{l.label}</a>
+              </span>
+            ))}
+          </div>
+        );
+      })()}
     </div>
   );
 }

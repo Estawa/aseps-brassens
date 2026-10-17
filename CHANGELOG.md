@@ -1,8 +1,15 @@
 # Site EPS — journal des changements
 
-Version actuelle : **1.4.1**
+Version actuelle : **1.4.2**
 
 ---
+
+### v1.4.2 — 17/10/2026
+- **Protocoles Bac professionnel** ajoutés en PDF pour les 9 APSA (documents Word convertis tels
+  quels, badminton déjà en PDF), dans public/protocoles/*-bac-pro.pdf.
+- En bas de chaque page des APSA : « Protocoles d'évaluation (PDF) : Bac général et technologique ·
+  Bac professionnel ».
+- Les pages Évaluation précisent qu'elles présentent le Bac général et technologique.
 
 ### v1.4.1 — 17/10/2026
 - Exemples de notation (Bac général et technologique) mis à jour :
