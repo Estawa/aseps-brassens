@@ -11,7 +11,7 @@ import { ecouterSite, publierSite, syncDisponible, ecrireAcces, ecrireMigrations
 import { PAGES_EVAL_GT, PROTOCOLES_PDF } from "./evaluations-gt.js";
 
 const uid = () => Math.random().toString(36).slice(2, 10);
-const APP_VERSION = "1.4.0";
+const APP_VERSION = "1.4.1";
 
 // ---------- Stockage local persistant ----------
 function lsLire(cle, defaut) {

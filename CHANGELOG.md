@@ -1,8 +1,17 @@
 # Site EPS — journal des changements
 
-Version actuelle : **1.4.0**
+Version actuelle : **1.4.1**
 
 ---
+
+### v1.4.1 — 17/10/2026
+- Exemples de notation (Bac général et technologique) mis à jour :
+  - Musculation : **Isa** seule (16 / 20) ;
+  - Course de durée : **Christophe** remplace Lucas (18 / 20) ;
+  - Escalade : **Frédéric** descend à 14,5 / 20 (5c en tête), Thierry reste à 13 / 20 ;
+  - Football : **Lohan** remplace Mehdi (16 / 20) ;
+  - Badminton : **Eléa** remplace Inès (17 / 20) ;
+  - Volley-ball : **Maëly** remplace Yanis (17 / 20).
 
 ### v1.4.0 — 17/10/2026
 - **Évaluations mises à jour selon les protocoles Bac général et technologique** du lycée

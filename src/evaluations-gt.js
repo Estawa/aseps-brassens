@@ -316,33 +316,33 @@ Après une intervention du coach, le professeur demande à l'équipe si elle **v
 
   "ft-eval-exemple": {
     cours: FTE,
-    titre: "4. Exemple de notation : Mehdi",
-    md: `Mehdi joue milieu de terrain. Son équipe fait **1 victoire et 1 défaite** : 4 + 1 = **5 points d'équipe** (colonne « 3 à 5 »).
+    titre: "4. Exemple de notation : Lohan",
+    md: `Lohan joue milieu de terrain. Son équipe fait **1 victoire et 1 nul** : 4 + 2 = **6 points d'équipe** (ligne « 6 à 8 »).
 
 ### L'AFL1
 
 | Élément | Ce qui a été observé | Placement | Points |
 | --- | --- | --- | --- |
-| **Élément 1** | Prise de balle en mouvement, passes dans le mouvement, se démarque bien ; se replace après avoir été éliminé mais perd encore des duels | Degré 3, **milieu** du degré | **5 / 8** |
-| **Élément 2** | L'équipe défend en bloc sur 2 lignes et maîtrise la contre-attaque (degré 3) ; au temps mort, elle se réorganise de façon cohérente (analyse **C**) | Degré 3, niveau C | **2,5 / 4** |
-| **AFL1** | | | **7,5 / 12** |
+| **Élément 1** | Contrôle orienté, conserve le ballon sous pression, élimine et crée le danger ; appels et contre-appels ; gagne la plupart de ses duels | Degré 4, **milieu** du degré | **7,25 / 8** |
+| **Élément 2** | L'équipe défend en bloc sur 2 lignes et maîtrise la contre-attaque (degré 3) ; au temps mort, elle se réorganise de façon cohérente (analyse **C**) | Degré 3, niveau C | **2,75 / 4** |
+| **AFL1** | | | **10 / 12** |
 
 ### L'AFL2 et l'AFL3
 
-Mehdi a choisi la répartition **b : 4 / 4**.
+Lohan a choisi la répartition **b : 4 / 4**.
 
 | Attendu | Observation | Degré | Points |
 | --- | --- | --- | --- |
-| **AFL2** | Échauffement appliqué, engagement régulier, tient l'effort sur toute la période de jeu | 3 | **3 / 4** |
+| **AFL2** | Connaît et applique les principes d'échauffement, s'engage régulièrement, tient l'effort sur toute la période de jeu | 3 | **3 / 4** |
 | **AFL3** | Auto-arbitre fiable (quelques fautes sans danger, s'arrête quand on lui signale une faute) et coach pertinent au temps mort | 3 | **3 / 4** |
 
 ### La note finale
 
 | AFL1 | AFL2 | AFL3 | **Total** |
 | --- | --- | --- | --- |
-| 7,5 / 12 | 3 / 4 | 3 / 4 | **13,5 / 20** |
+| 10 / 12 | 3 / 4 | 3 / 4 | **16 / 20** |
 
-Avec **une victoire de plus** (8 points d'équipe), les mêmes observations donnaient 5,25 + 2,75 = **8 / 12** à l'AFL1, soit **14 / 20**.`,
+Lohan est déjà au degré 4 comme joueur. Ses points à gagner sont **collectifs** : une équipe qui alterne jeu direct et indirect (degré 4) et un temps mort **efficace** (analyse D) donnaient 3,75 au lieu de 2,75 à l'élément 2.`,
   },
 };
 
@@ -599,33 +599,33 @@ ${TABLE_AFL23}
 
   "vb-eval-exemple": {
     cours: VBE,
-    titre: "4. Exemple de notation : Yanis",
-    md: `Yanis joue **passeur** dans son équipe de 4. Contre la même équipe, ils gagnent la 1re rencontre et perdent la 2e : **1 victoire + 1 défaite** (5 points d'équipe).
+    titre: "4. Exemple de notation : Maëly",
+    md: `Maëly joue **passeuse** dans son équipe de 4. Contre la même équipe, ils gagnent **les 2 rencontres** (8 points d'équipe).
 
 ### L'AFL1
 
 | Élément | Ce qui a été observé | Degré | Points |
 | --- | --- | --- | --- |
-| **Élément 1** | Passes hautes orientées vers la zone avant, service tendu mais irrégulier, déplacements actifs ; l'équipe attaque depuis la zone avant | 3 | **5,25 / 8** |
-| **Élément 2** | À la pause, l'équipe repère que l'adversaire défend mal le fond du terrain mais ne propose pas d'adaptation | 3 | **2,6 / 4** |
-| **AFL1** | | | **7,85 / 12** |
+| **Élément 1** | Passes hautes orientées vers la zone avant, service tendu mais irrégulier, déplacements actifs ; l'équipe attaque depuis la zone avant | 3 | **6 / 8** |
+| **Élément 2** | À la pause, l'équipe repère que l'adversaire défend mal le fond du terrain et décide de servir systématiquement dans cette zone, ce qui fonctionne | 4 | **4 / 4** |
+| **AFL1** | | | **10 / 12** |
 
 ### L'AFL2 et l'AFL3
 
-Yanis a choisi la répartition **c : AFL2 sur 6, AFL3 sur 2**.
+Maëly a choisi la répartition **b : 4 / 4**.
 
 | Attendu | Observation | Degré | Points |
 | --- | --- | --- | --- |
-| **AFL2** | Autonome et très actif, propose des exercices de passe à son équipe, échauffement complet en 3 phases | 4 | **6 / 6** |
-| **AFL3** | Capitaine et arbitre : conseille ses coéquipiers avec une attitude positive ; arbitre qui connaît les règles mais pas tous les gestes | 3 | **1,5 / 2** |
+| **AFL2** | Autonome et très active, propose des exercices de passe à son équipe, échauffement complet en 3 phases | 4 | **4 / 4** |
+| **AFL3** | Capitaine et arbitre : conseille ses coéquipiers avec une attitude positive ; arbitre qui connaît les règles mais pas tous les gestes | 3 | **3 / 4** |
 
 ### La note finale
 
 | AFL1 | AFL2 | AFL3 | **Total** |
 | --- | --- | --- | --- |
-| 7,85 / 12 | 6 / 6 | 1,5 / 2 | **15,35 / 20** |
+| 10 / 12 | 4 / 4 | 3 / 4 | **17 / 20** |
 
-Une **adaptation proposée** à la pause (par exemple servir systématiquement dans le fond du terrain) aurait fait passer l'élément 2 au degré 4 : 3,6 au lieu de 2,6, soit **un point de plus**.`,
+Pour viser plus haut, Maëly doit fiabiliser son **service tendu** et donner des passes **sur un passeur défini** (degré 4 de l'élément 1 : 8 au lieu de 6).`,
   },
 };
 
@@ -749,31 +749,33 @@ L'évaluation s'appuie sur ta prestation et sur les documents à remplir (feuill
 
   "bd-eval-exemple": {
     cours: BDE,
-    titre: "4. Exemple de notation : Inès",
-    md: `Inès est placée par l'enseignant au **degré 3** de l'élément 1, avec 3 autres filles de ce degré. Le jour de l'épreuve, elle joue dans une **poule de 4**.
+    titre: "4. Exemple de notation : Eléa",
+    md: `Eléa est placée par l'enseignant au **degré 4** de l'élément 1, avec 2 autres filles de ce degré. Le jour de l'épreuve, elle joue dans une **poule de 4**.
 
 ### L'AFL1
 
 | Élément | Ce qui a été observé | Points |
 | --- | --- | --- |
-| **Élément 1** | Trajectoires variées en profondeur et largeur, frappes de rupture sur volant haut au filet, déplacements rapides ; elle termine **2e des 4 filles** du degré 3 (milieu du degré) | **5,25 / 8** |
-| **Élément 2** | Projet cohérent : jouer le revers de ses adversaires (degré 3) ; **2 victoires** sur 3 matchs dans sa poule de 4 | **2,8 / 4** |
-| **AFL1** | | **8,05 / 12** |
+| **Élément 1** | Trajectoires variées en profondeur et en largeur, volants proches des lignes, attaque au filet ; elle termine **1re des 3 filles** du degré 4 (haut du degré) | **8 / 8** |
+| **Élément 2** | Projet cohérent : jouer le revers de ses adversaires (degré 3) ; **3 victoires** sur 3 matchs dans sa poule de 4 | **3 / 4** |
+| **AFL1** | | **11 / 12** |
 
 ### L'AFL2 et l'AFL3
 
-Inès a choisi la répartition **a : AFL2 sur 2, AFL3 sur 6**.
+Eléa a choisi la répartition **b : 4 / 4**.
 
 | Attendu | Observation | Degré | Points |
 | --- | --- | --- | --- |
-| **AFL2** | Connaît et applique les principes d'échauffement, s'engage régulièrement | 3 | **1,5 / 2** |
-| **AFL3** | Gestionnaire et coach : organise les matchs de sa poule et tient le classement ; conseils pertinents mais pas toujours adaptés à sa partenaire | 3 | **4,5 / 6** |
+| **AFL2** | Connaît et applique les principes d'échauffement, s'engage régulièrement | 3 | **3 / 4** |
+| **AFL3** | Gestionnaire et coach : organise les matchs de sa poule et tient le classement ; conseils pertinents mais pas toujours adaptés à sa partenaire | 3 | **3 / 4** |
 
 ### La note finale
 
 | AFL1 | AFL2 | AFL3 | **Total** |
 | --- | --- | --- | --- |
-| 8,05 / 12 | 1,5 / 2 | 4,5 / 6 | **14,05 / 20** |`,
+| 11 / 12 | 3 / 4 | 3 / 4 | **17 / 20** |
+
+Son projet de jeu reste centré sur **une** faiblesse adverse : en tenant compte aussi de **ses propres forces** (degré 4), elle obtenait 4 / 4 à l'élément 2, soit **18 / 20**.`,
   },
 };
 
@@ -886,38 +888,38 @@ ${TABLE_AFL23}
 
 | | Frédéric | Thierry |
 | --- | --- | --- |
-| Mode et voie tirée au sort | **Tête**, voie en **6a** | **Moulitête**, voie en **5c** |
-| Déroulement | Sort la voie en 2 min 40 s (moins de la moitié des 6 minutes) | Sort la voie en 5 min 20 s avec plusieurs pauses |
-| Dans le tableau de performance | **T** sur la voie en 6a | **MT** sur la voie en 5c |
+| Mode et voie tirée au sort | **Tête**, voie en **5c** | **Moulitête**, voie en **5c** |
+| Déroulement | Sort la voie en 4 min 30 s avec quelques pauses pour lire | Sort la voie en 5 min 20 s avec plusieurs pauses |
+| Dans le tableau de performance | **T** sur la voie en 5c | **MT** sur la voie en 5c |
 
 ### L'AFL1
 
 | Élément | Frédéric | Thierry |
 | --- | --- | --- |
-| **Élément 1** — lecture de la voie | Voie adaptée, sortie en moins de la moitié du temps : degré 4, 6a → **6** | Voie la plus dure réussie du cycle, sortie avec difficulté : degré 3, 5c → **4,25** |
-| **Élément 2** — déplacement | Pieds précis, très souvent en position d'équilibre pour clipper, mais pas encore ambidextre : degré 3, 6a → **4,5** | Monte ses pieds en s'équilibrant avec les mains, s'y reprend pour mousquetonner : degré 2, 5c → **2,75** |
-| **AFL1** | **10,5 / 12** | **7 / 12** (moulitête : degré 3 au maximum) |
+| **Élément 1** — lecture de la voie | Voie la plus dure réussie du cycle, quelques pauses pour lire : degré 3, 5c → **4,25** | Voie la plus dure réussie du cycle, sortie avec difficulté : degré 3, 5c → **4,25** |
+| **Élément 2** — déplacement | Pieds précis, très souvent en position d'équilibre pour clipper, mais pas encore ambidextre : degré 3, 5c → **4,25** | Monte ses pieds en s'équilibrant avec les mains, s'y reprend pour mousquetonner : degré 2, 5c → **2,75** |
+| **AFL1** | **8,5 / 12** | **7 / 12** (moulitête : degré 3 au maximum) |
 
 ### L'AFL2 et l'AFL3
 
 | | Frédéric | Thierry |
 | --- | --- | --- |
 | Répartition choisie | c : AFL2 sur 6, AFL3 sur 2 | a : AFL2 sur 2, AFL3 sur 6 |
-| AFL2 | Carnet méthodique, voies de plus en plus dures : degré 4 → **6 / 6** | Carnet régulier, axes de travail identifiés : degré 3 → **1,5 / 2** |
+| AFL2 | Carnet régulier, axes de travail identifiés, mais sans prise de risque : degré 3 → **4,5 / 6** | Carnet régulier, axes de travail identifiés : degré 3 → **1,5 / 2** |
 | AFL3 | Assureur en moulitête sans risque, anticipe un peu : degré 3 → **1,5 / 2** | Assureur en tête, tension de corde contrôlée : degré 3 → **4,5 / 6** |
-| **AFL2 + AFL3** | **7,5 / 8** | **6 / 8** |
+| **AFL2 + AFL3** | **6 / 8** | **6 / 8** |
 
 ### La note du bac
 
 | | AFL1 | AFL2 + AFL3 | **Total** |
 | --- | --- | --- | --- |
-| Frédéric | 10,5 | 7,5 | **18 / 20** |
+| Frédéric | 8,5 | 6 | **14,5 / 20** |
 | Thierry | 7 | 6 | **13 / 20** |
 
 ### À retenir
 
 - Thierry est **bloqué au degré 3** parce qu'il a choisi la moulitête. En tête sur la même voie en 5c, avec un déplacement de degré 3, il pouvait viser jusqu'à 4,25 + 4,25 = 8,5 à l'AFL1.
-- Frédéric gagne ses points sur la **difficulté** (6a, la voie la plus dure de l'épreuve) et sur la **vitesse de lecture** ; un mousquetonnage ambidextre lui donnait le degré 4 à l'élément 2, soit 6 au lieu de 4,5.`,
+- Frédéric reste sur une voie qu'il **connaît** (5c). En visant le **6a** en tête avec le même degré, il gagnait 0,25 point par élément ; en lisant la voie en moins de la moitié du temps (degré 4 de l'élément 1), il passait à 6 points au lieu de 4,25. Son carnet doit aussi montrer une **prise de risque** progressive (degré 4 de l'AFL2 : 6 au lieu de 4,5).`,
   },
 };
 
@@ -1168,42 +1170,41 @@ ${TABLE_AFL23}
 
   "mu-eval-exemple": {
     cours: MUE,
-    titre: "4. Exemple de notation : le binôme Christophe et Isa",
-    md: `Christophe et Isa travaillent en binôme : chacun réalise sa séance pendant que l'autre le coache ou le pare.
+    titre: "4. Exemple de notation : Isa",
+    md: `Isa travaille en binôme : elle réalise sa séance pendant que son partenaire la coache, puis elle l'observe et le pare.
 
-### Leurs projets
+### Son projet
 
-| | Christophe | Isa |
-| --- | --- | --- |
-| Thème | Gain de **force** | **Tonicité** |
-| Ateliers | Développé couché, demi-squat + exercices complémentaires (rowing, gainage) | Tirage poulie haute, demi-squat + exercices complémentaires (pompes, fentes) |
-| Méthode | Charge constante, séries courtes (R6) | Super-séries agonistes / antagonistes (R15) |
+| | Isa |
+| --- | --- |
+| Thème | **Tonicité** |
+| Ateliers | Tirage poulie haute, demi-squat + exercices complémentaires (pompes, fentes) |
+| Méthode | Super-séries agonistes / antagonistes (R15) |
 
 ### L'AFL1
 
-| Élément | Christophe | Isa |
-| --- | --- | --- |
-| **Élément 1** — produire | Échauffement complet et progressif, séries d'approche ; trajets et respiration toujours placés ; légère cambrure seulement sur la dernière répétition : degré 4 → **7 / 8** | Échauffement structuré ; paramètres respectés sur tous les ateliers ; quelques postures compensatoires en fin de super-série : degré 3 → **5 / 8** |
-| **Élément 2** — analyser | Charge adaptée mais non affinée (n'a pas osé augmenter malgré 2 répétitions de plus) ; bilan lucide : degré 3 → **2,5 / 4** | Charge régulée pendant la séance selon ses ressentis ; bilan détaillé avec propositions pour la suivante : degré 4 → **3,5 / 4** |
-| **AFL1** | **9,5 / 12** | **8,5 / 12** |
+| Élément | Ce qui a été observé | Degré | Points |
+| --- | --- | --- | --- |
+| **Élément 1** — produire | Échauffement structuré ; paramètres respectés sur tous les ateliers ; quelques postures compensatoires en fin de super-série | 3 | **5 / 8** |
+| **Élément 2** — analyser | Charge régulée pendant la séance selon ses ressentis ; bilan détaillé avec propositions pour la séance suivante | 4 | **3,5 / 4** |
+| **AFL1** | | | **8,5 / 12** |
 
 ### L'AFL2 et l'AFL3
 
-| | Christophe | Isa |
-| --- | --- | --- |
-| Répartition choisie | b : AFL2 sur 4, AFL3 sur 4 | a : AFL2 sur 2, AFL3 sur 6 |
-| AFL2 | Paramètres maîtrisés, équilibre tronc-membres et agonistes-antagonistes, fatigue visible en fin de séance : degré 4 → **4 / 4** | Projet pertinent, plusieurs formes de contraction, engagement réel : degré 3 → **1,5 / 2** |
-| AFL3 | Coach : conseils justes mais génériques : degré 3 → **3 / 4** | Observatrice et pareuse : compte précisément, repère constamment amplitude et postures : degré 4 → **6 / 6** |
-| **AFL2 + AFL3** | **7 / 8** | **7,5 / 8** |
+Isa a choisi la répartition **a : AFL2 sur 2, AFL3 sur 6**.
+
+| Attendu | Observation | Degré | Points |
+| --- | --- | --- | --- |
+| **AFL2** | Projet pertinent, plusieurs formes de contraction, engagement réel | 3 | **1,5 / 2** |
+| **AFL3** | Observatrice et pareuse : compte précisément les répétitions, repère constamment l'amplitude et les postures | 4 | **6 / 6** |
 
 ### La note finale
 
-| | AFL1 | AFL2 + AFL3 | **Total** |
+| AFL1 | AFL2 | AFL3 | **Total** |
 | --- | --- | --- | --- |
-| Christophe | 9,5 | 7 | **16,5 / 20** |
-| Isa | 8,5 | 7,5 | **16 / 20** |
+| 8,5 / 12 | 1,5 / 2 | 6 / 6 | **16 / 20** |
 
-Christophe pouvait gagner un point en **augmentant sa charge** au bon moment (élément 2 au degré 4) ; Isa en supprimant ses **postures compensatoires** en fin de série (élément 1 au degré 4).`,
+Isa a bien joué sa répartition : très à l'aise comme **observatrice-pareuse**, elle a mis 6 points sur l'AFL3. Pour aller plus haut, elle doit supprimer ses **postures compensatoires** en fin de série : l'élément 1 passait au degré 4 (au moins 6,5 / 8).`,
   },
 
   // --------------------------- Course de durée ---------------------------
@@ -1286,8 +1287,8 @@ ${TABLE_AFL23}
 
   "cd-eval-exemple": {
     cours: CDE,
-    titre: "4. Exemple de notation : Lucas",
-    md: `Lucas a une **VMA de 14 km/h**. Il veut améliorer son endurance pour son club de football : il choisit le thème **capacité aérobie** (80 à 95 % de VMA).
+    titre: "4. Exemple de notation : Christophe",
+    md: `Christophe a une **VMA de 14 km/h**. Il prépare un trail : il choisit le thème **capacité aérobie** (80 à 95 % de VMA) pour tenir un effort soutenu plus longtemps.
 
 ### Sa séance (plan présenté par écrit)
 
@@ -1300,26 +1301,26 @@ ${TABLE_AFL23}
 
 | Élément | Ce qui a été observé | Degré | Points |
 | --- | --- | --- | --- |
-| **Élément 1** | Échauffement structuré ; bien engagé à la bonne allure ; **5 passages hors zone** (surtout dans le dernier bloc à 90 %) ; récupérations actives ; il hésite à ralentir quand il sort de la zone | 3 | **5 / 8** |
-| **Élément 2** | Bilan réaliste : il explique ses passages hors zone par un départ trop rapide sur le 4e bloc et prévoit de couper le bloc à 90 % en 2 × 3 min la prochaine fois | 3 | **3 / 4** |
-| **AFL1** | | | **8 / 12** |
+| **Élément 1** | Échauffement complet et personnalisé ; engagement maximal dans la zone visée ; **2 passages hors zone** seulement, corrigés aussitôt ; récupérations actives réduites au minimum | 4 | **7 / 8** |
+| **Élément 2** | Bilan expliqué : il relie ses 2 sorties de zone à la fatigue du dernier bloc, relève sa fréquence cardiaque et son Borg, propose de passer à 4 × 6 min la prochaine fois ; parle aussi de son alimentation et de son sommeil avant la course | 4 | **4 / 4** |
+| **AFL1** | | | **11 / 12** |
 
 ### L'AFL2 et l'AFL3
 
-Lucas a choisi la répartition **b : 4 / 4**.
+Christophe a choisi la répartition **b : 4 / 4**.
 
 | Attendu | Observation | Degré | Points |
 | --- | --- | --- | --- |
-| **AFL2** | Carnet tenu à chaque séance avec écarts prévu / réalisé et Borg ; séances cohérentes | 3 | **3 / 4** |
-| **AFL3** | Observateur : recueil des temps de passage parfait sur toutes les séances | 4 | **4 / 4** |
+| **AFL2** | Carnet complet à chaque séance, écarts prévu / réalisé et sensations mis en relation ; séances conçues et régulées seul | 4 | **4 / 4** |
+| **AFL3** | Coach attentif à son partenaire et à l'écart entre l'allure prévue et réalisée, conseils justes | 3 | **3 / 4** |
 
 ### La note finale
 
 | AFL1 | AFL2 | AFL3 | **Total** |
 | --- | --- | --- | --- |
-| 8 / 12 | 3 / 4 | 4 / 4 | **15 / 20** |
+| 11 / 12 | 4 / 4 | 3 / 4 | **18 / 20** |
 
-Avec **moins de 3 passages hors zone** et une régulation plus rapide (ralentir dès la première sortie de zone), l'élément 1 passait au degré 4 : **au moins 6 / 8**.`,
+Il ne lui manque presque rien : un coaching qui aide son partenaire à **réguler sur le moment** (degré 4) lui donnait un point de plus à l'AFL3.`,
   },
 };
 
