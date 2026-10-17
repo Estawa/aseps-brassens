@@ -8,7 +8,6 @@
 // RELAIS 2 × 200 m — niveau Terminale (barème Bac Pro, application Relais 200m)
 // =====================================================================
 const RL = "Relais 2 × 200 m — théorie";
-const RLE = "Relais 2 × 200 m — évaluation";
 
 export const COURS_RELAIS = {
   "rl-jeu": {
@@ -22,10 +21,10 @@ Gagner du temps au relais, ce n'est pas seulement courir vite : c'est surtout **
 
 | Élément | Organisation en cycle |
 | --- | --- |
-| Équipes | Binômes (2 × 200 m) ou trinômes (3 coureurs, temps ramené à un équivalent binôme) de **niveau proche** |
+| Équipes | **Binômes** de niveau proche (à l'épreuve du bac). En cours de cycle, des trinômes sont possibles pour l'entraînement |
 | Constitution | À partir du **test individuel sur 200 m** de début de cycle |
 | Course | Chaque équipe dans **son couloir**, plusieurs équipes au départ ensemble, un seul chronomètre |
-| Transmission | Dans une **zone de transmission de 20 m** |
+| Transmission | Dans une **zone de transmission de 20 m**, précédée d'une **zone d'élan de 10 m** |
 | Manches | Plusieurs prises de performance sur le cycle ; l'**ordre des coureurs tourne** d'une manche à l'autre |
 
 ### Ce qu'on attend d'un élève de Terminale
@@ -34,7 +33,7 @@ Gagner du temps au relais, ce n'est pas seulement courir vite : c'est surtout **
 - **Partir vite** : départ (premier relayeur) ou départ lancé du receveur au bon moment.
 - **Transmettre le témoin à pleine vitesse**, sans ralentir, dans la zone, grâce à des **repères précis** (marque au sol, signal).
 - **Analyser** ses temps et ceux de l'équipe pour ajuster marques et stratégie.
-- **Tenir les rôles** de starter-chronométreur et de juge de zone, et **se préparer** de façon autonome.`,
+- **Tenir des rôles** (starter, chronométreur, juge de zone, observateur-coach) et **se préparer** de façon autonome.`,
   },
 
   "rl-reglement": {
@@ -47,7 +46,7 @@ Gagner du temps au relais, ce n'est pas seulement courir vite : c'est surtout **
 | Milieu de zone | La marque des **200 m** (fin du parcours du premier coureur) |
 | Début de la zone de transmission | **10 m avant** le milieu |
 | Fin de la zone de transmission | **10 m après** le milieu (soit **20 m** au total) |
-| Zone d'élan | **5 m avant** le début de la zone de transmission : le receveur peut s'y placer pour démarrer |
+| Zone d'élan | **10 m avant** le début de la zone de transmission : le receveur peut s'y placer pour démarrer |
 
 **Le témoin doit changer de main à l'intérieur de la zone de transmission.** Ce qui compte, c'est la **position du témoin**, pas celle des pieds des coureurs.
 
@@ -194,7 +193,7 @@ Entre deux manches : **marcher**, boire, rester couvert, récupérer complèteme
 
 ### Les rôles
 
-- Tenir le rôle de **starter-chronométreur** et de **juge de zone**.
+- Tenir les rôles de **starter**, **chronométreur**, **juge de zone** et **observateur-coach**.
 - Conduire un **échauffement** adapté au relais.`,
   },
 
@@ -207,7 +206,7 @@ Entre deux manches : **marcher**, boire, rester couvert, récupérer complèteme
 | Donneur | Coureur qui arrive et transmet le témoin |
 | Receveur | Coureur qui part et reçoit le témoin |
 | Zone de transmission | Zone de 20 m dans laquelle le témoin doit changer de main |
-| Zone d'élan | Espace de 5 m avant la zone de transmission où le receveur peut se placer pour démarrer |
+| Zone d'élan | Espace de 10 m avant la zone de transmission où le receveur peut se placer pour démarrer |
 | Marque | Repère au sol : quand le donneur l'atteint, le receveur démarre |
 | Départ lancé | Départ du receveur en course, pour être à pleine vitesse au moment de recevoir le témoin |
 | Indice de transmission (IT) | Somme des 200 m individuels − meilleur temps de relais de l'équipe ; plus il est petit (voire négatif), meilleure est la transmission |
@@ -215,175 +214,12 @@ Entre deux manches : **marcher**, boire, rester couvert, récupérer complèteme
 | Starter | Personne qui donne le départ |`,
   },
 
-  // --------------------------- Relais : évaluation ---------------------------
-  "rl-eval-structure": {
-    cours: RLE,
-    titre: "1. L'épreuve : structure de la note",
-    md: `Le relais fait partie du **champ d'apprentissage 1** : « Réaliser une performance motrice maximale mesurable à une échéance donnée ». La note est sur **20 points**. Le barème présenté ici est celui du **Bac Pro (Terminale)**, référentiel de l'Académie de Versailles — c'est lui qu'utilise l'application Relais 200m.
-
-| Partie | Ce qui est évalué | Points | Quand |
-| --- | --- | --- | --- |
-| **AFLP 1** | Produire et répartir intentionnellement ses efforts en mobilisant ses ressources pour gagner ou battre un record | **7 points** : positionnement /4 + performance /3 | Fin de séquence |
-| **AFLP 2** | Connaître et mobiliser les techniques efficaces pour produire la meilleure performance possible | **5 points** | Fin de séquence |
-| **AFLP 4** | Assumer des rôles sociaux pour organiser une épreuve de production de performance | **2, 4 ou 6 points** | Au fil de la séquence |
-| **AFLP 5** | Assurer la prise en charge de sa préparation et de celle d'un groupe, de façon autonome | **6, 4 ou 2 points** | Au fil de la séquence |
-
-### Fin de séquence : 12 points
-
-- **Positionnement /4** : l'enseignant situe ton engagement et ta gestion de l'effort (vitesse produite et **maintenue** jusqu'au bout du 200 m, départ, relâchement).
-- **Performance /3** : calculée à partir de tes temps (voir partie 2).
-- **AFLP 2 /5** : qualité de tes techniques — départ, course en virage, **transmission** (marque, signal, main, vitesse conservée, témoin dans la zone).
-
-### Fil de séquence : 8 points
-
-Tu choisis comment répartir les 8 points entre **AFLP 4** (rôles) et **AFLP 5** (préparation) :
-
-| Choix | AFLP 4 | AFLP 5 |
-| --- | --- | --- |
-| a | 6 points | 2 points |
-| b | 4 points | 4 points |
-| c | 2 points | 6 points |`,
-  },
-
-  "rl-eval-performance": {
-    cours: RLE,
-    titre: "2. La performance /3 : 200 m, relais et indice de transmission",
-    md: `La note de performance est la **moyenne de trois notes**, chacune sur la même échelle de 0 à 3 points :
-
-1. **Ton meilleur 200 m individuel** (barème filles ou garçons).
-2. **La moyenne de deux relais** de ton équipe (les 2 meilleurs ou les 2 derniers du cycle, selon le choix de l'enseignant pour la classe).
-3. **L'indice de transmission (IT)** = somme des deux 200 m individuels du binôme − meilleur des deux temps de relais retenus.
-
-On lit chaque barème **par paliers** : on prend le nombre de points du **premier temps qui n'est pas dépassé**.
-
-### Le barème (Bac Pro Terminale)
-
-| Points | 200 m filles | 200 m garçons | Relais filles | Relais garçons | IT (commun) |
-| --- | --- | --- | --- | --- | --- |
-| 3 | 32"5 | 27"0 | 1'10"0 | 55"5 | −1,2 |
-| 2,8 | 33"0 | 27"5 | 1'11"0 | 56"0 | −1,1 |
-| 2,6 | 33"5 | 28"0 | 1'12"0 | 56"5 | −1,0 |
-| 2,4 | 34"0 | 28"5 | 1'13"0 | 57"0 | −0,9 |
-| 2,2 | 34"5 | 29"0 | 1'14"0 | 58"0 | −0,8 |
-| 2 | 35"0 | 29"5 | 1'15"0 | 59"0 | −0,7 |
-| 1,9 | 36"0 | 30"0 | 1'16"0 | 1'00"0 | −0,6 |
-| 1,8 | 37"0 | 30"5 | 1'17"0 | 1'01"0 | −0,5 |
-| 1,75 | 38"0 | 31"0 | 1'18"0 | 1'02"0 | −0,4 |
-| 1,7 | 39"0 | 32"0 | 1'19"0 | 1'03"0 | −0,3 |
-| 1,65 | 40"0 | 32"5 | 1'20"0 | 1'04"0 | −0,2 |
-| 1,6 | 40"5 | 32"7 | 1'22"0 | 1'05"0 | −0,1 |
-| 1,5 | 41"0 | 33"0 | 1'24"0 | 1'06"0 | 0 |
-| 1,4 | 42"0 | 33"5 | 1'26"0 | 1'08"0 | +0,2 |
-| 1,3 | 43"0 | 34"0 | 1'28"0 | 1'10"0 | +0,5 |
-| 1,2 | 44"0 | 35"0 | 1'30"0 | 1'12"0 | +0,7 |
-| 1,1 | 45"0 | 36"0 | 1'32"0 | 1'14"0 | +1,0 |
-| 1 | 46"0 | 37"0 | 1'34"0 | 1'16"0 | +1,5 |
-| 0,9 | 47"0 | 38"0 | 1'35"0 | 1'18"0 | +1,75 |
-| 0,8 | 48"0 | 39"0 | 1'36"0 | 1'20"0 | +2,0 |
-| 0,7 | 49"0 | 40"0 | 1'40"0 | 1'21"0 | +2,25 |
-| 0,5 | 50"0 | 41"0 | 1'42"0 | 1'22"0 | +2,5 |
-| 0,3 | 51"0 | 42"0 | 1'44"0 | 1'23"0 | +3,0 |
-| 0,1 | 52"0 | 43"0 | 1'46"0 | 1'24"0 | +3,2 |
-| 0 | 53"0 | 44"0 | 1'48"0 | 1'25"0 | +3,5 |
-
-### Comprendre l'indice de transmission
-
-- **IT positif** : l'équipe va **moins vite** en relais que ses coureurs en individuel → le témoin fait perdre du temps (receveur parti trop tard, donneur qui freine).
-- **IT nul ou négatif** : le **départ lancé** du receveur fait gagner du temps → la transmission est réussie.
-
-### En trinôme
-
-Le barème est prévu pour des binômes : pour un trinôme, les temps de relais et la somme des 200 m sont **multipliés par 2/3** (règle de trois) avant de lire le barème.`,
-  },
-
-  "rl-eval-fil": {
-    cours: RLE,
-    titre: "3. Le fil de séquence /8 : rôles et préparation",
-    md: `Évalué **tout au long du cycle**. Pour chaque AFLP, l'enseignant te situe dans un **degré** (1 à 4), qui correspond à une plage de points selon ta répartition.
-
-### AFLP 4 : assumer des rôles sociaux
-
-Rôles possibles : **starter-chronométreur**, **juge de zone** (vérifie que le témoin change de main dans la zone), **chronométreur**, **organisateur** (couloirs, plots, rangement du matériel).
-
-| Degré | Ce qui est observé |
-| --- | --- |
-| 1 | S'investit épisodiquement dans un des rôles |
-| 2 | S'investit dans un rôle choisi (souvent juge de zone ou starter) |
-| 3 | Assure un rôle de façon autonome et efficace, un deuxième ponctuellement avec de l'aide |
-| 4 | Assume avec efficacité au moins deux rôles et aide ses camarades |
-
-### AFLP 5 : se préparer de façon autonome
-
-| Degré | Ce qui est observé |
-| --- | --- |
-| 1 | Échauffement insuffisant ; ne s'entraîne pas assez pour progresser ; centré sur lui-même |
-| 2 | Échauffement largement perfectible ; entraînement approximatif ; guide sans aide réelle |
-| 3 | Échauffement complet ; entraînement adapté, répétitions suffisantes ; guide un petit groupe |
-| 4 | Échauffement varié, complet et adapté ; entraînement optimisé, progrès nets ; motive et corrige un groupe |
-
-### Les plages de points
-
-| Degré | Sur 2 points | Sur 4 points | Sur 6 points |
-| --- | --- | --- | --- |
-| 1 | 0 à 0,4 | 0 à 0,9 | 0 à 1,4 |
-| 2 | 0,5 à 0,9 | 1 à 1,9 | 1,5 à 2,9 |
-| 3 | 1 à 1,4 | 2 à 2,9 | 3 à 4,4 |
-| 4 | 1,5 à 2 | 3 à 4 | 4,5 à 6 |`,
-  },
-
-  "rl-eval-exemple": {
-    cours: RLE,
-    titre: "4. Exemple de notation : le binôme Cyrille et Steph",
-    md: `Cyrille et Steph courent ensemble en **binôme garçons**. Voici leurs résultats du cycle et le calcul complet de leur note.
-
-### Les performances
-
-| | Cyrille | Steph |
-| --- | --- | --- |
-| Meilleur 200 m individuel | **34"6** | **36"8** |
-| Relais retenus (les 2 meilleurs) | 1'11"1 et 1'12"3 | 1'11"1 et 1'12"3 |
-
-### 1. Les trois notes de performance
-
-| Calcul | Valeur | Lecture du barème garçons | Points |
-| --- | --- | --- | --- |
-| 200 m de Cyrille | 34"6 | ne dépasse pas 35"0 | **1,2** |
-| 200 m de Steph | 36"8 | ne dépasse pas 37"0 | **1** |
-| Moyenne des 2 relais | (71"1 + 72"3) ÷ 2 = **71"7** (1'11"7) | ne dépasse pas 1'12"0 | **1,2** |
-| Indice de transmission | (34"6 + 36"8) − 71"1 = **+0,3** | ne dépasse pas +0,5 | **1,3** |
-
-L'IT est **positif** : ensemble, ils vont un peu moins vite que la somme de leurs deux 200 m. Le receveur part trop tard et le témoin leur coûte du temps.
-
-- **Performance de Cyrille** = (1,2 + 1,2 + 1,3) ÷ 3 = 3,7 ÷ 3 ≈ **1,23 / 3**
-- **Performance de Steph** = (1 + 1,2 + 1,3) ÷ 3 = 3,5 ÷ 3 ≈ **1,17 / 3**
-
-### 2. La note complète
-
-| Partie | Cyrille | Steph |
-| --- | --- | --- |
-| Positionnement AFLP 1 (/4) | 2 — vitesse qui chute dans la ligne droite | 2,5 — effort mieux réparti |
-| Performance AFLP 1 (/3) | 1,23 | 1,17 |
-| **AFLP 1 (/7)** | **3,23** | **3,67** |
-| AFLP 2 — techniques (/5) | 2,5 — départ correct, signal donné trop tard | 3 — marque prise sérieusement, main bien tendue |
-| **Fin de séquence (/12)** | **5,73** | **6,67** |
-| Répartition choisie | b : AFLP 4 sur 4, AFLP 5 sur 4 | a : AFLP 4 sur 6, AFLP 5 sur 2 |
-| AFLP 4 — rôles | 2,5 / 4 (degré 3, juge de zone fiable) | 3,5 / 6 (degré 3, starter autonome) |
-| AFLP 5 — préparation | 2 / 4 (degré 3, échauffement complet) | 1 / 2 (degré 3) |
-| **Fil de séquence (/8)** | **4,5** | **4,5** |
-| **Note finale (/20)** | **10,23 → 10,2 / 20** | **11,17 → 11,2 / 20** |
-
-### Ce qui leur a manqué
-
-- Un **200 m individuel** plus rapide : chaque seconde gagnée rapporte environ 0,1 point sur l'échelle de performance.
-- Surtout, la **transmission** : avec un IT à 0 au lieu de +0,3, ils gagnaient déjà 0,2 point sur cette note, et un relais en 1'10" leur donnait 1,3 au lieu de 1,2. Le travail de **marque** (reculer d'1 ou 2 pieds pour que le receveur parte plus tôt) était la priorité.`,
-  },
 };
 
 // =====================================================================
-// FOOTBALL (à 5 contre 5 sur terrain réduit) — niveau Terminale
+// FOOTBALL (à 7 contre 7, règles UNSS) — niveau Terminale
 // =====================================================================
 const FT = "Football — théorie";
-const FTE = "Football — évaluation";
 
 export const COURS_FOOT = {
   "ft-jeu": {
@@ -395,16 +231,20 @@ export const COURS_FOOT = {
 
 | Élément | Règle en cycle |
 | --- | --- |
-| Équipes | **5 contre 5** (4 joueurs de champ + 1 gardien), parfois 7 contre 7 en extérieur |
-| Terrain | Réduit, du type terrain de handball (**40 m × 20 m**), buts de handball |
-| Zone du gardien | La zone de handball (6 m) : seul le gardien y joue le ballon à la main |
-| Ballon | Taille 5 (ou ballon de futsal en gymnase) |
-| Durée | Matchs courts (par exemple 2 × 6 à 8 minutes) |
-| Équipes | Homogènes entre elles, mixtes selon l'organisation de la classe |
+| Équipes | **7 contre 7** (6 joueurs de champ + 1 gardien), avec des remplaçants |
+| Terrain | Terrain de **football à 7** |
+| Règles | Celles du **football à 7 UNSS** |
+| Ballon | Taille 5 |
+| Durée | Matchs de 24 minutes à l'évaluation, changements toutes les 6 minutes |
+| Équipes | Fixées par l'enseignant à partir de la 4e séance, de force équilibrée, mixtes |
 
-### Pourquoi un terrain réduit ?
+### La règle de mixité
 
-Moins d'espace et moins de joueurs, c'est **plus de ballons touchés**, des décisions **plus rapides** et une vraie nécessité de **jouer ensemble** : un joueur seul face à deux défenseurs perd vite le ballon.
+Un garçon ne peut prendre le ballon à une fille (non experte) qu'à sa **4e touche** de balle, sauf sur **interception** ou dans ses **13 derniers mètres**. Une fille peut récupérer le ballon dès la 1re touche adverse. Cette règle laisse aux joueuses le temps de contrôler, de regarder et de choisir, et pousse les garçons à jouer **avec** elles. Elle peut aussi s'appliquer aux garçons les plus en difficulté.
+
+### Pourquoi le football à 7 ?
+
+Un terrain plus petit et moins de joueurs, c'est **plus de ballons touchés**, des décisions **plus rapides** et une vraie nécessité de **jouer ensemble** : un joueur seul face à deux défenseurs perd vite le ballon.
 
 ### Ce qu'on attend d'un élève de Terminale
 
@@ -425,16 +265,17 @@ Moins d'espace et moins de joueurs, c'est **plus de ballons touchés**, des déc
 | --- | --- |
 | Engagement | Au centre, en début de période et après chaque but (par l'équipe qui a encaissé) |
 | But | Le ballon a **entièrement franchi** la ligne de but, entre les poteaux et sous la barre |
-| Hors-jeu | **Pas de hors-jeu** sur terrain réduit (sauf règle différente fixée par l'enseignant) |
-| Sortie en touche | Remise en jeu **au pied** (ballon arrêté sur la ligne) ou à la main selon la règle du cycle ; adversaires à **3 m** |
-| Sortie en but (dernier touché par un attaquant) | Relance du **gardien**, à la main ou au pied, depuis sa zone |
+| Hors-jeu | Signalé **dans la moitié de terrain adverse** seulement |
+| Sortie en touche | Remise en jeu **au pied**, ballon arrêté sur la ligne ; adversaires à distance |
+| Sortie en but (dernier touché par un attaquant) | **Sortie de but** par le gardien, au pied |
 | Sortie en but (dernier touché par un défenseur) | **Corner** au pied, au coin du terrain |
 
 ### Le gardien
 
-- Il est le **seul** à pouvoir entrer dans sa zone et à jouer le ballon **à la main**, uniquement dans sa zone.
+- Il est le seul à pouvoir jouer le ballon **à la main**, uniquement dans sa **surface de réparation**.
 - Il **ne prend pas à la main** une passe volontaire au pied d'un partenaire.
 - Il relance en moins de **6 secondes** environ.
+- À l'évaluation, le poste de gardien **n'est pas évalué** : chacun est noté comme joueur de champ.
 
 ### Les fautes
 
@@ -444,11 +285,10 @@ Moins d'espace et moins de joueurs, c'est **plus de ballons touchés**, des déc
 | **Charge**, poussée, retenue (tirage de maillot), croche-pied | Coup franc direct |
 | **Tacle glissé** (interdit en EPS, pour la sécurité) | Coup franc direct |
 | Jeu dangereux (pied haut près de la tête d'un adversaire) | Coup franc indirect |
-| Défenseur dans sa propre zone | Penalty |
-| Attaquant dans la zone du gardien | Relance du gardien |
-| Gardien qui sort de sa zone avec le ballon à la main | Coup franc pour l'adversaire |
+| Faute directe d'un défenseur dans sa surface de réparation | Penalty |
+| Gardien qui joue à la main hors de sa surface | Coup franc pour l'adversaire |
 
-Sur coup franc, les adversaires se placent à **3 m** (ou 5 m) du ballon. Le **penalty** est tiré face au gardien, à une distance fixée par l'enseignant (6 ou 7 m sur terrain de handball).
+Sur coup franc, les adversaires se placent à distance du ballon (selon les règles du foot à 7). Le **penalty** est tiré face au gardien, au point de penalty.
 
 ### L'esprit du jeu
 
@@ -494,12 +334,15 @@ Le contact **épaule contre épaule** pour disputer le ballon est autorisé ; to
 - **Appel de balle** : un mouvement court (vers le ballon) ou long (dans le dos de la défense).
 - **Occuper la largeur** : un joueur de chaque côté pour écarter la défense.
 
-### Une organisation simple à 4 joueurs de champ
+### Une organisation simple à 6 joueurs de champ
 
 | Organisation | Principe |
 | --- | --- |
-| **Losange** (1-2-1) | Un défenseur axial, deux joueurs sur les côtés, un attaquant en pointe : bonne occupation de la largeur et de la profondeur |
-| **Carré** (2-2) | Deux derrière, deux devant : plus simple, solide en défense |
+| **2-3-1** | Deux défenseurs, trois milieux (dont deux sur les côtés), un attaquant : bonne occupation de la largeur, solide derrière |
+| **3-2-1** | Trois défenseurs, deux milieux, un attaquant : bloc compact, idéal pour défendre et contre-attaquer |
+| **2-2-2** | Deux lignes de deux et deux attaquants : plus offensif, demande des milieux très mobiles |
+
+Les **remplaçants** entrent toutes les 6 minutes à l'évaluation : l'équipe prévoit ses rotations à l'avance.
 
 ### En défense
 
@@ -572,7 +415,7 @@ Pendant le **temps mort** ou entre deux matchs, le coach donne **une ou deux con
 ### Les rôles et l'organisation
 
 - Expliquer les rôles de **porteur**, **soutien** et **appui**.
-- Décrire une organisation à 4 joueurs de champ et les principes de **défense** (couverture, fermer l'axe).
+- Décrire une organisation à 6 joueurs de champ et les principes de **défense** (couverture, fermer l'axe).
 
 ### La tactique
 
@@ -603,95 +446,12 @@ Pendant le **temps mort** ou entre deux matchs, le coach donne **une ou deux con
 | Rapport de force | Comparaison des points forts et faibles des deux équipes |`,
   },
 
-  // --------------------------- Football : évaluation ---------------------------
-  "ft-eval-structure": {
-    cours: FTE,
-    titre: "1. L'épreuve du bac : structure de la note",
-    md: `Le football fait partie du **champ d'apprentissage 4** : « Conduire et maîtriser un affrontement collectif ou interindividuel pour gagner ». La note est sur **20 points**, répartis en trois attendus de fin de lycée (AFL).
-
-| Attendu | Intitulé | Points | Quand |
-| --- | --- | --- | --- |
-| **AFL1** | S'engager pour gagner une rencontre en faisant des choix techniques et tactiques pertinents au regard de l'analyse du rapport de force | **12 points** | Le jour de l'épreuve (fin de cycle) |
-| **AFL2** | Se préparer et s'entraîner, individuellement ou collectivement, pour conduire et maîtriser un affrontement collectif | **2, 4 ou 6 points** | Au fil du cycle |
-| **AFL3** | Choisir et assumer les rôles qui permettent un fonctionnement collectif solidaire | **6, 4 ou 2 points** | Au fil du cycle (et le jour de l'épreuve) |
-
-### Ton choix de répartition (AFL2 / AFL3)
-
-| Choix | AFL2 | AFL3 |
-| --- | --- | --- |
-| a | 2 points | 6 points |
-| b | 4 points | 4 points |
-| c | 6 points | 2 points |
-
-### L'AFL1 en deux éléments
-
-- **Élément 1** : s'engager et réaliser des **actions techniques d'attaque et de défense** efficaces, en lien avec son projet de jeu (porteur et non-porteur).
-- **Élément 2** : faire des **choix** pertinents au regard de l'**analyse du rapport de force**.
-
-Les points de chaque élément (entre 4 et 8) et les descripteurs précis sont fixés par le **référentiel de l'établissement**. La note est ensuite ajustée selon la **proportion de rencontres gagnées**.`,
-  },
-
-  "ft-eval-deroulement": {
-    cours: FTE,
-    titre: "2. Le jour de l'épreuve : ce qui est observé",
-    md: `### Le déroulement
-
-- Les équipes de **5 joueurs** (4 + gardien) sont constituées pour être **homogènes entre elles**, selon les règles fixées par l'enseignant.
-- Chaque équipe dispute **plusieurs rencontres** courtes ; le rôle de **gardien tourne** pour que chacun soit évalué surtout comme joueur de champ.
-- Avant les matchs, chaque équipe présente son **projet de jeu** (organisation, rôles, intentions).
-- Entre les rencontres, l'équipe **analyse** ses résultats et l'adversaire suivant et peut **ajuster** son projet.
-
-### Ce que l'enseignant observe (AFL1)
-
-| Domaine | Indicateurs |
-| --- | --- |
-| **Porteur de balle** | Passes réussies, contrôles orientés, choix entre conserver, progresser et tirer ; peu de pertes de balle |
-| **Non-porteur en attaque** | Démarquages, soutiens et appuis, occupation de la largeur, appels dans l'espace libre |
-| **Efficacité offensive** | Tirs cadrés, occasions créées, buts marqués |
-| **Défense** | Replacement, couverture, ballons récupérés, défense sans faute |
-| **Choix tactiques** | Adaptation à l'adversaire, respect et ajustement du projet de jeu |
-| **Rapport de force** | Résultats obtenus face à des adversaires de niveau proche |
-
-### Ce qui fait la différence en Terminale
-
-- Un jeu **collectif** construit (passes, soutiens), pas une suite d'exploits individuels.
-- Un **changement de statut** immédiat à la perte et à la récupération du ballon.
-- Une équipe qui **communique** et **s'adapte** pendant la rencontre.`,
-  },
-
-  "ft-eval-roles": {
-    cours: FTE,
-    titre: "3. AFL2 et AFL3 : s'entraîner et assumer des rôles",
-    md: `### AFL2 : se préparer et s'entraîner
-
-Évalué **tout au long du cycle**, souvent à l'aide d'un **carnet d'entraînement** ou de fiches d'observation.
-
-- **Identifier** ses points forts et faibles (et ceux de l'équipe) à partir d'observations (passes réussies, ballons perdus, tirs).
-- **Choisir** des exercices adaptés pour progresser (conservation, finition, défense en couverture).
-- **S'échauffer** de façon complète et spécifique (voir *Sport & Santé › L'échauffement*, partie sports collectifs).
-- **Mesurer** ses progrès et ajuster son entraînement.
-
-### AFL3 : assumer des rôles
-
-Tu choisis **deux rôles** parmi ceux proposés et tu es évalué dans ces rôles :
-
-| Rôle | Ce que l'on attend |
-| --- | --- |
-| **Arbitre** | Siffler juste, sans hésiter, faire les bons gestes, gérer le temps et le score, faire respecter les règles avec calme |
-| **Coach** | Observer, donner une à deux consignes claires, encourager |
-| **Observateur** | Remplir une fiche d'observation fiable, restituer des informations utiles |
-| **Partenaire d'entraînement** | Jouer le jeu dans les exercices pour faire progresser les autres |
-| **Organisateur** | Installer le terrain, gérer les rencontres et le temps |
-
-Dans tous les cas, on attend une attitude **solidaire** : respect des partenaires, des adversaires et de l'arbitre, engagement constant.`,
-  },
 };
 
 // =====================================================================
 // BASKET-BALL (4 contre 4) — niveau Terminale
 // =====================================================================
 const BK = "Basket-ball — théorie";
-const BKE = "Basket-ball — évaluation";
 
 export const COURS_BASKET = {
   "bk-jeu": {
@@ -895,188 +655,5 @@ Le **temps mort** permet au coach de donner **une ou deux consignes simples**.`,
 | Rapport de force | Comparaison des points forts et faibles des deux équipes |`,
   },
 
-  // --------------------------- Basket-ball : évaluation ---------------------------
-  "bk-eval-structure": {
-    cours: BKE,
-    titre: "1. L'épreuve du bac : structure de la note",
-    md: `Le basket-ball fait partie du **champ d'apprentissage 4** : « Conduire et maîtriser un affrontement collectif ou interindividuel pour gagner ». La note est sur **20 points**, répartis en trois attendus de fin de lycée (AFL).
-
-| Attendu | Intitulé | Points | Quand |
-| --- | --- | --- | --- |
-| **AFL1** | S'engager pour gagner une rencontre en faisant des choix techniques et tactiques pertinents au regard de l'analyse du rapport de force | **12 points** | Le jour de l'épreuve (fin de cycle) |
-| **AFL2** | Se préparer et s'entraîner, individuellement ou collectivement, pour conduire et maîtriser un affrontement collectif | **2, 4 ou 6 points** | Au fil du cycle |
-| **AFL3** | Choisir et assumer les rôles qui permettent un fonctionnement collectif solidaire | **6, 4 ou 2 points** | Au fil du cycle (et le jour de l'épreuve) |
-
-### Ton choix de répartition (AFL2 / AFL3)
-
-| Choix | AFL2 | AFL3 |
-| --- | --- | --- |
-| a | 2 points | 6 points |
-| b | 4 points | 4 points |
-| c | 6 points | 2 points |
-
-### L'AFL1 en deux éléments
-
-- **Élément 1** : s'engager et réaliser des **actions techniques d'attaque et de défense** efficaces, en lien avec son projet de jeu.
-- **Élément 2** : faire des **choix** pertinents au regard de l'**analyse du rapport de force**.
-
-Les points de chaque élément (entre 4 et 8) et les descripteurs précis sont fixés par le **référentiel de l'établissement**. La note est ensuite ajustée selon la **proportion de rencontres gagnées**.`,
-  },
-
-  "bk-eval-deroulement": {
-    cours: BKE,
-    titre: "2. Le jour de l'épreuve : ce qui est observé",
-    md: `### Le déroulement
-
-- Les équipes de **4 joueurs** sont constituées pour être **homogènes entre elles**, selon les règles fixées par l'enseignant.
-- Chaque équipe dispute **plusieurs rencontres** courtes contre des équipes de niveau proche.
-- Avant les matchs, chaque équipe présente son **projet de jeu** (organisation, rôles, intentions).
-- Entre les rencontres, l'équipe **analyse** ses résultats et l'adversaire suivant et peut **ajuster** son projet.
-
-### Ce que l'enseignant observe (AFL1)
-
-| Domaine | Indicateurs |
-| --- | --- |
-| **Porteur de balle** | Passes réussies, dribble utile (progression, dégagement), peu de pertes de balle et de violations |
-| **Non-porteur** | Démarquages, coupes vers le panier, occupation de l'espace, appuis au pivot |
-| **Efficacité offensive** | Tirs pris en position favorable, paniers marqués, contre-attaques conclues |
-| **Défense** | Placement entre son joueur et le panier, aide, interceptions, **rebonds** défensifs, fautes évitées |
-| **Choix tactiques** | Adaptation à l'adversaire, respect et ajustement du projet de jeu |
-| **Rapport de force** | Résultats obtenus face à des adversaires de niveau proche |
-
-### Ce qui fait la différence en Terminale
-
-- Une attaque qui **construit** des tirs faciles plutôt que des tirs forcés.
-- Une **contre-attaque** jouée à chaque récupération.
-- Un **repli défensif** immédiat et une défense qui **s'entraide**.`,
-  },
-
-  "bk-eval-roles": {
-    cours: BKE,
-    titre: "3. AFL2 et AFL3 : s'entraîner et assumer des rôles",
-    md: `### AFL2 : se préparer et s'entraîner
-
-Évalué **tout au long du cycle**, souvent à l'aide d'un **carnet d'entraînement** ou de fiches d'observation.
-
-- **Identifier** ses points forts et faibles (et ceux de l'équipe) à partir d'observations (tirs réussis, ballons perdus, rebonds).
-- **Choisir** des exercices adaptés pour progresser (tir, double pas, 2 contre 1, défense).
-- **S'échauffer** de façon complète et spécifique (voir *Sport & Santé › L'échauffement*, partie sports collectifs).
-- **Mesurer** ses progrès (pourcentage de réussite aux tirs, par exemple) et ajuster son entraînement.
-
-### AFL3 : assumer des rôles
-
-Tu choisis **deux rôles** parmi ceux proposés et tu es évalué dans ces rôles :
-
-| Rôle | Ce que l'on attend |
-| --- | --- |
-| **Arbitre** | Siffler juste, faire les bons gestes, indiquer le fautif et la direction, gérer le match avec calme |
-| **Marqueur / chronométreur** | Tenir la feuille de marque (paniers, fautes), gérer le temps |
-| **Coach** | Observer, donner une à deux consignes claires, gérer les changements, encourager |
-| **Observateur** | Remplir une fiche d'observation fiable, restituer des informations utiles |
-| **Organisateur** | Installer le matériel, gérer les rencontres et le temps |
-
-Dans tous les cas, on attend une attitude **solidaire** : respect des partenaires, des adversaires et de l'arbitre, engagement constant.`,
-  },
-
-  "bk-eval-exemple": {
-    cours: BKE,
-    titre: "4. Exemple de notation : Kevin",
-    md: `Exemple fictif pour comprendre comment se construit la note. On suppose que le **référentiel de l'établissement** répartit l'AFL1 en **7 points pour l'élément 1** et **5 points pour l'élément 2**, avec quatre degrés :
-
-| Degré | Élément 1 (/7) | Élément 2 (/5) | AFL2 ou AFL3 sur 4 points |
-| --- | --- | --- | --- |
-| 1 | 0 à 1,5 | 0 à 1 | 0 à 0,9 |
-| 2 | 2 à 3,5 | 1,5 à 2,5 | 1 à 1,9 |
-| 3 | 4 à 5,5 | 3 à 4 | 2 à 2,9 |
-| 4 | 6 à 7 | 4,5 à 5 | 3 à 4 |
-
-### Le jour de l'épreuve (AFL1)
-
-Kevin joue **ailier** dans une équipe de 4. Son équipe gagne **3 rencontres sur 5**.
-
-| Élément | Ce qui a été observé | Degré | Points |
-| --- | --- | --- | --- |
-| **Élément 1** — actions techniques | Passes sûres, double pas réussi en contre-attaque, bon repli ; tir en appui encore irrégulier, deux pertes de balle en dribble face à la pression | Degré 3 ; 3 victoires sur 5 placent la note **dans le haut** du degré | **5 / 7** |
-| **Élément 2** — choix et rapport de force | Repère que l'équipe adverse se replie lentement et pousse les contre-attaques ; tente encore des tirs de loin quand un partenaire est seul sous le panier | Degré 3 | **3 / 5** |
-| **AFL1** | | | **8 / 12** |
-
-### Au fil du cycle (AFL2 et AFL3)
-
-Kevin a choisi la répartition **b : 4 points / 4 points**.
-
-| Attendu | Ce qui a été observé | Degré | Points |
-| --- | --- | --- | --- |
-| **AFL2** — s'entraîner | Carnet rempli, a identifié son tir en appui comme point faible et a fait des séries de tirs ; échauffement correct mais peu spécifique | Degré 3 | **2,5 / 4** |
-| **AFL3** — rôles | Arbitre clair et respecté, bon marqueur sur la feuille de match | Degré 4 | **3,5 / 4** |
-
-### La note finale
-
-| AFL1 | AFL2 | AFL3 | **Total** |
-| --- | --- | --- | --- |
-| 8 / 12 | 2,5 / 4 | 3,5 / 4 | **14 / 20** |
-
-**Pour aller plus haut**, Kevin doit fiabiliser son **tir en appui** (élément 1) et **choisir la passe** au partenaire démarqué plutôt que le tir lointain (élément 2) : deux points facilement à gagner.`,
-  },
 };
 
-// =====================================================================
-// ESCALADE — partie ajoutée à la page « Évaluation et tableau de performance »
-// =====================================================================
-export const COURS_ESCALADE_EXEMPLE = {
-  "esc-eval-exemple": {
-    cours: "Escalade — évaluation",
-    titre: "3. Exemple de notation au bac : le binôme Frédéric et Thierry",
-    md: `Exemple fictif pour comprendre comment les différentes parties de l'évaluation se transforment en note de bac. L'escalade fait partie du **champ d'apprentissage 2** : « Adapter son déplacement à des environnements variés et/ou incertains ». La note est sur **20 points**.
-
-### La structure de la note (exemple de barème)
-
-| Attendu | Ce qui est évalué | Points |
-| --- | --- | --- |
-| **AFL1** — s'engager pour réaliser en sécurité, à son meilleur niveau, un itinéraire | **Performance** sur la meilleure voie observée (/8) + **efficacité et sécurité** du grimpeur (/4) | **12 points** |
-| **AFL2** — s'entraîner pour se déplacer de façon efficiente et en sécurité | **Suivi de cycle** (tableau de suivi dans Escalade Pro) et **connaissances** | **2, 4 ou 6 points** |
-| **AFL3** — choisir et assumer les rôles d'un fonctionnement collectif solidaire | **Assurage** observé, contrôle croisé, rôle d'observateur | **6, 4 ou 2 points** |
-
-### Le barème de performance (/8)
-
-Points de la **meilleure voie réussie jusqu'au relais devant l'enseignant**, selon sa cotation et le mode de grimpe, avec toutes les couleurs de prises :
-
-| Cotation | Moulinette | Moulitête | Tête |
-| --- | --- | --- | --- |
-| 5a | 3 | 3,5 | 4 |
-| 5b | 4 | 4,5 | 5 |
-| 5c | 5 | 5,5 | 6 |
-| 6a | 6 | 6,5 | 7 |
-| 6b | 7 | 7,5 | 8 |
-| 6c et plus | 7,5 | 8 | 8 |
-
-**Bonus** : **+0,5 point par couleur de prises retirée** (voie à 3 couleurs, 2 couleurs, 1 couleur), dans la limite de **8 points**.
-
-### Ce qu'ont fait Frédéric et Thierry
-
-Ils grimpent en **binôme** et s'assurent mutuellement. Dans le tableau de performance observée :
-
-| Élève | Case de la voie évaluée | Lecture |
-| --- | --- | --- |
-| Frédéric | **T** sur la voie en **6a**, à **3 couleurs** · **AM** sur la voie de Thierry | Voie réussie en tête jusqu'au relais ; a assuré Thierry en moulinette |
-| Thierry | **M** sur la voie en **5c**, **toutes couleurs** · **AT** sur la voie de Frédéric | Voie réussie en moulinette ; a assuré Frédéric en tête |
-
-### Le calcul
-
-| Partie | Frédéric | Thierry |
-| --- | --- | --- |
-| Performance (/8) | 6a en tête = 7, + 0,5 (une couleur retirée) = **7,5** | 5c en moulinette, toutes couleurs = **5** |
-| Efficacité et sécurité du grimpeur (/4) | **3,5** — grimpe fluide, mousquetonnage rapide, bons repos | **2,5** — sûr, mais grimpe beaucoup avec les bras et hésite dans les passages |
-| **AFL1 (/12)** | **11** | **7,5** |
-| Répartition choisie | b : AFL2 sur 4, AFL3 sur 4 | a : AFL2 sur 2, AFL3 sur 6 |
-| AFL2 — suivi de cycle et connaissances | **3,5 / 4** — tableau de suivi complet, cotations en progression, très bonnes réponses | **1,5 / 2** — tableau rempli régulièrement, connaissances correctes |
-| AFL3 — assurage et rôles | **3,5 / 4** — assurage en tête attentif, mou bien géré | **4 / 6** — assurage sûr en tête, contrôle croisé systématique, gestion du mou encore à améliorer |
-| **Note du bac (/20)** | **18 / 20** | **13 / 20** |
-
-### À retenir
-
-- Frédéric gagne surtout des points en **performance** : grimper **en tête** et **retirer des couleurs** rapporte plus que changer de voie sans changer de mode.
-- Thierry a fait le bon choix de répartition : plus à l'aise comme **assureur** que comme grimpeur, il a mis **6 points sur l'AFL3**. Pour progresser, il doit passer en **moulitête** puis en **tête** sur une voie qu'il réussit déjà en moulinette (+0,5 à +1 point).
-
-Le barème réel du cycle est présenté par ton enseignant ; cet exemple montre seulement **comment les points s'additionnent**.`,
-  },
-};

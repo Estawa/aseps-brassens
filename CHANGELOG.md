@@ -1,8 +1,29 @@
 # Site EPS — journal des changements
 
-Version actuelle : **1.3.0**
+Version actuelle : **1.4.0**
 
 ---
+
+### v1.4.0 — 17/10/2026
+- **Évaluations mises à jour selon les protocoles Bac général et technologique** du lycée
+  (référentiels établissement, Académie de Versailles) pour les 9 APSA : Musculation, Course de
+  durée, Escalade, Volley-ball, Badminton, Gymnastique (au sol), Relais 2 × 200 m, Football,
+  Basket-ball. Pour chacune : structure de la note (éléments de l'AFL1, répartition 2/4/6 et
+  moment du choix), déroulement de l'épreuve, degrés et barèmes de l'AFL1, degrés de l'AFL2 et
+  des rôles de l'AFL3 (points fixes par degré).
+- **Exemples de notation** mis à jour (Cyrille et Steph en relais, Kevin en basket, Frédéric et
+  Thierry en escalade) et créés pour les autres APSA : Christophe et Isa (musculation), Lucas
+  (course de durée), Yanis (volley-ball), Inès (badminton), Camille (gymnastique), Mehdi (football).
+- **Protocoles en PDF** : un lien discret « Protocole d'évaluation — Bac général et technologique
+  (PDF) » en tout bas de chaque page de l'APSA concernée (fichiers dans public/protocoles/).
+- Escalade › Évaluation : nouvelles parties « Le barème de l'AFL1 » et « AFL2 et AFL3 ».
+- Football : théorie passée au **7 contre 7** (règles UNSS, règle de mixité, hors-jeu dans la
+  moitié adverse, organisations à 6 joueurs de champ).
+- Relais : zone d'élan de **10 m** (zones fédérales du protocole), rôles starter, chronométreur,
+  juge de zone, observateur-coach.
+- Gymnastique › Théorie : rappel que la note D + E est celle de la compétition UNSS, pas du bac.
+- Les nouvelles parties sont ajoutées **une seule fois** au site en ligne, à leur place dans la
+  page ; les blocs ajoutés à la main (photos, textes) ne bougent pas.
 
 ### v1.3.0 — 17/10/2026
 - **Trois nouvelles rubriques**, sur le même modèle que Volley-ball et Badminton (une page

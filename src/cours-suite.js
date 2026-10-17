@@ -1726,7 +1726,9 @@ Léo présente 8 éléments : 2 C, 4 B et 2 A, avec les 4 exigences et les 3 con
 - Fautes : jambes fléchies 0,30, un pas en réception 0,10, une chute 1,00, ATR mal aligné 0,10. Note E = 10 − 1,50 = **8,50 / 10**.
 - Note finale : 6,80 + 8,50 = **15,30 / 20**.
 
-Le **calculateur de Gym Pro** fait ce calcul automatiquement à partir des éléments choisis et des fautes cochées.`,
+Le **calculateur de Gym Pro** fait ce calcul automatiquement à partir des éléments choisis et des fautes cochées.
+
+**Attention** : cette note D + note E est celle de la **compétition UNSS**. Au **bac**, la note se calcule autrement (exécution, niveau moyen des éléments et composition) : voir *Gymnastique › Évaluation de fin de cycle*.`,
   },
 
   "gy-technique": {

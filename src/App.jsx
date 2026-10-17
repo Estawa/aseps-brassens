@@ -8,9 +8,10 @@ import {
 import { COURS, BlocCours, blocsCoursPourPage } from "./cours.jsx";
 import { AssistantPage, ZoneTexteMd, EXEMPLE_PARTIE } from "./modele.jsx";
 import { ecouterSite, publierSite, syncDisponible, ecrireAcces, ecrireMigrations, empreintePin } from "./sync.js";
+import { PAGES_EVAL_GT, PROTOCOLES_PDF } from "./evaluations-gt.js";
 
 const uid = () => Math.random().toString(36).slice(2, 10);
-const APP_VERSION = "1.3.0";
+const APP_VERSION = "1.4.0";
 
 // ---------- Stockage local persistant ----------
 function lsLire(cle, defaut) {
@@ -124,7 +125,7 @@ const SEED_RUBRIQUES = [
   { id: "relais-theorie", titre: "Théorie", parentId: "relais", ordre: 0, page: { blocs: [blocTexte("Le relais 2 × 200 m en binôme (ou trinôme) : ce qu'on attend en Terminale, le règlement et la zone de transmission, la technique, les marques et la préparation. Les fiches de séances et le chronométrage sont dans l'application Relais 200m. Clique sur une partie pour l'ouvrir."), ...blocsCoursPourPage("relais-theorie", uid)] } },
   { id: "relais-evaluation", titre: "Évaluation de fin de cycle", parentId: "relais", ordre: 1, page: { blocs: [blocTexte("Comment se déroule et se note l'épreuve de relais (champ d'apprentissage 1), avec le barème complet et un exemple de calcul."), ...blocsCoursPourPage("relais-evaluation", uid)] } },
   { id: "football", titre: "Football", parentId: null, ordre: 7, page: { blocs: [] } },
-  { id: "foot-theorie", titre: "Théorie", parentId: "football", ordre: 0, page: { blocs: [blocTexte("Le football à 5 contre 5 sur terrain réduit : ce qu'on attend en Terminale, le règlement, la technique, les rôles et la tactique. Clique sur une partie pour l'ouvrir."), ...blocsCoursPourPage("foot-theorie", uid)] } },
+  { id: "foot-theorie", titre: "Théorie", parentId: "football", ordre: 0, page: { blocs: [blocTexte("Le football à 7 contre 7 (règles UNSS) : ce qu'on attend en Terminale, le règlement, la technique, les rôles et la tactique. Clique sur une partie pour l'ouvrir."), ...blocsCoursPourPage("foot-theorie", uid)] } },
   { id: "foot-evaluation", titre: "Évaluation de fin de cycle", parentId: "football", ordre: 1, page: { blocs: [blocTexte("Comment se déroule et se note l'épreuve de football au bac (champ d'apprentissage 4)."), ...blocsCoursPourPage("foot-evaluation", uid)] } },
   { id: "basket", titre: "Basket-ball", parentId: null, ordre: 8, page: { blocs: [] } },
   { id: "basket-theorie", titre: "Théorie", parentId: "basket", ordre: 0, page: { blocs: [blocTexte("Le basket-ball en 4 contre 4 : ce qu'on attend en Terminale, le règlement, la technique, les rôles et la tactique. Clique sur une partie pour l'ouvrir."), ...blocsCoursPourPage("basket-theorie", uid)] } },
@@ -479,6 +480,15 @@ function PageRubrique({ rubrique, sousRubriques, allerA, parent, zoneBlocs }) {
 
       {!zoneBlocs && (rubrique.page.blocs || []).length === 0 && sousRubriques.length === 0 && (
         <div style={{ color: "#9a9384", fontSize: 13, fontStyle: "italic" }}>Cette page n'a pas encore de contenu.</div>
+      )}
+
+      {/* v1.4.0 : protocole d'évaluation officiel de l'APSA, lien discret en tout bas de page */}
+      {PROTOCOLES_PDF[parent ? parent.id : rubrique.id] && (
+        <div className="lien-protocole" style={{ marginTop: 34, textAlign: "center", fontSize: 11.5 }}>
+          <a href={PROTOCOLES_PDF[parent ? parent.id : rubrique.id]} target="_blank" rel="noopener noreferrer" style={{ color: "#8a8372", textDecoration: "underline", textUnderlineOffset: 2 }}>
+            Protocole d'évaluation — Bac général et technologique (PDF)
+          </a>
+        </div>
       )}
     </div>
   );
@@ -1531,7 +1541,54 @@ function migrerCours(rubriques) {
     lsEcrire("rubriques", r);
     lsEcrire("migrationCours", 7);
   }
+  // v1.4.0 : évaluations Bac général et technologique (nouvelles parties, dont les exemples de notation)
+  if (lsLire("migrationCours", 0) < 8) {
+    r = ajouterPartiesEvalV140(r);
+    lsEcrire("rubriques", r);
+    lsEcrire("migrationCours", 8);
+  }
   return r;
+}
+
+// Mises à jour de contenu appliquées une seule fois à la version en ligne (marqueur « contenus »).
+const VERSION_CONTENUS = 2;
+function migrerContenusEnLigne(rubriques, depuis) {
+  let r = rubriques;
+  if (depuis < 1) r = ajouterContenusV130(r);
+  if (depuis < 2) r = ajouterPartiesEvalV140(r);
+  return r;
+}
+
+// v1.4.0 : chaque page « Évaluation » reçoit les parties qui lui manquent (exemples de notation,
+// barème de l'escalade…), insérées à leur place dans l'ordre prévu. Une partie déjà présente
+// n'est pas dupliquée ; les autres blocs de la page (photos, textes ajoutés) ne bougent pas.
+function ajouterPartiesEvalV140(rubriques) {
+  return rubriques.map((r) => {
+    const ordre = PAGES_EVAL_GT[r.id];
+    if (!ordre) return r;
+    const blocs = [...(r.page?.blocs || [])];
+    let change = false;
+    ordre.forEach((partie, k) => {
+      if (blocs.some((b) => b.partie === partie)) return;
+      const nouveau = { id: uid(), type: "cours", largeur: 12, partie, ouvert: false };
+      // après la partie précédente prévue (si présente), sinon avant la suivante, sinon à la fin
+      let idx = -1;
+      for (let j = k - 1; j >= 0 && idx < 0; j--) {
+        const i = blocs.findIndex((b) => b.partie === ordre[j]);
+        if (i >= 0) idx = i + 1;
+      }
+      if (idx < 0) {
+        for (let j = k + 1; j < ordre.length && idx < 0; j++) {
+          const i = blocs.findIndex((b) => b.partie === ordre[j]);
+          if (i >= 0) idx = i;
+        }
+      }
+      if (idx < 0) idx = blocs.length;
+      blocs.splice(idx, 0, nouveau);
+      change = true;
+    });
+    return change ? { ...r, page: { ...r.page, blocs } } : r;
+  });
 }
 
 // v1.3.0 : nouvelles rubriques « Relais 2 × 200 m », « Football », « Basket-ball » (avec leurs pages
@@ -1562,12 +1619,7 @@ function ajouterContenusV130(rubriques) {
     const rang = Object.fromEntries(ordre.map((r, i) => [r.id, i]));
     tout = tout.map((r) => (!r.parentId && rang[r.id] !== undefined ? { ...r, ordre: rang[r.id] } : r));
   }
-  // Escalade › Évaluation : exemple de notation (Frédéric et Thierry) ajouté à la fin de la page
-  const esc = tout.find((r) => r.id === "escalade-evaluation");
-  if (esc && !(esc.page?.blocs || []).some((b) => b.partie === "esc-eval-exemple")) {
-    const bloc = { id: uid(), type: "cours", largeur: 12, partie: "esc-eval-exemple", ouvert: false };
-    tout = tout.map((r) => (r.id === esc.id ? { ...r, page: { ...r.page, blocs: [...(r.page?.blocs || []), bloc] } } : r));
-  }
+  // (l'exemple de notation de l'escalade est désormais ajouté à sa place par ajouterPartiesEvalV140)
   return tout;
 }
 
@@ -1765,11 +1817,13 @@ export default function App() {
         setEtatSync((e) => (e === "envoi" ? e : "ok"));
         if (modifEnAttente.current) return; // une modification locale part bientôt : on ne l'écrase pas
         const cur = etatRef.current;
-        // v1.3.0 : ajout unique des nouveaux contenus (Relais, Football, Basket-ball, exemple Escalade)
-        // dans la version en ligne ; un marqueur en ligne évite de recréer une page supprimée ensuite.
-        if ((d.migrations?.contenus || 0) < 1 && d.rubriques && !migrationEnCours.current) {
+        // Ajout unique des nouveaux contenus dans la version en ligne (v1.3.0 : Relais, Football,
+        // Basket-ball ; v1.4.0 : parties des évaluations Bac GT) ; un marqueur en ligne évite de
+        // recréer ensuite une page ou une partie supprimée volontairement.
+        const depuis = d.migrations?.contenus || 0;
+        if (depuis < VERSION_CONTENUS && d.rubriques && !migrationEnCours.current) {
           migrationEnCours.current = true;
-          const rubriquesMaj = ajouterContenusV130(d.rubriques);
+          const rubriquesMaj = migrerContenusEnLigne(d.rubriques, depuis);
           const etat = {
             rubriques: rubriquesMaj,
             pageAccueil: d.pageAccueil ?? cur.pageAccueil,
@@ -1780,8 +1834,8 @@ export default function App() {
           lsEcrire("rubriques", rubriquesMaj);
           etatRef.current = { ...etatRef.current, rubriques: rubriquesMaj };
           publierSite(etat, false)
-            .then(() => ecrireMigrations({ ...(d.migrations || {}), contenus: 1 }))
-            .catch((e) => console.warn("Mise à jour des contenus v1.3.0 non enregistrée en ligne", e))
+            .then(() => ecrireMigrations({ ...(d.migrations || {}), contenus: VERSION_CONTENUS }))
+            .catch((e) => console.warn("Mise à jour des contenus non enregistrée en ligne", e))
             .finally(() => { migrationEnCours.current = false; });
           d = { ...d, rubriques: rubriquesMaj };
         }
