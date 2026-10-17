@@ -1,8 +1,30 @@
 # Site EPS — journal des changements
 
-Version actuelle : **1.2.0**
+Version actuelle : **1.3.0**
 
 ---
+
+### v1.3.0 — 17/10/2026
+- **Trois nouvelles rubriques**, sur le même modèle que Volley-ball et Badminton (une page
+  « Théorie » + une page « Évaluation de fin de cycle », en parties dépliables), placées juste
+  après Gymnastique :
+  - **Relais 2 × 200 m** — *Théorie* : principe et attendus, règlement et zone de transmission
+    (20 m + zone d'élan 5 m), technique, marques en pieds et stratégie d'équipe, préparation,
+    questions possibles, lexique. *Évaluation* : structure de la note CA1 (Bac Pro, AFLP 1/2/4/5),
+    **barème complet** de l'application Relais 200m (200 m filles/garçons, relais, indice de
+    transmission), fil de séquence /8, et **exemple de notation du binôme Cyrille et Steph**
+    (10,2 et 11,2 / 20).
+  - **Football** (5 contre 5 sur terrain réduit) — *Théorie* : terrain et attendus, règlement,
+    gestes techniques, rôles (porteur, soutien, appui), tactique et rapport de force, questions
+    possibles, lexique. *Évaluation* : structure CA4, ce qui est observé, AFL2 et AFL3.
+  - **Basket-ball** (4 contre 4) — *Théorie* : mêmes parties. *Évaluation* : structure CA4,
+    ce qui est observé, AFL2 et AFL3, et **exemple de notation de Kevin** (14 / 20).
+- **Escalade › Évaluation** : nouvelle partie « Exemple de notation au bac : le binôme Frédéric
+  et Thierry » (18 et 13 / 20), avec un exemple de barème de performance (cotation × mode,
+  bonus par couleur retirée).
+- Ces contenus sont ajoutés **une seule fois** au site en ligne, au premier chargement de la
+  nouvelle version : les pages existantes ne sont pas modifiées, et une page supprimée ensuite
+  ne sera pas recréée.
 
 ### v1.2.0 — 16/10/2026
 - **Nouvelle page (modèle)** dans Administration › Pages : crée en une fois une page sur le

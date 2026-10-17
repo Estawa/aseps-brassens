@@ -1,5 +1,6 @@
 import React from "react";
 import { COURS_COURSE, COURS_ESCALADE, COURS_VOLLEY, COURS_BADMINTON, COURS_EVAL_CA5, COURS_GYM } from "./cours-suite.js";
+import { COURS_RELAIS, COURS_FOOT, COURS_BASKET, COURS_ESCALADE_EXEMPLE } from "./cours-apsa.js";
 
 // =====================================================================
 // Contenus de cours prêts à l'emploi (bloc « Cours »)
@@ -634,7 +635,7 @@ En cas de question sur son poids ou son alimentation, le bon réflexe est d'en p
   },
 };
 
-export const COURS = { ...COURS_BASE, ...COURS_COURSE, ...COURS_ESCALADE, ...COURS_VOLLEY, ...COURS_BADMINTON, ...COURS_EVAL_CA5, ...COURS_GYM };
+export const COURS = { ...COURS_BASE, ...COURS_COURSE, ...COURS_ESCALADE, ...COURS_VOLLEY, ...COURS_BADMINTON, ...COURS_EVAL_CA5, ...COURS_GYM, ...COURS_ESCALADE_EXEMPLE, ...COURS_RELAIS, ...COURS_FOOT, ...COURS_BASKET };
 
 export const PAGES_COURS = {
   "musculation-theorie": ["muscu-intro", "muscu-anatomie", "muscu-physiologie", "muscu-projets", "muscu-charges", "muscu-methodes", "muscu-seance", "muscu-recuperation", "muscu-connaissances", "muscu-lexique"],
@@ -642,7 +643,7 @@ export const PAGES_COURS = {
   "echauffement": ["echauf-principes", "echauf-course-duree", "echauf-musculation", "echauf-sports-co", "echauf-escalade", "echauf-badminton", "echauf-gymnastique", "echauf-relais"],
   "course-duree-theorie": Object.keys(COURS_COURSE),
   "escalade-theorie": Object.keys(COURS_ESCALADE).filter((k) => !k.startsWith("esc-eval")),
-  "escalade-evaluation": Object.keys(COURS_ESCALADE).filter((k) => k.startsWith("esc-eval")),
+  "escalade-evaluation": [...Object.keys(COURS_ESCALADE).filter((k) => k.startsWith("esc-eval")), ...Object.keys(COURS_ESCALADE_EXEMPLE)],
   "volley-theorie": Object.keys(COURS_VOLLEY).filter((k) => !k.startsWith("vb-eval")),
   "volley-evaluation": Object.keys(COURS_VOLLEY).filter((k) => k.startsWith("vb-eval")),
   "badminton-theorie": Object.keys(COURS_BADMINTON).filter((k) => !k.startsWith("bd-eval")),
@@ -651,6 +652,12 @@ export const PAGES_COURS = {
   "course-duree-evaluation": ["cd-eval-structure", "cd-eval-deroulement", "cd-eval-roles"],
   "gym-theorie": Object.keys(COURS_GYM).filter((k) => !k.startsWith("gy-eval")),
   "gym-evaluation": Object.keys(COURS_GYM).filter((k) => k.startsWith("gy-eval")),
+  "relais-theorie": Object.keys(COURS_RELAIS).filter((k) => !k.startsWith("rl-eval")),
+  "relais-evaluation": Object.keys(COURS_RELAIS).filter((k) => k.startsWith("rl-eval")),
+  "foot-theorie": Object.keys(COURS_FOOT).filter((k) => !k.startsWith("ft-eval")),
+  "foot-evaluation": Object.keys(COURS_FOOT).filter((k) => k.startsWith("ft-eval")),
+  "basket-theorie": Object.keys(COURS_BASKET).filter((k) => !k.startsWith("bk-eval")),
+  "basket-evaluation": Object.keys(COURS_BASKET).filter((k) => k.startsWith("bk-eval")),
 };
 
 // ---------- Petit moteur Markdown (titres, listes, tableaux, gras) ----------

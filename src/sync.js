@@ -8,6 +8,7 @@
 //   documents    → documents à télécharger
 //   index        → liste ordonnée des identifiants de rubriques
 //   rub_<id>     → une rubrique (avec sa page), un document par rubrique
+//   migrations   → mises à jour de contenu déjà appliquées en ligne (v1.3.0)
 // Chaque document contient { json: "<données en JSON>", maj: <date> } :
 // le JSON en texte évite les limites de Firestore sur les tableaux imbriqués.
 import { initializeApp } from "firebase/app";
@@ -66,6 +67,7 @@ export function ecouterSite(rappel, erreur) {
           pageAccueil: docs.accueil ? JSON.parse(docs.accueil) : null,
           liens: docs.liens ? JSON.parse(docs.liens) : null,
           documents: docs.documents ? JSON.parse(docs.documents) : null,
+          migrations: docs.migrations ? JSON.parse(docs.migrations) : null,
         });
       } catch (e) {
         erreur && erreur(e);
@@ -111,6 +113,14 @@ export async function publierSite({ rubriques, pageAccueil, liens, documents }, 
   voulu.forEach((json, id) => dernier.set(id, json));
   [...dernier.keys()].filter((id) => id.startsWith("rub_") && !voulu.has(id)).forEach((id) => dernier.delete(id));
   return n;
+}
+
+// Marqueur des mises à jour de contenu déjà appliquées à la version en ligne (« aseps/migrations »)
+export async function ecrireMigrations(migrations) {
+  if (!db) throw new Error("Connexion à la base en ligne impossible.");
+  const json = JSON.stringify(migrations);
+  await writeBatch(db).set(doc(db, COLLECTION, "migrations"), { json, maj: Date.now() }).commit();
+  dernier.set("migrations", json);
 }
 
 // Codes d'accès (administrateur + collègues), enregistrés à part dans « aseps/acces ».

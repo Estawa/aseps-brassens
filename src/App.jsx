@@ -7,10 +7,10 @@ import {
 } from "lucide-react";
 import { COURS, BlocCours, blocsCoursPourPage } from "./cours.jsx";
 import { AssistantPage, ZoneTexteMd, EXEMPLE_PARTIE } from "./modele.jsx";
-import { ecouterSite, publierSite, syncDisponible, ecrireAcces, empreintePin } from "./sync.js";
+import { ecouterSite, publierSite, syncDisponible, ecrireAcces, ecrireMigrations, empreintePin } from "./sync.js";
 
 const uid = () => Math.random().toString(36).slice(2, 10);
-const APP_VERSION = "1.2.0";
+const APP_VERSION = "1.3.0";
 
 // ---------- Stockage local persistant ----------
 function lsLire(cle, defaut) {
@@ -90,7 +90,7 @@ const PAGE_ACCUEIL_SEED = {
 // Rubrique « Association Sportive du Lycée » (textes de départ à compléter depuis l'éditeur)
 const SEED_AS = [
   {
-    id: "as", titre: "Association Sportive du Lycée", parentId: null, ordre: 8,
+    id: "as", titre: "Association Sportive du Lycée", parentId: null, ordre: 11,
     page: { blocs: [blocTexte("L'Association Sportive (AS) du lycée Georges-Brassens permet aux élèves de pratiquer des activités sportives en dehors des cours d'EPS, de participer aux compétitions UNSS et de représenter le lycée. Retrouve ici les informations pratiques, les résultats de nos équipes et les photos des rencontres.")] },
   },
   { id: "as-presentation", titre: "Présentation et inscriptions", parentId: "as", ordre: 0, page: { blocs: [blocTexte("Activités proposées, horaires des entraînements, enseignants responsables et modalités d'inscription (licence UNSS) : informations à compléter.")] } },
@@ -120,12 +120,21 @@ const SEED_RUBRIQUES = [
   { id: "gymnastique", titre: "Gymnastique", parentId: null, ordre: 5, page: { blocs: [] } },
   { id: "gym-theorie", titre: "Théorie", parentId: "gymnastique", ordre: 0, page: { blocs: [blocTexte("La gymnastique au sol et au mini-trampoline avec le code UNSS 2024-2028 : éléments, composition (note D), exécution (note E), technique, sécurité et jugement. Les fiches, croquis, vidéos et le calculateur sont dans l'application Gym Pro. Clique sur une partie pour l'ouvrir."), ...blocsCoursPourPage("gym-theorie", uid)] } },
   { id: "gym-evaluation", titre: "Évaluation de fin de cycle", parentId: "gymnastique", ordre: 1, page: { blocs: [blocTexte("Comment se déroule et se note l'épreuve de gymnastique au bac (champ d'apprentissage 3)."), ...blocsCoursPourPage("gym-evaluation", uid)] } },
-  { id: "sopra", titre: "Sopra Flashmob", parentId: null, ordre: 6, page: { blocs: [] } },
+  { id: "relais", titre: "Relais 2 × 200 m", parentId: null, ordre: 6, page: { blocs: [] } },
+  { id: "relais-theorie", titre: "Théorie", parentId: "relais", ordre: 0, page: { blocs: [blocTexte("Le relais 2 × 200 m en binôme (ou trinôme) : ce qu'on attend en Terminale, le règlement et la zone de transmission, la technique, les marques et la préparation. Les fiches de séances et le chronométrage sont dans l'application Relais 200m. Clique sur une partie pour l'ouvrir."), ...blocsCoursPourPage("relais-theorie", uid)] } },
+  { id: "relais-evaluation", titre: "Évaluation de fin de cycle", parentId: "relais", ordre: 1, page: { blocs: [blocTexte("Comment se déroule et se note l'épreuve de relais (champ d'apprentissage 1), avec le barème complet et un exemple de calcul."), ...blocsCoursPourPage("relais-evaluation", uid)] } },
+  { id: "football", titre: "Football", parentId: null, ordre: 7, page: { blocs: [] } },
+  { id: "foot-theorie", titre: "Théorie", parentId: "football", ordre: 0, page: { blocs: [blocTexte("Le football à 5 contre 5 sur terrain réduit : ce qu'on attend en Terminale, le règlement, la technique, les rôles et la tactique. Clique sur une partie pour l'ouvrir."), ...blocsCoursPourPage("foot-theorie", uid)] } },
+  { id: "foot-evaluation", titre: "Évaluation de fin de cycle", parentId: "football", ordre: 1, page: { blocs: [blocTexte("Comment se déroule et se note l'épreuve de football au bac (champ d'apprentissage 4)."), ...blocsCoursPourPage("foot-evaluation", uid)] } },
+  { id: "basket", titre: "Basket-ball", parentId: null, ordre: 8, page: { blocs: [] } },
+  { id: "basket-theorie", titre: "Théorie", parentId: "basket", ordre: 0, page: { blocs: [blocTexte("Le basket-ball en 4 contre 4 : ce qu'on attend en Terminale, le règlement, la technique, les rôles et la tactique. Clique sur une partie pour l'ouvrir."), ...blocsCoursPourPage("basket-theorie", uid)] } },
+  { id: "basket-evaluation", titre: "Évaluation de fin de cycle", parentId: "basket", ordre: 1, page: { blocs: [blocTexte("Comment se déroule et se note l'épreuve de basket-ball au bac (champ d'apprentissage 4), avec un exemple de calcul."), ...blocsCoursPourPage("basket-evaluation", uid)] } },
+  { id: "sopra", titre: "Sopra Flashmob", parentId: null, ordre: 9, page: { blocs: [] } },
   {
     id: "sopra-flashmob", titre: "En mode flashmob", parentId: "sopra", ordre: 0,
     page: { blocs: [blocTexte("Chorégraphie collective sur Sopra."), blocLiens([{ label: "Playlist Chorés (YouTube)", url: "https://www.youtube.com/playlist?list=PL7ZFD8B4khX1Iw7hNSVHNJPJZM8U9A4BY" }])] },
   },
-  { id: "sportsante", titre: "Sport & Santé", parentId: null, ordre: 7, page: { blocs: [] } },
+  { id: "sportsante", titre: "Sport & Santé", parentId: null, ordre: 10, page: { blocs: [] } },
   { id: "sportsante-alim", titre: "L'alimentation", parentId: "sportsante", ordre: 0, page: { blocs: [blocTexte("Repères sur l'alimentation du sportif. Clique sur une partie pour l'ouvrir."), ...blocsCoursPourPage("sportsante-alim", uid)] } },
   { id: "echauffement", titre: "L'échauffement", parentId: "sportsante", ordre: 1, page: { blocs: [blocTexte("Comment s'échauffer correctement selon l'activité pratiquée. Commence par les principes communs, puis ouvre la partie de ton activité."), ...blocsCoursPourPage("echauffement", uid)] } },
   ...SEED_AS,
@@ -1515,6 +1524,54 @@ function migrerBandeauAccueil(page) {
 }
 
 function migrerCours(rubriques) {
+  let r = migrerCoursV6(rubriques);
+  // v1.3.0 : Relais 2 × 200 m, Football, Basket-ball + exemple de notation en Escalade
+  if (lsLire("migrationCours", 0) < 7) {
+    r = ajouterContenusV130(r);
+    lsEcrire("rubriques", r);
+    lsEcrire("migrationCours", 7);
+  }
+  return r;
+}
+
+// v1.3.0 : nouvelles rubriques « Relais 2 × 200 m », « Football », « Basket-ball » (avec leurs pages
+// Théorie et Évaluation), placées juste après « Gymnastique », et nouvelle partie « Exemple de notation »
+// à la fin de la page « Escalade › Évaluation ». Rien n'est ajouté si c'est déjà présent.
+// Sert à la fois pour la version de l'appareil et pour la version en ligne (une seule fois, voir App).
+const RUBRIQUES_V130 = ["relais", "football", "basket"];
+function ajouterContenusV130(rubriques) {
+  let tout = rubriques;
+  const existe = new Set(tout.map((r) => r.id));
+  const racines = RUBRIQUES_V130.filter((id) => !existe.has(id));
+  if (racines.length) {
+    const nouvelles = SEED_RUBRIQUES.filter((r) => racines.includes(r.id) || racines.includes(r.parentId))
+      .filter((r) => !existe.has(r.id))
+      .map((r) => ({ ...JSON.parse(JSON.stringify(r)), page: { blocs: r.page.blocs.map((b) => ({ ...JSON.parse(JSON.stringify(b)), id: uid() })) } }));
+    tout = [...tout, ...nouvelles];
+    // ordre des rubriques principales : les nouvelles juste après Gymnastique (sinon avant Sopra / Sport & Santé / AS)
+    const tri = tout.filter((r) => !r.parentId).sort((a, b) => a.ordre - b.ordre);
+    const autres = tri.filter((r) => !racines.includes(r.id));
+    const ajoutees = racines.map((id) => tout.find((r) => r.id === id));
+    let idx = autres.findIndex((r) => r.id === "gymnastique");
+    if (idx < 0) {
+      const apres = autres.findIndex((r) => ["sopra", "sportsante", "as"].includes(r.id));
+      idx = apres < 0 ? autres.length - 1 : apres - 1;
+    }
+    const ordre = [...autres];
+    ordre.splice(idx + 1, 0, ...ajoutees);
+    const rang = Object.fromEntries(ordre.map((r, i) => [r.id, i]));
+    tout = tout.map((r) => (!r.parentId && rang[r.id] !== undefined ? { ...r, ordre: rang[r.id] } : r));
+  }
+  // Escalade › Évaluation : exemple de notation (Frédéric et Thierry) ajouté à la fin de la page
+  const esc = tout.find((r) => r.id === "escalade-evaluation");
+  if (esc && !(esc.page?.blocs || []).some((b) => b.partie === "esc-eval-exemple")) {
+    const bloc = { id: uid(), type: "cours", largeur: 12, partie: "esc-eval-exemple", ouvert: false };
+    tout = tout.map((r) => (r.id === esc.id ? { ...r, page: { ...r.page, blocs: [...(r.page?.blocs || []), bloc] } } : r));
+  }
+  return tout;
+}
+
+function migrerCoursV6(rubriques) {
   const etape = lsLire("migrationCours", 0);
   if (etape >= 6) return rubriques;
   if (etape >= 2) {
@@ -1697,6 +1754,7 @@ export default function App() {
   const minuteurSync = useRef(null);
   const etatRef = useRef({});
   etatRef.current = { rubriques, pageAccueil, liens, documents };
+  const migrationEnCours = useRef(false);
 
   useEffect(() => {
     const arreter = ecouterSite(
@@ -1707,6 +1765,26 @@ export default function App() {
         setEtatSync((e) => (e === "envoi" ? e : "ok"));
         if (modifEnAttente.current) return; // une modification locale part bientôt : on ne l'écrase pas
         const cur = etatRef.current;
+        // v1.3.0 : ajout unique des nouveaux contenus (Relais, Football, Basket-ball, exemple Escalade)
+        // dans la version en ligne ; un marqueur en ligne évite de recréer une page supprimée ensuite.
+        if ((d.migrations?.contenus || 0) < 1 && d.rubriques && !migrationEnCours.current) {
+          migrationEnCours.current = true;
+          const rubriquesMaj = ajouterContenusV130(d.rubriques);
+          const etat = {
+            rubriques: rubriquesMaj,
+            pageAccueil: d.pageAccueil ?? cur.pageAccueil,
+            liens: d.liens ?? cur.liens,
+            documents: d.documents ?? cur.documents,
+          };
+          setRubriquesState(rubriquesMaj);
+          lsEcrire("rubriques", rubriquesMaj);
+          etatRef.current = { ...etatRef.current, rubriques: rubriquesMaj };
+          publierSite(etat, false)
+            .then(() => ecrireMigrations({ ...(d.migrations || {}), contenus: 1 }))
+            .catch((e) => console.warn("Mise à jour des contenus v1.3.0 non enregistrée en ligne", e))
+            .finally(() => { migrationEnCours.current = false; });
+          d = { ...d, rubriques: rubriquesMaj };
+        }
         const appliquer = (val, actuel, setState, cle) => {
           if (val == null || JSON.stringify(val) === JSON.stringify(actuel)) return;
           setState(val);
