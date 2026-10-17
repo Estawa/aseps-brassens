@@ -1,8 +1,15 @@
 # Site EPS — journal des changements
 
-Version actuelle : **1.4.2**
+Version actuelle : **1.4.3**
 
 ---
+
+### v1.4.3 — 17/10/2026
+- **Gymnastique › Évaluation** : il est précisé que les éléments de mini-trampoline font partie des
+  éléments de l'évaluation au sol ; le total des fautes d'exécution donne le degré, et les points
+  d'une famille ou d'un élément manquant sont retirés de la note finale.
+- **Football › Évaluation** : la première ligne des points d'équipe devient « 2 à 5 » (2 défaites y
+  sont rattachées) ; la ligne « 9 à 12 » ne sert que si le championnat se joue en 3 matchs par équipe.
 
 ### v1.4.2 — 17/10/2026
 - **Protocoles Bac professionnel** ajoutés en PDF pour les 9 APSA (documents Word convertis tels

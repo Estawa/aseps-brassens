@@ -265,9 +265,11 @@ Dans chaque degré, l'enseignant te place **en bas, au milieu ou en haut** du de
 
 | Points d'équipe | Degré 1 | Degré 2 | Degré 3 | Degré 4 |
 | --- | --- | --- | --- | --- |
-| 3 à 5 | 0,5 · 1 · 1,5 | 2,5 · 3 · 3,5 | 4,5 · 5 · 5,5 | 6,5 · 7 · 7,5 |
+| 2 à 5 | 0,5 · 1 · 1,5 | 2,5 · 3 · 3,5 | 4,5 · 5 · 5,5 | 6,5 · 7 · 7,5 |
 | 6 à 8 | 0,75 · 1,25 · 1,75 | 2,75 · 3,25 · 3,75 | 4,75 · 5,25 · 5,75 | 6,75 · 7,25 · 7,75 |
-| 9 et plus | 1 · 1,5 · 2 | 3 · 3,5 · 4 | 5 · 5,5 · 6 | 7 · 7,5 · 8 |
+| 9 à 12 (3 matchs) | 1 · 1,5 · 2 | 3 · 3,5 · 4 | 5 · 5,5 · 6 | 7 · 7,5 · 8 |
+
+Avec **2 matchs**, une équipe marque de **2 points** (2 défaites) à **8 points** (2 victoires) : la ligne « 2 à 5 » comprend les 2 défaites. La ligne « 9 à 12 » ne sert que si le championnat se joue en **3 matchs** par équipe.
 
 ### Élément 2 : niveau de l'équipe et analyse (/4)
 
@@ -282,9 +284,9 @@ Dans chaque degré, l'enseignant te place **en bas, au milieu ou en haut** du de
 
 | Points d'équipe | Degré 1 (A · B · C · D) | Degré 2 | Degré 3 | Degré 4 |
 | --- | --- | --- | --- | --- |
-| 3 à 5 | 0 · 0,25 · 0,5 · 0,75 | 1 · 1,25 · 1,5 · 1,75 | 2 · 2,25 · 2,5 · 2,75 | 3 · 3,25 · 3,5 · 3,75 |
+| 2 à 5 | 0 · 0,25 · 0,5 · 0,75 | 1 · 1,25 · 1,5 · 1,75 | 2 · 2,25 · 2,5 · 2,75 | 3 · 3,25 · 3,5 · 3,75 |
 | 6 à 8 | 0,25 · 0,5 · 0,75 · 1 | 1,25 · 1,5 · 1,75 · 2 | 2,25 · 2,5 · 2,75 · 3 | 3,25 · 3,5 · 3,75 · 4 |
-| 9 et plus | 0,5 · 0,75 · 1 · 1,25 | 1,5 · 1,75 · 2 · 2,25 | 2,5 · 2,75 · 3 · 3,25 | 3,5 · 3,75 · 4 · 4 |`,
+| 9 à 12 (3 matchs) | 0,5 · 0,75 · 1 · 1,25 | 1,5 · 1,75 · 2 · 2,25 | 2,5 · 2,75 · 3 · 3,25 | 3,5 · 3,75 · 4 · 4 |`,
   },
 
   "ft-eval-roles": {
@@ -932,7 +934,7 @@ export const EVAL_GYM = {
   "gy-eval-structure": {
     cours: GYE,
     titre: "1. L'épreuve du bac : structure de la note",
-    md: `La gymnastique fait partie du **champ d'apprentissage 3** : « Réaliser une prestation corporelle destinée à être vue et appréciée ». Au bac, l'épreuve se passe **au sol**. La note est sur **20 points**.
+    md: `La gymnastique fait partie du **champ d'apprentissage 3** : « Réaliser une prestation corporelle destinée à être vue et appréciée ». Au bac, l'épreuve se passe **au sol** ; les éléments de **mini-trampoline** font partie des éléments de l'évaluation au sol. La note est sur **20 points**.
 
 | Attendu | Ce qui est évalué | Points | Quand |
 | --- | --- | --- | --- |
@@ -961,12 +963,13 @@ ${LIEN_PDF}`,
 
 - Au moins **8 éléments différents**, issus de **4 familles sur 5** : ATR, 2 éléments acrobatiques de sens différents, saut, élément de souplesse ou de maintien.
 - Des **éléments de liaison**, une **chronologie**, **deux changements de direction**.
+- Les éléments de **mini-trampoline** font partie des éléments de l'évaluation au sol : ils peuvent compter parmi tes 8 éléments.
 - Difficultés de **A à D** selon le **code UNSS** en vigueur.
 - Durée de **30 secondes à 1 min 30**, **un seul passage**, devant un public.
 
 ### Élément 1 : réaliser et maîtriser (/8)
 
-Valeur des éléments : **A = 0,5 · B = 0,65 · C = 0,8 · D = 1 point**. On relève toutes les **fautes d'exécution** (code UNSS : petite faute 0,2, moyenne 0,3, grosse 0,5, chute 1). Il manque une famille : **−2 points** ; il manque un élément : **−1 point**.
+Valeur des éléments : **A = 0,5 · B = 0,65 · C = 0,8 · D = 1 point**. On relève toutes les **fautes d'exécution** (code UNSS : petite faute 0,2, moyenne 0,3, grosse 0,5, chute 1). Le total des fautes d'exécution donne le degré. Il manque une famille : **−2 points** ; il manque un élément : **−1 point** (retirés de la note finale).
 
 | Degré | Exécution | Total des fautes d'exécution |
 | --- | --- | --- |
