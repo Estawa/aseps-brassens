@@ -489,3 +489,38 @@ details[open] > .cours-titre { border-bottom: 1px solid var(--ligne); }
   .assistant-fond { padding: 0; }
   .assistant { border-radius: 0; height: 100vh; height: 100dvh; max-height: none; }
 }
+
+/* ---------- v1.7.0 : éditeur visuel (sans balises) ---------- */
+.editeur-visuel {
+  width: 100%;
+  background: #fff;
+  border: 1px solid var(--ligne);
+  border-radius: 8px;
+  padding: 8px 12px;
+  outline: none;
+  font-size: 14.5px;
+  line-height: 1.6;
+  color: var(--ink);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  cursor: text;
+}
+.editeur-visuel:focus { border-color: var(--piste); box-shadow: 0 0 0 3px var(--piste-soft); }
+.editeur-visuel[data-vide="1"]::before { content: attr(data-placeholder); color: #9a9384; font-style: italic; pointer-events: none; }
+.editeur-visuel.ev-simple { padding: 6px 8px; }
+.editeur-visuel h1, .editeur-visuel h2, .editeur-visuel h3, .editeur-visuel h4, .editeur-visuel h5, .editeur-visuel h6 {
+  font-family: "Oswald", sans-serif; font-size: 15.5px; font-weight: 600; margin: 14px 0 6px; color: var(--ink);
+}
+.editeur-visuel p { margin: 8px 0; }
+.editeur-visuel ul, .editeur-visuel ol { margin: 8px 0; padding-left: 22px; }
+.editeur-visuel ul { list-style: disc; }
+.editeur-visuel ol { list-style: decimal; }
+.editeur-visuel li { margin: 4px 0; }
+.widget-tableau { margin: 10px 0; border: 2px dashed transparent; border-radius: 12px; padding: 2px; cursor: pointer; white-space: normal; }
+.widget-tableau:hover { border-color: var(--piste); }
+.widget-actions { display: flex; gap: 6px; margin-top: 6px; }
+.widget-actions button {
+  border: 1px solid var(--ligne); background: #fff; border-radius: 7px; padding: 4px 9px;
+  font-size: 11.5px; font-weight: 700; color: #4a4636; cursor: pointer; font-family: inherit;
+}
+.widget-actions button[data-action="modifier"] { color: var(--piste); border-color: var(--piste); }

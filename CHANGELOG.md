@@ -1,8 +1,15 @@
 # Site EPS — journal des changements
 
-Version actuelle : **1.6.0**
+Version actuelle : **1.7.0**
 
 ---
+
+### v1.7.0 — 19/10/2026
+- **Éditeur visuel, sans balises** : on écrit directement sur le texte mis en forme (comme dans
+  Word) dans les blocs « Texte », les parties dépliables et les cases des tableaux. Gras,
+  italique, souligné, tailles, polices, couleurs, surlignage, encadrés, sous-titres, listes.
+- Les tableaux apparaissent tels quels dans le texte : « Modifier le tableau » / « Supprimer ».
+- Le texte est toujours enregistré dans le même format : rien ne change pour les pages existantes.
 
 ### v1.6.0 — 19/10/2026
 - **Mise en forme du texte** dans les blocs « Texte », les parties dépliables (cours, partie écrite

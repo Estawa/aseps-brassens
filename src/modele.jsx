@@ -1,9 +1,9 @@
 import React, { useState, useRef, useEffect } from "react";
 import { createPortal } from "react-dom";
-import { BarreFormat, useMiseEnForme, styleBouton, formater } from "./format.jsx";
+import { BarreFormat, styleBouton } from "./format.jsx";
+import { EditeurVisuel } from "./visuel.jsx";
 import { X, Plus, Trash2, ChevronUp, ChevronDown, Eye, EyeOff, Heading, Bold, Italic, List, ListOrdered, Table, Wand, Maximize2, Minimize2 } from "lucide-react";
 import { Markdown } from "./cours.jsx";
-import { FenetreTableau, mdVersTableau, tableauVersMd, tableauAuCurseur } from "./tableau.jsx";
 
 // =====================================================================
 // Page type (modèle) : génère une page sur le même principe que
@@ -38,159 +38,64 @@ Un paragraphe d'explication, avec un mot important en **gras**.
 
 const AIDE_PLACEHOLDER = "Texte de la partie…\n\nUtilise les boutons ci-dessus :\n### Sous-titre\n- liste à puces\n1. liste numérotée\n**gras**\n| tableau | … |";
 
-// ---------- Zone de texte avec barre de mise en forme ----------
+// ---------- Zone de texte avec barre de mise en forme (éditeur visuel, sans balises) ----------
 // value : texte enregistré ; onCommit(nouveau) : appelé à la sortie du champ et après chaque bouton.
 // simple : bloc « Texte » (pas de sous-titres / listes / tableaux, retours à la ligne conservés)
 export function ZoneTexteMd({ value, onCommit, rows = 12, placeholder, simple = false, alignTexte }) {
-  const [local, setLocal] = useState(value || "");
-  const [apercu, setApercu] = useState(true);
   const [grand, setGrand] = useState(false);
-  // fenêtre d'édition visuelle d'un tableau : null ou { zone: {debut, fin} | null, initial }
-  const [fenetreTab, setFenetreTab] = useState(null);
-  const ref = useRef(null);
-  useEffect(() => { setLocal(value || ""); }, [value]);
+  const ed = useRef(null);
   useEffect(() => {
     if (!grand) return;
-    const echap = (e) => { if (e.key === "Escape") setGrand(false); };
+    const echap = (e) => { if (e.key === "Escape") basculerGrand(false); };
     window.addEventListener("keydown", echap);
     return () => window.removeEventListener("keydown", echap);
   }, [grand]);
 
-  const appliquer = (nouveau, debutSel, finSel) => {
-    setLocal(nouveau);
-    onCommit(nouveau);
-    requestAnimationFrame(() => {
-      const t = ref.current;
-      if (!t) return;
-      t.focus();
-      t.setSelectionRange(debutSel, finSel ?? debutSel);
-    });
-  };
-  const sel = () => {
-    const t = ref.current;
-    return t ? [t.selectionStart, t.selectionEnd] : [local.length, local.length];
-  };
-  const outils = useMiseEnForme({ texte: local, getSel: sel, appliquer, blocs: !simple });
-
-  // insère un bloc sur sa propre ligne (sous-titre, tableau), après la sélection éventuelle (rien n'est effacé)
-  const insererBloc = (texte, selDebut = 0, selLong = 0) => {
-    const [, fin] = sel();
-    const finLigne = local.indexOf("\n", fin);
-    const a = finLigne === -1 ? local.length : finLigne;
-    const avant = local.slice(0, a);
-    const apres = local.slice(a);
-    const prefixe = avant.length === 0 ? "" : avant.endsWith("\n\n") ? "" : avant.endsWith("\n") ? "\n" : "\n\n";
-    const suffixe = apres.length === 0 ? "\n" : apres.startsWith("\n\n") ? "" : apres.startsWith("\n") ? "\n" : "\n\n";
-    const nouveau = avant + prefixe + texte + suffixe + apres;
-    const debut = avant.length + prefixe.length + selDebut;
-    appliquer(nouveau, debut, debut + selLong);
-  };
-  // préfixe chaque ligne sélectionnée (listes)
-  const prefixerLignes = (numerotee) => {
-    const [a, b] = sel();
-    if (a === b) {
-      const exemple = numerotee ? "1. premier point\n2. deuxième point" : "- premier point\n- deuxième point";
-      insererBloc(exemple, numerotee ? 3 : 2, "premier point".length);
-      return;
-    }
-    const debutLigne = local.lastIndexOf("\n", a - 1) + 1;
-    const morceau = local.slice(debutLigne, b);
-    let n = 0;
-    const transforme = morceau.split("\n").map((l) => {
-      const propre = l.replace(/^(\d+\. |- )/, "");
-      if (!propre.trim()) return l;
-      n++;
-      return (numerotee ? `${n}. ` : "- ") + propre;
-    }).join("\n");
-    const nouveau = local.slice(0, debutLigne) + transforme + local.slice(b);
-    appliquer(nouveau, debutLigne, debutLigne + transforme.length);
-  };
-
-  // Tableau : si le curseur est dans un tableau existant, on le modifie ; sinon on en crée un nouveau
-  const ouvrirTableau = () => {
-    const [a] = sel();
-    const zone = tableauAuCurseur(local, a);
-    setFenetreTab({ zone, initial: zone ? mdVersTableau(local.slice(zone.debut, zone.fin)) : null });
-  };
-  const validerTableau = (t) => {
-    const md = tableauVersMd(t);
-    const zone = fenetreTab?.zone;
-    setFenetreTab(null);
-    if (zone) appliquer(local.slice(0, zone.debut) + md + local.slice(zone.fin), zone.debut, zone.debut);
-    else insererBloc(md);
-  };
-
+  const commit = (t) => { if (t !== (value || "")) onCommit(t); };
+  const basculerGrand = (v) => { if (ed.current) commit(ed.current.texte()); setGrand(v); };
+  const outils = { cmd: (nom, val) => ed.current?.cmd(nom, val) };
   const bouton = styleBouton;
-  const garder = (e) => e.preventDefault(); // garde la sélection dans la zone de texte
-
-  const zoneTexte = (
-    <textarea
-      ref={ref}
-      value={local}
-      onChange={(e) => setLocal(e.target.value)}
-      onKeyDown={outils.surTouche}
-      onBlur={() => { if (local !== (value || "")) onCommit(local); }}
-      rows={grand ? undefined : rows}
-      placeholder={placeholder ?? (simple ? "Contenu du texte…" : AIDE_PLACEHOLDER)}
-      style={{ width: "100%", height: grand ? "100%" : undefined, minHeight: grand ? 260 : undefined, padding: "8px 10px", borderRadius: 8, border: "1px solid var(--ligne)", resize: grand ? "none" : "vertical", fontFamily: "ui-monospace, Menlo, Consolas, monospace", fontSize: grand ? 14 : 12.5, lineHeight: 1.5 }}
-    />
-  );
-  const rendu = local.trim()
-    ? (simple
-      ? <div style={{ fontSize: 14.5, lineHeight: 1.65, whiteSpace: "pre-wrap", textAlign: alignTexte || "left", padding: "10px 12px" }}>{formater(local)}</div>
-      : <div className="cours-corps" style={{ paddingTop: 10 }}><Markdown md={local} /></div>)
-    : <div style={{ color: "#9a9384", fontStyle: "italic", padding: 12 }}>Rien à afficher pour l'instant.</div>;
-  const zoneApercu = (
-    <div style={{ display: "grid", gap: 4, alignContent: "start", minHeight: 0 }}>
-      <div style={{ fontSize: 10.5, fontWeight: 700, color: "#9a9384", textTransform: "uppercase", letterSpacing: 0.4 }}>Aperçu en direct (rendu sur le site)</div>
-      <div className="cours-carte" style={{ minHeight: 80, overflow: "auto", maxHeight: grand ? "none" : 420 }}>{rendu}</div>
-    </div>
-  );
+  const garder = (e) => e.preventDefault(); // garde la sélection dans le texte
 
   const barre = (
     <BarreFormat
       outils={outils}
-      avant={!simple && <button type="button" style={bouton} onMouseDown={garder} onClick={() => insererBloc("### Sous-titre", 4, 10)} title="Ajouter un sous-titre"><Heading size={13} /> Sous-titre</button>}
+      avant={!simple && <button type="button" style={bouton} onMouseDown={garder} onClick={() => outils.cmd("titre")} title="Transformer la ligne en sous-titre (ou revenir en texte normal)"><Heading size={13} /> Sous-titre</button>}
       apres={<>
-        {!simple && <button type="button" style={bouton} onMouseDown={garder} onClick={() => prefixerLignes(false)} title="Liste à puces (sélectionne des lignes pour les transformer)"><List size={13} /> Liste</button>}
-        {!simple && <button type="button" style={bouton} onMouseDown={garder} onClick={() => prefixerLignes(true)} title="Liste numérotée"><ListOrdered size={13} /> 1. 2. 3.</button>}
-        {!simple && <button type="button" style={bouton} onMouseDown={garder} onClick={ouvrirTableau} title="Créer un tableau, ou modifier celui où se trouve le curseur"><Table size={13} /> Tableau</button>}
+        {!simple && <button type="button" style={bouton} onMouseDown={garder} onClick={() => outils.cmd("ul")} title="Liste à puces"><List size={13} /> Liste</button>}
+        {!simple && <button type="button" style={bouton} onMouseDown={garder} onClick={() => outils.cmd("ol")} title="Liste numérotée"><ListOrdered size={13} /> 1. 2. 3.</button>}
+        {!simple && <button type="button" style={bouton} onMouseDown={garder} onClick={() => outils.cmd("tableau")} title="Insérer un tableau sous la ligne où se trouve le curseur"><Table size={13} /> Tableau</button>}
         <span style={{ flex: 1 }} />
-        <button type="button" style={{ ...bouton, color: apercu ? "#fff" : "var(--teal)", background: apercu ? "var(--teal)" : "#fff", borderColor: "var(--teal)" }} onClick={() => setApercu((v) => !v)} title="Afficher ou masquer l'aperçu en direct">
-          {apercu ? <Eye size={13} /> : <EyeOff size={13} />} Aperçu
-        </button>
-        <button type="button" style={{ ...bouton, color: "var(--piste)", borderColor: "var(--piste)" }} onClick={() => setGrand((v) => !v)} title={grand ? "Revenir à la petite fenêtre" : "Écrire en grand (texte à gauche, aperçu à droite)"}>
+        <button type="button" style={{ ...bouton, color: "var(--piste)", borderColor: "var(--piste)" }} onMouseDown={garder} onClick={() => basculerGrand(!grand)} title={grand ? "Revenir à la petite fenêtre" : "Écrire en grand"}>
           {grand ? <Minimize2 size={13} /> : <Maximize2 size={13} />} {grand ? "Réduire" : "Agrandir"}
         </button>
       </>}
     />
   );
+  const editeur = (
+    <EditeurVisuel
+      ref={ed}
+      value={value || ""}
+      onCommit={commit}
+      simple={simple}
+      placeholder={placeholder ?? (simple ? "Écris ton texte ici…" : "Écris le texte de la partie ici…")}
+      style={{ minHeight: grand ? "100%" : rows * 20, maxHeight: grand ? "none" : 520, overflowY: "auto", textAlign: simple ? alignTexte || "left" : undefined }}
+    />
+  );
   const aide = (
     <div style={{ fontSize: 11, color: "#9a9384", lineHeight: 1.45 }}>
-      Sélectionne le texte, puis choisis la mise en forme. Le bouton gomme retire la mise en forme de la sélection.
-      {!simple && <> Ligne vide = nouveau paragraphe. Pour modifier un tableau déjà écrit : clique dans ses lignes « | … | » puis sur « Tableau ».</>}
+      Sélectionne le texte, puis choisis la mise en forme. La gomme retire la mise en forme de la sélection.
+      {!simple && <> Clique sur un tableau pour le modifier.</>}
     </div>
-  );
-  const fenetre = fenetreTab && (
-    <FenetreTableau
-      titreFenetre={fenetreTab.zone ? "Modifier le tableau" : "Nouveau tableau"}
-      initial={fenetreTab.initial}
-      onValider={validerTableau}
-      onFermer={() => setFenetreTab(null)}
-    />
   );
 
   if (grand) {
     return createPortal(
-      <div style={{ position: "fixed", inset: 0, zIndex: 150, background: "rgba(16,24,38,0.55)", display: "flex", padding: 12 }} onClick={() => setGrand(false)}>
-        <div onClick={(e) => e.stopPropagation()} style={{ background: "#fff", borderRadius: 14, flex: 1, display: "flex", flexDirection: "column", gap: 10, padding: 14, minHeight: 0, maxWidth: 1400, margin: "0 auto", boxShadow: "0 20px 60px rgba(0,0,0,0.3)" }}>
+      <div style={{ position: "fixed", inset: 0, zIndex: 150, background: "rgba(16,24,38,0.55)", display: "flex", padding: 12 }} onMouseDown={(e) => { if (e.target === e.currentTarget) basculerGrand(false); }}>
+        <div style={{ background: "#fff", borderRadius: 14, flex: 1, display: "flex", flexDirection: "column", gap: 10, padding: 14, minHeight: 0, maxWidth: 1000, margin: "0 auto", boxShadow: "0 20px 60px rgba(0,0,0,0.3)" }}>
           {barre}
-          <div className="editeur-grand" style={{ flex: 1, minHeight: 0, display: "grid", gridTemplateColumns: apercu ? "repeat(auto-fit, minmax(300px, 1fr))" : "1fr", gap: 12, overflow: "auto" }}>
-            {zoneTexte}
-            {apercu && zoneApercu}
-          </div>
+          <div style={{ flex: 1, minHeight: 0, display: "flex", flexDirection: "column" }}>{editeur}</div>
           {aide}
-          {fenetre}
         </div>
       </div>,
       document.body
@@ -199,10 +104,8 @@ export function ZoneTexteMd({ value, onCommit, rows = 12, placeholder, simple = 
   return (
     <div style={{ display: "grid", gap: 6 }}>
       {barre}
-      {zoneTexte}
-      {apercu && zoneApercu}
+      {editeur}
       {aide}
-      {fenetre}
     </div>
   );
 }

@@ -1,6 +1,7 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { createPortal } from "react-dom";
-import { formater, BarreFormat, useMiseEnForme } from "./format.jsx";
+import { formater, BarreFormat } from "./format.jsx";
+import { EditeurVisuel } from "./visuel.jsx";
 import { X, Plus, Trash2, ChevronUp, ChevronDown, ChevronLeft, ChevronRight, Check, Clipboard, Table } from "lucide-react";
 
 // =====================================================================
@@ -111,18 +112,10 @@ export function GrilleTableau({ valeur, onChange }) {
     const sw = (r) => { const c = [...r]; [c[k], c[j]] = [c[j], c[k]]; return c; };
     maj(sw(entete), lignes.map(sw));
   };
-  // Entrée dans la dernière case = nouvelle ligne
-  const surTouche = (e, ri, k) => {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      if (ri === lignes.length - 1) ajouterLigne(ri);
-      requestAnimationFrame(() => document.querySelector(`[data-case="${ri + 1}-${k}"]`)?.focus());
-    }
-  };
   // coller plusieurs cases d'un coup depuis Excel/Word
   const surColler = (e, ri, k) => {
     const t = e.clipboardData.getData("text");
-    if (!t.includes("\t") && !t.includes("\n")) return;
+    if (!t.includes("\t") && !t.replace(/\n+$/, "").includes("\n")) return false;
     e.preventDefault();
     const rangs = t.replace(/\r/g, "").split("\n").filter((x, i, arr) => x !== "" || i < arr.length - 1).map((x) => x.split("\t"));
     let e2 = [...entete], l2 = lignes.map((r) => [...r]);
@@ -138,28 +131,34 @@ export function GrilleTableau({ valeur, onChange }) {
       });
     });
     maj(e2, l2);
+    return true;
   };
 
   // case active : la barre de mise en forme agit sur elle
-  const [active, setActive] = useState(null); // { ri, k, el }
-  const texteActif = active ? (active.ri === -1 ? entete[active.k] : lignes[active.ri]?.[active.k]) ?? "" : "";
-  const outils = useMiseEnForme({
-    texte: texteActif,
-    getSel: () => (active?.el ? [active.el.selectionStart, active.el.selectionEnd] : [texteActif.length, texteActif.length]),
-    appliquer: (nouveau, a, b) => {
-      if (!active) { alert("Clique d'abord dans une case du tableau."); return; }
-      active.ri === -1 ? setEntete(active.k, nouveau) : setCase(active.ri, active.k, nouveau);
-      requestAnimationFrame(() => { const el = active.el; if (el) { el.focus(); el.setSelectionRange(a, b ?? a); } });
-    },
+  const active = useRef(null);
+  const [aUneCase, setAUneCase] = useState(false);
+  const refs = useRef({});
+  const outils = { cmd: (nom, val) => { const h = active.current && refs.current[active.current]; if (!h) { alert("Clique d'abord dans une case du tableau."); return; } h.cmd(nom, val); } };
+  const focus = (cle) => () => { active.current = cle; setAUneCase(true); };
+  // case à activer après le prochain affichage (la nouvelle ligne n'existe pas encore)
+  const aFocaliser = useRef(null);
+  useEffect(() => {
+    const cle = aFocaliser.current;
+    if (cle && refs.current[cle]) { aFocaliser.current = null; refs.current[cle].focus(); }
   });
-  const focus = (ri, k) => (e) => setActive({ ri, k, el: e.target });
+  const allerA = (ri, k) => {
+    const cle = `${ri}-${k}`;
+    if (refs.current[cle] && ri < lignes.length) refs.current[cle].focus();
+    else { aFocaliser.current = cle; }
+  };
+  const entree = (ri, k) => { if (ri === lignes.length - 1) ajouterLigne(ri); allerA(ri + 1, k); };
 
-  const caseStyle = { width: "100%", minWidth: 110, border: "1px solid var(--ligne)", borderRadius: 6, padding: "6px 7px", fontSize: 13, fontFamily: "inherit", resize: "vertical", lineHeight: 1.35, background: "#fff" };
+  const caseStyle = { width: "100%", minWidth: 120, maxWidth: 260, border: "1px solid var(--ligne)", borderRadius: 6, padding: "6px 7px", fontSize: 13, fontFamily: "inherit", resize: "vertical", lineHeight: 1.35, background: "#fff" };
 
   return (
     <div style={{ display: "grid", gap: 8 }}>
     <div style={{ display: "grid", gap: 4 }}>
-      <div style={{ fontSize: 11, color: "#6b6656" }}>Mise en forme de la case {active ? "sélectionnée" : "(clique d'abord dans une case)"} :</div>
+      <div style={{ fontSize: 11, color: "#6b6656" }}>Mise en forme de la case {aUneCase ? "sélectionnée" : "(clique d'abord dans une case)"} :</div>
       <BarreFormat outils={outils} />
     </div>
     <div style={{ overflowX: "auto", border: "1px solid var(--ligne)", borderRadius: 10, padding: 8, background: "#faf9f6" }}>
@@ -180,7 +179,7 @@ export function GrilleTableau({ valeur, onChange }) {
             <td style={{ fontSize: 10.5, fontWeight: 700, color: "#9a9384", textTransform: "uppercase", whiteSpace: "nowrap", paddingRight: 4 }}>Titres</td>
             {entete.map((c, k) => (
               <td key={k}>
-                <input value={c} onChange={(e) => setEntete(k, e.target.value)} onPaste={(e) => surColler(e, -1, k)} onFocus={focus(-1, k)} onKeyDown={outils.surTouche} data-case={`-1-${k}`} placeholder={`Titre ${k + 1}`}
+                <EditeurVisuel ref={(h) => { refs.current[`-1-${k}`] = h; }} simple uneLigne value={c} onChange={(v) => setEntete(k, v)} onCollerSpecial={(e) => surColler(e, -1, k)} onFocus={focus(`-1-${k}`)} onEntree={() => allerA(0, k)} data-case={`-1-${k}`} placeholder={`Titre ${k + 1}`}
                   style={{ ...caseStyle, background: "var(--ink)", color: "#fff", fontWeight: 700, borderColor: "var(--ink)" }} />
               </td>
             ))}
@@ -197,8 +196,8 @@ export function GrilleTableau({ valeur, onChange }) {
               </td>
               {r.map((c, k) => (
                 <td key={k} style={{ verticalAlign: "top" }}>
-                  <textarea value={c} rows={2} onChange={(e) => setCase(ri, k, e.target.value)} onKeyDown={(e) => { outils.surTouche(e); surTouche(e, ri, k); }} onPaste={(e) => surColler(e, ri, k)} onFocus={focus(ri, k)} data-case={`${ri}-${k}`}
-                    style={{ ...caseStyle, fontWeight: k === 0 ? 700 : 400 }} />
+                  <EditeurVisuel ref={(h) => { refs.current[`${ri}-${k}`] = h; }} simple uneLigne value={c} onChange={(v) => setCase(ri, k, v)} onCollerSpecial={(e) => surColler(e, ri, k)} onFocus={focus(`${ri}-${k}`)} onEntree={() => entree(ri, k)} data-case={`${ri}-${k}`}
+                    style={{ ...caseStyle, minHeight: 44, fontWeight: k === 0 ? 700 : 400 }} />
                 </td>
               ))}
               <td style={{ verticalAlign: "top", whiteSpace: "nowrap" }}>
