@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { X, Plus, Trash2, ChevronUp, ChevronDown, Eye, EyeOff, Heading, Bold, Italic, List, ListOrdered, Table, Wand } from "lucide-react";
 import { Markdown } from "./cours.jsx";
+import { FenetreTableau, mdVersTableau, tableauVersMd, tableauAuCurseur } from "./tableau.jsx";
 
 // =====================================================================
 // Page type (modèle) : génère une page sur le même principe que
@@ -40,6 +41,8 @@ const AIDE_PLACEHOLDER = "Texte de la partie…\n\nUtilise les boutons ci-dessus
 export function ZoneTexteMd({ value, onCommit, rows = 12, placeholder = AIDE_PLACEHOLDER }) {
   const [local, setLocal] = useState(value || "");
   const [apercu, setApercu] = useState(false);
+  // fenêtre d'édition visuelle d'un tableau : null ou { zone: {debut, fin} | null, initial }
+  const [fenetreTab, setFenetreTab] = useState(null);
   const ref = useRef(null);
   useEffect(() => { setLocal(value || ""); }, [value]);
 
@@ -99,6 +102,20 @@ export function ZoneTexteMd({ value, onCommit, rows = 12, placeholder = AIDE_PLA
     appliquer(nouveau, debutLigne, debutLigne + transforme.length);
   };
 
+  // Tableau : si le curseur est dans un tableau existant, on le modifie ; sinon on en crée un nouveau
+  const ouvrirTableau = () => {
+    const [a] = sel();
+    const zone = apercu ? null : tableauAuCurseur(local, a);
+    setFenetreTab({ zone, initial: zone ? mdVersTableau(local.slice(zone.debut, zone.fin)) : null });
+  };
+  const validerTableau = (t) => {
+    const md = tableauVersMd(t);
+    const zone = fenetreTab?.zone;
+    setFenetreTab(null);
+    if (zone) appliquer(local.slice(0, zone.debut) + md + local.slice(zone.fin), zone.debut, zone.debut);
+    else insererBloc(md);
+  };
+
   const bouton = { display: "flex", alignItems: "center", gap: 4, border: "1px solid var(--ligne)", background: "#fff", borderRadius: 7, padding: "5px 8px", fontSize: 11.5, fontWeight: 700, color: "#4a4636", cursor: "pointer", fontFamily: "inherit" };
   const garder = (e) => e.preventDefault(); // garde la sélection dans la zone de texte
 
@@ -110,7 +127,7 @@ export function ZoneTexteMd({ value, onCommit, rows = 12, placeholder = AIDE_PLA
         <button type="button" style={bouton} onMouseDown={garder} onClick={() => entourer("*", "texte en italique")} title="Mettre en italique"><Italic size={13} /></button>
         <button type="button" style={bouton} onMouseDown={garder} onClick={() => prefixerLignes(false)} title="Liste à puces (sélectionne des lignes pour les transformer)"><List size={13} /> Liste</button>
         <button type="button" style={bouton} onMouseDown={garder} onClick={() => prefixerLignes(true)} title="Liste numérotée"><ListOrdered size={13} /> 1. 2. 3.</button>
-        <button type="button" style={bouton} onMouseDown={garder} onClick={() => insererBloc("| Colonne 1 | Colonne 2 |\n| --- | --- |\n| … | … |\n| … | … |", 2, 9)} title="Insérer un tableau"><Table size={13} /> Tableau</button>
+        <button type="button" style={bouton} onMouseDown={garder} onClick={ouvrirTableau} title="Créer un tableau, ou modifier celui où se trouve le curseur"><Table size={13} /> Tableau</button>
         <span style={{ flex: 1 }} />
         <button type="button" style={{ ...bouton, color: apercu ? "#fff" : "var(--teal)", background: apercu ? "var(--teal)" : "#fff", borderColor: "var(--teal)" }} onClick={() => setApercu((v) => !v)} title="Voir le rendu sur le site">
           {apercu ? <EyeOff size={13} /> : <Eye size={13} />} Aperçu
@@ -135,7 +152,16 @@ export function ZoneTexteMd({ value, onCommit, rows = 12, placeholder = AIDE_PLA
       )}
       <div style={{ fontSize: 11, color: "#9a9384", lineHeight: 1.45 }}>
         Sélectionne des lignes puis « Liste » pour les transformer en liste. Ligne vide = nouveau paragraphe.
+        Pour modifier un tableau déjà écrit : clique dans ses lignes « | … | » puis sur « Tableau ».
       </div>
+      {fenetreTab && (
+        <FenetreTableau
+          titreFenetre={fenetreTab.zone ? "Modifier le tableau" : "Nouveau tableau"}
+          initial={fenetreTab.initial}
+          onValider={validerTableau}
+          onFermer={() => setFenetreTab(null)}
+        />
+      )}
     </div>
   );
 }

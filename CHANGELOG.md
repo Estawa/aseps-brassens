@@ -1,8 +1,20 @@
 # Site EPS — journal des changements
 
-Version actuelle : **1.4.3**
+Version actuelle : **1.5.0**
 
 ---
+
+### v1.5.0 — 19/10/2026
+- **Tableaux faciles à créer, partout sur le site** :
+  - nouveau bloc **« Tableau »** dans la mise en page (menu « Ajouter un bloc ») : on le place
+    où l'on veut sur n'importe quelle page, puis « Modifier le tableau » ouvre une grille à remplir ;
+  - dans les parties dépliables (cours, « Partie écrite moi-même », page type), le bouton
+    **« Tableau »** ouvre la même grille au lieu d'insérer des « | … | » à remplir à la main ;
+    si le curseur est placé dans un tableau existant (ex. « Manger autour de la séance »),
+    c'est ce tableau qui s'ouvre pour être modifié.
+- Dans la grille : titres de colonnes, + / corbeille pour lignes et colonnes, flèches pour les
+  déplacer, Entrée = case du dessous (nouvelle ligne à la fin), collage direct de cases copiées
+  depuis Excel, Word ou Google Sheets, aperçu identique au rendu du site (fiches sur téléphone).
 
 ### v1.4.3 — 17/10/2026
 - **Gymnastique › Évaluation** : il est précisé que les éléments de mini-trampoline font partie des

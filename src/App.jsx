@@ -3,15 +3,16 @@ import {
   Home, LayoutList, FolderOpen, Lock, Unlock, Plus, Trash2, Pencil,
   ChevronUp, ChevronDown, ChevronRight, ExternalLink, Image as ImageIcon,
   Video, FileText, Upload, X, Link2, ArrowLeft, Menu, Images, Type, LayoutTemplate, GripVertical, LayoutGrid,
-  ChevronLeft, Copy, Undo2, Monitor, Smartphone, Check, Square, BookOpen, Wand, ListCollapse,
+  ChevronLeft, Copy, Undo2, Monitor, Smartphone, Check, Square, BookOpen, Wand, ListCollapse, Table,
 } from "lucide-react";
 import { COURS, BlocCours, blocsCoursPourPage } from "./cours.jsx";
 import { AssistantPage, ZoneTexteMd, EXEMPLE_PARTIE } from "./modele.jsx";
+import { RenduTableau, FenetreTableau, tableauVide } from "./tableau.jsx";
 import { ecouterSite, publierSite, syncDisponible, ecrireAcces, ecrireMigrations, empreintePin } from "./sync.js";
 import { PAGES_EVAL_GT, PROTOCOLES_PDF, PROTOCOLES_PDF_PRO } from "./evaluations-gt.js";
 
 const uid = () => Math.random().toString(36).slice(2, 10);
-const APP_VERSION = "1.4.3";
+const APP_VERSION = "1.5.0";
 
 // ---------- Stockage local persistant ----------
 function lsLire(cle, defaut) {
@@ -322,6 +323,7 @@ function RenduBloc({ bloc, edition = false }) {
     );
   }
   if (bloc.type === "cours") return <BlocCours bloc={bloc} edition={edition} />;
+  if (bloc.type === "tableau") return <RenduTableau bloc={bloc} />;
   if (bloc.type === "espace") {
     const h = bloc.hauteur || 40;
     if (edition) {
@@ -811,6 +813,7 @@ const TYPES_BLOC = [
   { id: "video", label: "Vidéo", Icon: Video },
   { id: "diaporama", label: "Diaporama photos", Icon: Images },
   { id: "galerie", label: "Galerie photos (plusieurs par ligne)", Icon: LayoutGrid },
+  { id: "tableau", label: "Tableau", Icon: Table },
   { id: "liens", label: "Liens externes", Icon: Link2 },
   { id: "partie", label: "Partie dépliable (à écrire)", Icon: ListCollapse },
   { id: "cours", label: "Cours (partie prête)", Icon: BookOpen },
@@ -825,6 +828,7 @@ function nouveauBloc(type) {
   if (type === "diaporama") return { ...base, images: [], vitesse: 4 };
   if (type === "galerie") return { ...base, images: [], affichage: "grille", parLigneOrdi: 4, parLigneTel: 2, recadrage: "uniforme" };
   if (type === "liens") return { ...base, liens: [] };
+  if (type === "tableau") return { ...base, titre: "", ...tableauVide(3, 3) };
   if (type === "cours") return { ...base, partie: "", ouvert: false };
   // « partie » : une partie dépliable dont on écrit soi-même le titre et le texte (bloc « cours » libre)
   if (type === "partie") return { ...base, type: "cours", partie: "libre", titrePerso: "", mdPerso: "", ouvert: false };
@@ -1098,6 +1102,33 @@ function BarreEdition({ onAjouter, onAnnuler, peutAnnuler, apercuMobile, setAper
   );
 }
 
+// Bloc « Tableau » : bouton qui ouvre l'éditeur visuel en grand
+function EditeurTableauBloc({ bloc, majBloc }) {
+  const [ouvert, setOuvert] = useState(false);
+  const nL = (bloc.lignes || []).length, nC = (bloc.entete || []).length;
+  return (
+    <div style={{ display: "grid", gap: 10 }}>
+      <button onClick={() => setOuvert(true)} style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 6, background: "var(--piste)", color: "#fff", border: "none", borderRadius: 8, padding: "10px 12px", fontSize: 13, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>
+        <Table size={15} /> Modifier le tableau
+      </button>
+      <div style={{ fontSize: 12, color: "#6b6656" }}>{nC} colonne{nC > 1 ? "s" : ""} · {nL} ligne{nL > 1 ? "s" : ""}{bloc.titre ? ` · « ${bloc.titre} »` : ""}</div>
+      <div style={{ fontSize: 11.5, color: "#6b6656", lineHeight: 1.55, background: "#faf9f6", border: "1px solid var(--ligne)", borderRadius: 8, padding: "8px 10px" }}>
+        Sur téléphone, chaque ligne du tableau s'affiche comme une petite fiche (comme dans « Manger autour de la séance »).
+      </div>
+      {ouvert && (
+        <FenetreTableau
+          titreFenetre="Bloc tableau"
+          avecTitre
+          titreInitial={bloc.titre}
+          initial={{ entete: bloc.entete || [], lignes: bloc.lignes || [] }}
+          onValider={(t, titre) => { majBloc({ entete: t.entete, lignes: t.lignes, titre }); setOuvert(false); }}
+          onFermer={() => setOuvert(false)}
+        />
+      )}
+    </div>
+  );
+}
+
 function EditeurContenuBloc({ bloc, majBloc }) {
   const [local, setLocal] = useState(bloc);
   useEffect(() => setLocal(bloc), [bloc.id]);
@@ -1221,6 +1252,8 @@ function EditeurContenuBloc({ bloc, majBloc }) {
       </div>
     );
   }
+
+  if (bloc.type === "tableau") return <EditeurTableauBloc bloc={bloc} majBloc={majBloc} />;
 
   if (bloc.type === "texte") {
     return <textarea value={local.texte} onChange={(e) => setLocal({ ...local, texte: e.target.value })} onBlur={() => majBloc({ texte: local.texte })} rows={4} placeholder="Contenu du texte…" style={{ ...champStyle("100%"), resize: "vertical" }} />;
