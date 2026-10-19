@@ -1,8 +1,24 @@
 # Site EPS — journal des changements
 
-Version actuelle : **1.7.1**
+Version actuelle : **1.8.0**
 
 ---
+
+### v1.8.0 — 19/10/2026
+- **Publications en 3 étapes** pour les collègues (et l'administrateur) dans « Résultats sportifs »
+  et « Photos et vidéos / Vie de l'A.S. » : 1. où publier, titre, date, activité et modèle
+  (résultat de compétition, sortie photos/vidéos, information/annonce, page vide) ;
+  2. contenu : sous-titres, textes mis en forme, information importante, photos, vidéo (fichier
+  ou lien YouTube), documents (PDF, Word… ou lien), tableau de résultats ; 3. aperçu puis Publier.
+- Sur la page : cartes des publications (photo, activité, date, extrait), filtre par activité,
+  lecture d'une publication. Chaque collègue modifie ou supprime ses publications ;
+  l'administrateur peut tout modifier ou retirer.
+- Photos, vidéos et documents envoyés sur Cloudinary (même compte que Suivi AS), photos réduites
+  avant envoi ; chaque publication est enregistrée à part en ligne (deux collègues peuvent publier
+  en même temps). Brouillon gardé sur l'appareil en cas de fermeture.
+- Espace collègue : encadré « Publier sur le site » avec un bouton par page.
+- Administration › Pages : case « Page de publications » pour activer ce système sur une page.
+- Sur téléphone, les tableaux restent un seul tableau (v1.7.1).
 
 ### v1.7.1 — 19/10/2026
 - **Tableaux sur téléphone** : ils restent un seul tableau (plus de découpage en fiches). S'ils sont

@@ -9,10 +9,12 @@
 //   index        → liste ordonnée des identifiants de rubriques
 //   rub_<id>     → une rubrique (avec sa page), un document par rubrique
 //   migrations   → mises à jour de contenu déjà appliquées en ligne (v1.3.0)
+//   art_<id>     → une publication (v1.8.0 : Résultats sportifs, Vie de l'AS…), un document par
+//                  publication pour que deux collègues puissent publier en même temps
 // Chaque document contient { json: "<données en JSON>", maj: <date> } :
 // le JSON en texte évite les limites de Firestore sur les tableaux imbriqués.
 import { initializeApp } from "firebase/app";
-import { getFirestore, collection, doc, onSnapshot, writeBatch } from "firebase/firestore";
+import { getFirestore, collection, doc, onSnapshot, writeBatch, setDoc, deleteDoc } from "firebase/firestore";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAh2sS6lbXv1S_70fGqkTQXt8qjS-xl8hc",
@@ -53,8 +55,10 @@ export function ecouterSite(rappel, erreur) {
         docs[d.id] = data.json;
         dernier.set(d.id, data.json);
       });
+      const articles = [];
+      Object.keys(docs).filter((k) => k.startsWith("art_")).forEach((k) => { try { articles.push(JSON.parse(docs[k])); } catch {} });
       if (!docs.index) {
-        rappel({ existe: false, acces: docs.acces ? JSON.parse(docs.acces) : null });
+        rappel({ existe: false, acces: docs.acces ? JSON.parse(docs.acces) : null, articles });
         return;
       }
       try {
@@ -68,6 +72,7 @@ export function ecouterSite(rappel, erreur) {
           liens: docs.liens ? JSON.parse(docs.liens) : null,
           documents: docs.documents ? JSON.parse(docs.documents) : null,
           migrations: docs.migrations ? JSON.parse(docs.migrations) : null,
+          articles,
         });
       } catch (e) {
         erreur && erreur(e);
@@ -136,4 +141,18 @@ export async function empreintePin(pin) {
   const donnees = new TextEncoder().encode("aseps-brassens:" + pin);
   const h = await crypto.subtle.digest("SHA-256", donnees);
   return Array.from(new Uint8Array(h)).map((b) => b.toString(16).padStart(2, "0")).join("");
+}
+
+// ---------- Publications (v1.8.0) : écrites une par une, directement ----------
+export async function enregistrerArticle(article) {
+  if (!db) throw new Error("Connexion à la base en ligne impossible.");
+  const json = JSON.stringify(article);
+  if (json.length > TAILLE_MAX) throw new Error("Cette publication est trop lourde (photos importées sans connexion au service d'images). Retire quelques photos puis recommence.");
+  await setDoc(doc(db, COLLECTION, "art_" + article.id), { json, maj: Date.now() });
+  dernier.set("art_" + article.id, json);
+}
+export async function supprimerArticleEnLigne(id) {
+  if (!db) throw new Error("Connexion à la base en ligne impossible.");
+  await deleteDoc(doc(db, COLLECTION, "art_" + id));
+  dernier.delete("art_" + id);
 }

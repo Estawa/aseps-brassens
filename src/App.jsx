@@ -9,11 +9,12 @@ import { COURS, BlocCours, blocsCoursPourPage } from "./cours.jsx";
 import { AssistantPage, ZoneTexteMd, EXEMPLE_PARTIE } from "./modele.jsx";
 import { RenduTableau, FenetreTableau, tableauVide } from "./tableau.jsx";
 import { formater } from "./format.jsx";
-import { ecouterSite, publierSite, syncDisponible, ecrireAcces, ecrireMigrations, empreintePin } from "./sync.js";
+import { ecouterSite, publierSite, syncDisponible, ecrireAcces, ecrireMigrations, empreintePin, enregistrerArticle, supprimerArticleEnLigne } from "./sync.js";
+import { ListePublications, AssistantPublication, estPagePublications } from "./publications.jsx";
 import { PAGES_EVAL_GT, PROTOCOLES_PDF, PROTOCOLES_PDF_PRO } from "./evaluations-gt.js";
 
 const uid = () => Math.random().toString(36).slice(2, 10);
-const APP_VERSION = "1.7.1";
+const APP_VERSION = "1.8.0";
 
 // ---------- Stockage local persistant ----------
 function lsLire(cle, defaut) {
@@ -448,7 +449,7 @@ function PageAccueil({ pageAccueil, arbre, liens, allerA, zoneBlocs }) {
 const TUILE_COULEURS = ["var(--piste-soft)", "var(--teal-soft)", "#fdeecb", "#e6e6fb"];
 
 // ---------- Page d'une rubrique / sous-rubrique ----------
-function PageRubrique({ rubrique, sousRubriques, allerA, parent, zoneBlocs }) {
+function PageRubrique({ rubrique, sousRubriques, allerA, parent, zoneBlocs, publications }) {
   return (
     <div className="page-contenu">
       {/* Fil d'Ariane ordinateur : Accueil › Rubrique › Page */}
@@ -470,6 +471,8 @@ function PageRubrique({ rubrique, sousRubriques, allerA, parent, zoneBlocs }) {
 
       {zoneBlocs || <RenduBlocs blocs={rubrique.page.blocs} />}
 
+      {publications}
+
       {sousRubriques.length > 0 && (
         <div className="grille-sous" style={{ display: "grid", gap: 8, marginTop: 18, gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))" }}>
           {sousRubriques.map((s) => (
@@ -481,7 +484,7 @@ function PageRubrique({ rubrique, sousRubriques, allerA, parent, zoneBlocs }) {
         </div>
       )}
 
-      {!zoneBlocs && (rubrique.page.blocs || []).length === 0 && sousRubriques.length === 0 && (
+      {!zoneBlocs && !publications && (rubrique.page.blocs || []).length === 0 && sousRubriques.length === 0 && (
         <div style={{ color: "#9a9384", fontSize: 13, fontStyle: "italic" }}>Cette page n'a pas encore de contenu.</div>
       )}
 
@@ -664,7 +667,7 @@ function AdminAcces({ acces, enregistrerAcces }) {
 }
 
 // ---------- Espace d'un collègue (accès limité à l'AS) ----------
-function EspaceCollegue({ nom, idCollegue, pagesAS, ouvrirEditeur, etat, onVerrouiller, onNouvellePage, renommerPage, supprimerPage }) {
+function EspaceCollegue({ nom, idCollegue, pagesAS, ouvrirEditeur, etat, onVerrouiller, onNouvellePage, renommerPage, supprimerPage, pagesPublications = [], onPublier, mesPublications = 0, allerA }) {
   const petit = { border: "1px solid var(--ligne)", background: "#fff", borderRadius: 7, width: 32, height: 32, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", color: "#6b6656", flexShrink: 0 };
   return (
     <div style={{ padding: 18, maxWidth: 720, margin: "0 auto" }}>
@@ -677,6 +680,27 @@ function EspaceCollegue({ nom, idCollegue, pagesAS, ouvrirEditeur, etat, onVerro
       <div style={{ fontSize: 13.5, color: "#4a4636", lineHeight: 1.5, marginBottom: 16 }}>
         Tu peux modifier les pages de l'<b>Association Sportive du Lycée</b> : textes, photos, vidéos, galeries, et créer de nouvelles pages. Tes modifications sont enregistrées en ligne automatiquement. <span style={{ color: "#6b6656" }}>({etat})</span>
       </div>
+      {pagesPublications.length > 0 && (
+        <div style={{ background: "#fff", border: "2px solid var(--piste)", borderRadius: 14, padding: 14, marginBottom: 18, display: "grid", gap: 10 }}>
+          <div className="display" style={{ fontSize: 17, fontWeight: 600 }}>📣 Publier sur le site</div>
+          <div style={{ fontSize: 12.5, color: "#6b6656", lineHeight: 1.5 }}>
+            Résultat, photos, vidéos, information, documents… en 3 étapes guidées : <b>1.</b> titre et date, <b>2.</b> contenu, <b>3.</b> vérifier et publier.
+          </div>
+          {pagesPublications.map((r) => (
+            <button key={r.id} onClick={() => onPublier(r.id)} style={{ ...boutonPrimaire, justifyContent: "center", padding: "13px 14px", fontSize: 14.5 }}>
+              <Plus size={16} /> Publier dans « {r.titre} »
+            </button>
+          ))}
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+            {pagesPublications.map((r) => (
+              <button key={r.id} onClick={() => allerA({ type: "rubrique", id: r.id })} style={{ border: "1px solid var(--ligne)", background: "#fff", borderRadius: 8, padding: "6px 10px", fontSize: 12, fontWeight: 600, cursor: "pointer", color: "#4a4636" }}>
+                Voir « {r.titre} »
+              </button>
+            ))}
+          </div>
+          {mesPublications > 0 && <div style={{ fontSize: 12, color: "#6b6656" }}>Tu as {mesPublications} publication{mesPublications > 1 ? "s" : ""} : ouvre-la sur le site pour la modifier ou la supprimer.</div>}
+        </div>
+      )}
       {pagesAS.some((r) => r.id === "as") && (
         <button onClick={onNouvellePage} style={{ ...boutonPrimaire, width: "100%", justifyContent: "center", padding: "12px 14px", fontSize: 14, marginBottom: 6 }}>
           <Wand size={15} /> Créer une nouvelle page AS (modèle)
@@ -1545,6 +1569,10 @@ function EspaceAdmin({ rubriques, setRubriques, pageAccueil, setPageAccueil, doc
                 Contenu de la page « {rubrique.titre} »
               </div>
               <BoutonMiseEnPage nbBlocs={(rubrique.page.blocs || []).length} onClick={() => ouvrirEditeur({ type: "rubrique", id: rubrique.id })} />
+              <label style={{ display: "flex", alignItems: "flex-start", gap: 8, marginTop: 12, fontSize: 12.5, color: "#4a4636", lineHeight: 1.45, cursor: "pointer" }}>
+                <input type="checkbox" checked={estPagePublications(rubrique)} onChange={(e) => setRubriques(rubriques.map((x) => (x.id === rubrique.id ? { ...x, publications: e.target.checked } : x)))} style={{ marginTop: 2 }} />
+                <span><b>Page de publications</b> : on y ajoute des articles (résultats, photos, vidéos, documents…) en 3 étapes, avec le bouton « Nouvelle publication ». Les collègues peuvent publier dans les pages de l'AS.</span>
+              </label>
             </div>
           )}
         </div>
@@ -1826,6 +1854,8 @@ export default function App() {
   const [rubriques, setRubriquesState] = useState(() => migrerCours(lsLire("rubriques", SEED_RUBRIQUES)));
   const [pageAccueil, setPageAccueilState] = useState(() => migrerBandeauAccueil(lsLire("pageAccueil", PAGE_ACCUEIL_SEED)));
   const [documents, setDocumentsState] = useState(() => lsLire("documents", []));
+  const [articles, setArticlesState] = useState(() => lsLire("articles", [])); // v1.8.0 : publications
+  const [assistantPub, setAssistantPub] = useState(null); // null | { rubriqueId } | { initial }
   const [liens, setLiensState] = useState(() => lsLire("liens", SEED_LIENS));
   const [pinAdmin] = useState(() => lsLire("pinAdmin", "1234")); // ancien code local, utilisé tant qu'aucun code n'est enregistré en ligne
   // role : null (visiteur) | { type: "admin" } | { type: "collegue", id, nom }
@@ -1860,6 +1890,7 @@ export default function App() {
         if (d.acces) { setAccesState(d.acces); lsEcrire("acces", d.acces); }
         if (!d.existe) { setSiteEnLigne(false); setEtatSync("ok"); return; }
         setSiteEnLigne(true);
+        if (d.articles) { setArticlesState(d.articles); lsEcrire("articles", d.articles); }
         setEtatSync((e) => (e === "envoi" ? e : "ok"));
         if (modifEnAttente.current) return; // une modification locale part bientôt : on ne l'écrase pas
         const cur = etatRef.current;
@@ -1963,6 +1994,36 @@ export default function App() {
     else setCadenasOuvert(true);
   };
 
+  // ---------- Publications (v1.8.0) ----------
+  const utilisateur = role ? (role.type === "admin" ? { id: "admin", nom: "Équipe EPS", admin: true } : { id: role.id, nom: role.nom, admin: false }) : null;
+  // les collègues publient dans les pages de l'AS ; l'administrateur partout
+  const peutPublierDans = (r) => !!utilisateur && (utilisateur.admin || r.id === "as" || r.parentId === "as");
+  const peutModifierArticle = (a) => !!utilisateur && (utilisateur.admin || a.auteurId === utilisateur.id);
+  const pagesPublications = rubriques.filter((r) => estPagePublications(r) && peutPublierDans(r))
+    .sort((a, b) => (a.parentId ? 1 : 0) - (b.parentId ? 1 : 0) || a.ordre - b.ordre);
+  const setArticles = (v) => { setArticlesState(v); lsEcrire("articles", v); };
+  const publierArticle = async (a) => {
+    setArticles([...articles.filter((x) => x.id !== a.id), a]);
+    if (siteEnLigne && syncDisponible()) {
+      try { await enregistrerArticle(a); }
+      catch (e) {
+        alert("La publication n'a pas pu être envoyée en ligne : " + (e.message || e) + "\n\nElle est gardée sur cet appareil. Vérifie la connexion puis clique à nouveau sur « Publier ».");
+        return false;
+      }
+    }
+    if (!(ecran.type === "rubrique" && ecran.id === a.rubriqueId)) setEcran({ type: "rubrique", id: a.rubriqueId });
+    return true;
+  };
+  const supprimerArticle = async (a) => {
+    if (!confirm(`Supprimer la publication « ${a.titre} » ? Elle disparaîtra du site.`)) return false;
+    if (siteEnLigne && syncDisponible()) {
+      try { await supprimerArticleEnLigne(a.id); }
+      catch (e) { alert("Suppression impossible pour le moment : " + (e.message || e)); return false; }
+    }
+    setArticles(articles.filter((x) => x.id !== a.id));
+    return true;
+  };
+
   // Blocs de la page affichée (accueil ou rubrique)
   const rubriqueCourante = ecran.type === "rubrique" ? rubriques.find((x) => x.id === ecran.id) : null;
   // Les collègues ne peuvent modifier que la rubrique « Association Sportive du Lycée » et ses pages
@@ -2036,7 +2097,19 @@ export default function App() {
     const r = rubriqueCourante;
     const sousRubriques = rubriques.filter((x) => x.parentId === r.id).sort((a, b) => a.ordre - b.ordre);
     const parent = r.parentId ? rubriques.find((x) => x.id === r.parentId) : null;
-    corps = <PageRubrique rubrique={r} sousRubriques={sousRubriques} allerA={setEcran} parent={parent} zoneBlocs={zoneBlocs} />;
+    const publications = estPagePublications(r) ? (
+      <ListePublications
+        key={r.id}
+        rubrique={r}
+        articles={articles}
+        utilisateur={peutPublierDans(r) ? utilisateur : null}
+        peutModifier={peutModifierArticle}
+        onNouvelle={() => setAssistantPub({ rubriqueId: r.id })}
+        onModifier={(a) => setAssistantPub({ initial: a })}
+        onSupprimer={supprimerArticle}
+      />
+    ) : null;
+    corps = <PageRubrique rubrique={r} sousRubriques={sousRubriques} allerA={setEcran} parent={parent} zoneBlocs={zoneBlocs} publications={publications} />;
   } else if (ecran.type === "documents") {
     corps = <PageDocuments documents={documents} />;
   } else if (ecran.type === "admin" && role?.type === "collegue") {
@@ -2055,6 +2128,10 @@ export default function App() {
           if (confirm(`Supprimer la page « ${r.titre} » ? Cette action est définitive.`)) setRubriques(rubriques.filter((x) => x.id !== id));
         }}
         pagesAS={rubriques.filter((r) => r.id === "as" || r.parentId === "as").sort((a, b) => (a.parentId ? 1 : 0) - (b.parentId ? 1 : 0) || a.ordre - b.ordre)}
+        pagesPublications={pagesPublications}
+        onPublier={(id) => setAssistantPub({ rubriqueId: id })}
+        mesPublications={articles.filter((a) => a.auteurId === role.id).length}
+        allerA={setEcran}
         ouvrirEditeur={ouvrirEditeur}
         etat={libelleSync(siteEnLigne, etatSync)}
         onVerrouiller={() => { setRole(null); setModeEdition(false); setEcran({ type: "accueil" }); }}
@@ -2145,6 +2222,17 @@ export default function App() {
             setAssistant(null);
             ouvrirEditeur({ type: "rubrique", id: idPage });
           }}
+        />
+      )}
+
+      {assistantPub && utilisateur && (
+        <AssistantPublication
+          pages={pagesPublications}
+          initial={assistantPub.initial}
+          rubriqueId={assistantPub.rubriqueId}
+          auteur={{ id: utilisateur.id, nom: utilisateur.nom }}
+          onPublier={publierArticle}
+          onFermer={() => setAssistantPub(null)}
         />
       )}
 
