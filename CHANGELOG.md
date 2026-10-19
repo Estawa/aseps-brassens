@@ -1,8 +1,18 @@
 # Site EPS — journal des changements
 
-Version actuelle : **1.5.0**
+Version actuelle : **1.6.0**
 
 ---
+
+### v1.6.0 — 19/10/2026
+- **Mise en forme du texte** dans les blocs « Texte », les parties dépliables (cours, partie écrite
+  soi-même, page type) et les cases des tableaux : **gras**, *italique*, souligné, 3 tailles
+  (petit, grand, très grand), 5 polices (classique, titre Oswald, arrondie Nunito, manuscrite
+  Caveat, machine à écrire), 8 couleurs d'écriture, 5 couleurs de surlignage, **encadré** en
+  5 couleurs (dans une phrase, ou sur plusieurs lignes dans les parties dépliables), gomme pour
+  retirer la mise en forme. Raccourcis Ctrl+B / Ctrl+I / Ctrl+U.
+- **Aperçu en direct** sous la zone de texte (rendu exact du site) et bouton **Agrandir** pour
+  écrire en grand : texte à gauche, aperçu à droite (Échap pour revenir).
 
 ### v1.5.0 — 19/10/2026
 - **Tableaux faciles à créer, partout sur le site** :

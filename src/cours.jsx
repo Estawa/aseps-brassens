@@ -1,4 +1,5 @@
 import React from "react";
+import { formater, cadreDe } from "./format.jsx";
 import { COURS_COURSE, COURS_ESCALADE, COURS_VOLLEY, COURS_BADMINTON, COURS_EVAL_CA5, COURS_GYM } from "./cours-suite.js";
 import { COURS_RELAIS, COURS_FOOT, COURS_BASKET } from "./cours-apsa.js";
 import { EVAL_GT, PAGES_EVAL_GT } from "./evaluations-gt.js";
@@ -656,12 +657,8 @@ export const PAGES_COURS = {
 
 // ---------- Petit moteur Markdown (titres, listes, tableaux, gras) ----------
 function enLigne(texte, cle) {
-  const morceaux = texte.split(/(\*\*[^*]+\*\*|\*[^*\s][^*]*\*)/g);
-  return morceaux.map((m, i) => {
-    if (m.startsWith("**") && m.endsWith("**") && m.length > 4) return <strong key={cle + "-" + i}>{m.slice(2, -2)}</strong>;
-    if (m.startsWith("*") && m.endsWith("*") && m.length > 2) return <em key={cle + "-" + i}>{m.slice(1, -1)}</em>;
-    return <React.Fragment key={cle + "-" + i}>{m}</React.Fragment>;
-  });
+  // gras, italique, souligné, tailles, couleurs, surlignage, encadré, police (voir format.jsx)
+  return formater(texte, String(cle));
 }
 function cellules(ligne) {
   return ligne.trim().replace(/^\|/, "").replace(/\|$/, "").split("|").map((c) => c.trim());
@@ -678,6 +675,28 @@ export function Markdown({ md }) {
       sortie.push(<h4 key={i} className="cours-h">{enLigne(l.slice(4), i)}</h4>);
       i++; continue;
     }
+    // encadré de plusieurs lignes :  :::cadre(:couleur) … :::
+    const cadre = l.trim().match(/^:::\s*cadre(?::([a-z0-9#-]*))?\s*$/i);
+    if (cadre) {
+      const interieur = [];
+      i++;
+      let profondeur = 0;
+      while (i < lignes.length) {
+        const t = lignes[i].trim();
+        if (/^:::\s*cadre/i.test(t)) profondeur++;
+        else if (t === ":::") { if (profondeur === 0) break; profondeur--; }
+        interieur.push(lignes[i]); i++;
+      }
+      i++; // ligne « ::: » de fermeture
+      const c = cadreDe(cadre[1]);
+      sortie.push(
+        <div key={"c" + i} className="cours-cadre" style={{ border: `2px solid ${c.bord}`, background: c.fond, borderRadius: 10, padding: "4px 14px", margin: "12px 0" }}>
+          <Markdown md={interieur.join("\n")} />
+        </div>
+      );
+      continue;
+    }
+    if (l.trim() === ":::") { i++; continue; } // fermeture orpheline
     if (l.trim().startsWith("|")) {
       const bloc = [];
       while (i < lignes.length && lignes[i].trim().startsWith("|")) { bloc.push(lignes[i]); i++; }
@@ -720,7 +739,7 @@ export function Markdown({ md }) {
     // paragraphe (consomme toujours au moins une ligne pour ne jamais bloquer)
     const para = [l.trim().replace(/^- /, "")];
     i++;
-    while (i < lignes.length && lignes[i].trim() && !/^(### |\||- |\d+\. )/.test(lignes[i].trim())) { para.push(lignes[i]); i++; }
+    while (i < lignes.length && lignes[i].trim() && !/^(### |\||- |\d+\. |:::)/.test(lignes[i].trim())) { para.push(lignes[i]); i++; }
     sortie.push(<p key={"p" + i} className="cours-p">{enLigne(para.join(" "), i)}</p>);
   }
   return <>{sortie}</>;

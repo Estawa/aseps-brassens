@@ -8,11 +8,12 @@ import {
 import { COURS, BlocCours, blocsCoursPourPage } from "./cours.jsx";
 import { AssistantPage, ZoneTexteMd, EXEMPLE_PARTIE } from "./modele.jsx";
 import { RenduTableau, FenetreTableau, tableauVide } from "./tableau.jsx";
+import { formater } from "./format.jsx";
 import { ecouterSite, publierSite, syncDisponible, ecrireAcces, ecrireMigrations, empreintePin } from "./sync.js";
 import { PAGES_EVAL_GT, PROTOCOLES_PDF, PROTOCOLES_PDF_PRO } from "./evaluations-gt.js";
 
 const uid = () => Math.random().toString(36).slice(2, 10);
-const APP_VERSION = "1.5.0";
+const APP_VERSION = "1.6.0";
 
 // ---------- Stockage local persistant ----------
 function lsLire(cle, defaut) {
@@ -281,7 +282,7 @@ function RenduBloc({ bloc, edition = false }) {
   }
   if (bloc.type === "texte") {
     if (!bloc.texte) return edition ? <VideEdition texte="Bloc texte vide — clique pour écrire" /> : null;
-    return <div className="texte-bloc" style={{ padding: "4px 2px", fontSize: 14.5, lineHeight: 1.65, color: "#101826", whiteSpace: "pre-wrap", textAlign: bloc.alignTexte || "left" }}>{bloc.texte}</div>;
+    return <div className="texte-bloc" style={{ padding: "4px 2px", fontSize: 14.5, lineHeight: 1.65, color: "#101826", whiteSpace: "pre-wrap", textAlign: bloc.alignTexte || "left" }}>{formater(bloc.texte)}</div>;
   }
   if (bloc.type === "image") {
     if (!bloc.url) return edition ? <VideEdition texte="Photo à choisir — clique pour l'importer" /> : null;
@@ -1256,7 +1257,7 @@ function EditeurContenuBloc({ bloc, majBloc }) {
   if (bloc.type === "tableau") return <EditeurTableauBloc bloc={bloc} majBloc={majBloc} />;
 
   if (bloc.type === "texte") {
-    return <textarea value={local.texte} onChange={(e) => setLocal({ ...local, texte: e.target.value })} onBlur={() => majBloc({ texte: local.texte })} rows={4} placeholder="Contenu du texte…" style={{ ...champStyle("100%"), resize: "vertical" }} />;
+    return <ZoneTexteMd simple value={bloc.texte || ""} rows={6} alignTexte={bloc.alignTexte} onCommit={(v) => { if (v !== (bloc.texte || "")) majBloc({ texte: v }); }} />;
   }
 
   if (bloc.type === "image" || bloc.type === "video") {

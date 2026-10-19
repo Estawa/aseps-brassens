@@ -1,5 +1,6 @@
 import React, { useState, useRef } from "react";
 import { createPortal } from "react-dom";
+import { formater, BarreFormat, useMiseEnForme } from "./format.jsx";
 import { X, Plus, Trash2, ChevronUp, ChevronDown, ChevronLeft, ChevronRight, Check, Clipboard, Table } from "lucide-react";
 
 // =====================================================================
@@ -69,11 +70,7 @@ function texteColleVersTableau(texte) {
 }
 
 // ---------- Rendu (identique aux tableaux des cours) ----------
-function enLigne(texte, cle) {
-  return String(texte || "").split(/(\*\*[^*]+\*\*)/g).map((m, i) =>
-    m.startsWith("**") && m.endsWith("**") && m.length > 4 ? <strong key={cle + i}>{m.slice(2, -2)}</strong> : <React.Fragment key={cle + i}>{m}</React.Fragment>
-  );
-}
+const enLigne = (texte, cle) => formater(texte, cle);
 
 export function RenduTableau({ bloc }) {
   const entete = bloc.entete || [];
@@ -143,9 +140,28 @@ export function GrilleTableau({ valeur, onChange }) {
     maj(e2, l2);
   };
 
+  // case active : la barre de mise en forme agit sur elle
+  const [active, setActive] = useState(null); // { ri, k, el }
+  const texteActif = active ? (active.ri === -1 ? entete[active.k] : lignes[active.ri]?.[active.k]) ?? "" : "";
+  const outils = useMiseEnForme({
+    texte: texteActif,
+    getSel: () => (active?.el ? [active.el.selectionStart, active.el.selectionEnd] : [texteActif.length, texteActif.length]),
+    appliquer: (nouveau, a, b) => {
+      if (!active) { alert("Clique d'abord dans une case du tableau."); return; }
+      active.ri === -1 ? setEntete(active.k, nouveau) : setCase(active.ri, active.k, nouveau);
+      requestAnimationFrame(() => { const el = active.el; if (el) { el.focus(); el.setSelectionRange(a, b ?? a); } });
+    },
+  });
+  const focus = (ri, k) => (e) => setActive({ ri, k, el: e.target });
+
   const caseStyle = { width: "100%", minWidth: 110, border: "1px solid var(--ligne)", borderRadius: 6, padding: "6px 7px", fontSize: 13, fontFamily: "inherit", resize: "vertical", lineHeight: 1.35, background: "#fff" };
 
   return (
+    <div style={{ display: "grid", gap: 8 }}>
+    <div style={{ display: "grid", gap: 4 }}>
+      <div style={{ fontSize: 11, color: "#6b6656" }}>Mise en forme de la case {active ? "sélectionnée" : "(clique d'abord dans une case)"} :</div>
+      <BarreFormat outils={outils} />
+    </div>
     <div style={{ overflowX: "auto", border: "1px solid var(--ligne)", borderRadius: 10, padding: 8, background: "#faf9f6" }}>
       <table style={{ borderCollapse: "separate", borderSpacing: 4 }}>
         <thead>
@@ -164,7 +180,7 @@ export function GrilleTableau({ valeur, onChange }) {
             <td style={{ fontSize: 10.5, fontWeight: 700, color: "#9a9384", textTransform: "uppercase", whiteSpace: "nowrap", paddingRight: 4 }}>Titres</td>
             {entete.map((c, k) => (
               <td key={k}>
-                <input value={c} onChange={(e) => setEntete(k, e.target.value)} onPaste={(e) => surColler(e, -1, k)} data-case={`-1-${k}`} placeholder={`Titre ${k + 1}`}
+                <input value={c} onChange={(e) => setEntete(k, e.target.value)} onPaste={(e) => surColler(e, -1, k)} onFocus={focus(-1, k)} onKeyDown={outils.surTouche} data-case={`-1-${k}`} placeholder={`Titre ${k + 1}`}
                   style={{ ...caseStyle, background: "var(--ink)", color: "#fff", fontWeight: 700, borderColor: "var(--ink)" }} />
               </td>
             ))}
@@ -181,7 +197,7 @@ export function GrilleTableau({ valeur, onChange }) {
               </td>
               {r.map((c, k) => (
                 <td key={k} style={{ verticalAlign: "top" }}>
-                  <textarea value={c} rows={2} onChange={(e) => setCase(ri, k, e.target.value)} onKeyDown={(e) => surTouche(e, ri, k)} onPaste={(e) => surColler(e, ri, k)} data-case={`${ri}-${k}`}
+                  <textarea value={c} rows={2} onChange={(e) => setCase(ri, k, e.target.value)} onKeyDown={(e) => { outils.surTouche(e); surTouche(e, ri, k); }} onPaste={(e) => surColler(e, ri, k)} onFocus={focus(ri, k)} data-case={`${ri}-${k}`}
                     style={{ ...caseStyle, fontWeight: k === 0 ? 700 : 400 }} />
                 </td>
               ))}
@@ -199,6 +215,7 @@ export function GrilleTableau({ valeur, onChange }) {
         <button type="button" style={petitBtn} onClick={() => ajouterLigne()}><Plus size={13} /> Ligne</button>
         <button type="button" style={petitBtn} onClick={() => ajouterColonne()}><Plus size={13} /> Colonne</button>
       </div>
+    </div>
     </div>
   );
 }
@@ -229,7 +246,7 @@ export function FenetreTableau({ initial, titreFenetre = "Tableau", onValider, o
             Remplis les cases directement. <strong>Entrée</strong> passe à la case du dessous (et crée une ligne à la fin).
             Les boutons <strong>+</strong> ajoutent une ligne ou une colonne, la corbeille la supprime.
             Tu peux aussi <strong>coller des cases copiées depuis Excel, Word ou Google Sheets</strong>.
-            Pour mettre un mot en gras : <code>**mot**</code>.
+            Pour mettre en forme : clique dans une case, sélectionne le texte puis utilise la barre (gras, couleur, surlignage…).
           </div>
           {avecTitre && (
             <input value={titre} onChange={(e) => setTitre(e.target.value)} placeholder="Titre au-dessus du tableau (facultatif)"

@@ -1,5 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
-import { X, Plus, Trash2, ChevronUp, ChevronDown, Eye, EyeOff, Heading, Bold, Italic, List, ListOrdered, Table, Wand } from "lucide-react";
+import { createPortal } from "react-dom";
+import { BarreFormat, useMiseEnForme, styleBouton, formater } from "./format.jsx";
+import { X, Plus, Trash2, ChevronUp, ChevronDown, Eye, EyeOff, Heading, Bold, Italic, List, ListOrdered, Table, Wand, Maximize2, Minimize2 } from "lucide-react";
 import { Markdown } from "./cours.jsx";
 import { FenetreTableau, mdVersTableau, tableauVersMd, tableauAuCurseur } from "./tableau.jsx";
 
@@ -38,13 +40,21 @@ const AIDE_PLACEHOLDER = "Texte de la partie…\n\nUtilise les boutons ci-dessus
 
 // ---------- Zone de texte avec barre de mise en forme ----------
 // value : texte enregistré ; onCommit(nouveau) : appelé à la sortie du champ et après chaque bouton.
-export function ZoneTexteMd({ value, onCommit, rows = 12, placeholder = AIDE_PLACEHOLDER }) {
+// simple : bloc « Texte » (pas de sous-titres / listes / tableaux, retours à la ligne conservés)
+export function ZoneTexteMd({ value, onCommit, rows = 12, placeholder, simple = false, alignTexte }) {
   const [local, setLocal] = useState(value || "");
-  const [apercu, setApercu] = useState(false);
+  const [apercu, setApercu] = useState(true);
+  const [grand, setGrand] = useState(false);
   // fenêtre d'édition visuelle d'un tableau : null ou { zone: {debut, fin} | null, initial }
   const [fenetreTab, setFenetreTab] = useState(null);
   const ref = useRef(null);
   useEffect(() => { setLocal(value || ""); }, [value]);
+  useEffect(() => {
+    if (!grand) return;
+    const echap = (e) => { if (e.key === "Escape") setGrand(false); };
+    window.addEventListener("keydown", echap);
+    return () => window.removeEventListener("keydown", echap);
+  }, [grand]);
 
   const appliquer = (nouveau, debutSel, finSel) => {
     setLocal(nouveau);
@@ -60,21 +70,15 @@ export function ZoneTexteMd({ value, onCommit, rows = 12, placeholder = AIDE_PLA
     const t = ref.current;
     return t ? [t.selectionStart, t.selectionEnd] : [local.length, local.length];
   };
-  // entoure la sélection (gras, italique)
-  const entourer = (marque, defaut) => {
-    const [a, b] = sel();
-    const choisi = local.slice(a, b) || defaut;
-    const nouveau = local.slice(0, a) + marque + choisi + marque + local.slice(b);
-    appliquer(nouveau, a + marque.length, a + marque.length + choisi.length);
-  };
+  const outils = useMiseEnForme({ texte: local, getSel: sel, appliquer, blocs: !simple });
+
   // insère un bloc sur sa propre ligne (sous-titre, tableau), après la sélection éventuelle (rien n'est effacé)
   const insererBloc = (texte, selDebut = 0, selLong = 0) => {
     const [, fin] = sel();
     const finLigne = local.indexOf("\n", fin);
     const a = finLigne === -1 ? local.length : finLigne;
-    const b = a;
     const avant = local.slice(0, a);
-    const apres = local.slice(b);
+    const apres = local.slice(a);
     const prefixe = avant.length === 0 ? "" : avant.endsWith("\n\n") ? "" : avant.endsWith("\n") ? "\n" : "\n\n";
     const suffixe = apres.length === 0 ? "\n" : apres.startsWith("\n\n") ? "" : apres.startsWith("\n") ? "\n" : "\n\n";
     const nouveau = avant + prefixe + texte + suffixe + apres;
@@ -105,7 +109,7 @@ export function ZoneTexteMd({ value, onCommit, rows = 12, placeholder = AIDE_PLA
   // Tableau : si le curseur est dans un tableau existant, on le modifie ; sinon on en crée un nouveau
   const ouvrirTableau = () => {
     const [a] = sel();
-    const zone = apercu ? null : tableauAuCurseur(local, a);
+    const zone = tableauAuCurseur(local, a);
     setFenetreTab({ zone, initial: zone ? mdVersTableau(local.slice(zone.debut, zone.fin)) : null });
   };
   const validerTableau = (t) => {
@@ -116,52 +120,89 @@ export function ZoneTexteMd({ value, onCommit, rows = 12, placeholder = AIDE_PLA
     else insererBloc(md);
   };
 
-  const bouton = { display: "flex", alignItems: "center", gap: 4, border: "1px solid var(--ligne)", background: "#fff", borderRadius: 7, padding: "5px 8px", fontSize: 11.5, fontWeight: 700, color: "#4a4636", cursor: "pointer", fontFamily: "inherit" };
+  const bouton = styleBouton;
   const garder = (e) => e.preventDefault(); // garde la sélection dans la zone de texte
 
+  const zoneTexte = (
+    <textarea
+      ref={ref}
+      value={local}
+      onChange={(e) => setLocal(e.target.value)}
+      onKeyDown={outils.surTouche}
+      onBlur={() => { if (local !== (value || "")) onCommit(local); }}
+      rows={grand ? undefined : rows}
+      placeholder={placeholder ?? (simple ? "Contenu du texte…" : AIDE_PLACEHOLDER)}
+      style={{ width: "100%", height: grand ? "100%" : undefined, minHeight: grand ? 260 : undefined, padding: "8px 10px", borderRadius: 8, border: "1px solid var(--ligne)", resize: grand ? "none" : "vertical", fontFamily: "ui-monospace, Menlo, Consolas, monospace", fontSize: grand ? 14 : 12.5, lineHeight: 1.5 }}
+    />
+  );
+  const rendu = local.trim()
+    ? (simple
+      ? <div style={{ fontSize: 14.5, lineHeight: 1.65, whiteSpace: "pre-wrap", textAlign: alignTexte || "left", padding: "10px 12px" }}>{formater(local)}</div>
+      : <div className="cours-corps" style={{ paddingTop: 10 }}><Markdown md={local} /></div>)
+    : <div style={{ color: "#9a9384", fontStyle: "italic", padding: 12 }}>Rien à afficher pour l'instant.</div>;
+  const zoneApercu = (
+    <div style={{ display: "grid", gap: 4, alignContent: "start", minHeight: 0 }}>
+      <div style={{ fontSize: 10.5, fontWeight: 700, color: "#9a9384", textTransform: "uppercase", letterSpacing: 0.4 }}>Aperçu en direct (rendu sur le site)</div>
+      <div className="cours-carte" style={{ minHeight: 80, overflow: "auto", maxHeight: grand ? "none" : 420 }}>{rendu}</div>
+    </div>
+  );
+
+  const barre = (
+    <BarreFormat
+      outils={outils}
+      avant={!simple && <button type="button" style={bouton} onMouseDown={garder} onClick={() => insererBloc("### Sous-titre", 4, 10)} title="Ajouter un sous-titre"><Heading size={13} /> Sous-titre</button>}
+      apres={<>
+        {!simple && <button type="button" style={bouton} onMouseDown={garder} onClick={() => prefixerLignes(false)} title="Liste à puces (sélectionne des lignes pour les transformer)"><List size={13} /> Liste</button>}
+        {!simple && <button type="button" style={bouton} onMouseDown={garder} onClick={() => prefixerLignes(true)} title="Liste numérotée"><ListOrdered size={13} /> 1. 2. 3.</button>}
+        {!simple && <button type="button" style={bouton} onMouseDown={garder} onClick={ouvrirTableau} title="Créer un tableau, ou modifier celui où se trouve le curseur"><Table size={13} /> Tableau</button>}
+        <span style={{ flex: 1 }} />
+        <button type="button" style={{ ...bouton, color: apercu ? "#fff" : "var(--teal)", background: apercu ? "var(--teal)" : "#fff", borderColor: "var(--teal)" }} onClick={() => setApercu((v) => !v)} title="Afficher ou masquer l'aperçu en direct">
+          {apercu ? <Eye size={13} /> : <EyeOff size={13} />} Aperçu
+        </button>
+        <button type="button" style={{ ...bouton, color: "var(--piste)", borderColor: "var(--piste)" }} onClick={() => setGrand((v) => !v)} title={grand ? "Revenir à la petite fenêtre" : "Écrire en grand (texte à gauche, aperçu à droite)"}>
+          {grand ? <Minimize2 size={13} /> : <Maximize2 size={13} />} {grand ? "Réduire" : "Agrandir"}
+        </button>
+      </>}
+    />
+  );
+  const aide = (
+    <div style={{ fontSize: 11, color: "#9a9384", lineHeight: 1.45 }}>
+      Sélectionne le texte, puis choisis la mise en forme. Le bouton gomme retire la mise en forme de la sélection.
+      {!simple && <> Ligne vide = nouveau paragraphe. Pour modifier un tableau déjà écrit : clique dans ses lignes « | … | » puis sur « Tableau ».</>}
+    </div>
+  );
+  const fenetre = fenetreTab && (
+    <FenetreTableau
+      titreFenetre={fenetreTab.zone ? "Modifier le tableau" : "Nouveau tableau"}
+      initial={fenetreTab.initial}
+      onValider={validerTableau}
+      onFermer={() => setFenetreTab(null)}
+    />
+  );
+
+  if (grand) {
+    return createPortal(
+      <div style={{ position: "fixed", inset: 0, zIndex: 150, background: "rgba(16,24,38,0.55)", display: "flex", padding: 12 }} onClick={() => setGrand(false)}>
+        <div onClick={(e) => e.stopPropagation()} style={{ background: "#fff", borderRadius: 14, flex: 1, display: "flex", flexDirection: "column", gap: 10, padding: 14, minHeight: 0, maxWidth: 1400, margin: "0 auto", boxShadow: "0 20px 60px rgba(0,0,0,0.3)" }}>
+          {barre}
+          <div className="editeur-grand" style={{ flex: 1, minHeight: 0, display: "grid", gridTemplateColumns: apercu ? "repeat(auto-fit, minmax(300px, 1fr))" : "1fr", gap: 12, overflow: "auto" }}>
+            {zoneTexte}
+            {apercu && zoneApercu}
+          </div>
+          {aide}
+          {fenetre}
+        </div>
+      </div>,
+      document.body
+    );
+  }
   return (
     <div style={{ display: "grid", gap: 6 }}>
-      <div style={{ display: "flex", flexWrap: "wrap", gap: 5 }}>
-        <button type="button" style={bouton} onMouseDown={garder} onClick={() => insererBloc("### Sous-titre", 4, 10)} title="Ajouter un sous-titre"><Heading size={13} /> Sous-titre</button>
-        <button type="button" style={bouton} onMouseDown={garder} onClick={() => entourer("**", "texte en gras")} title="Mettre en gras"><Bold size={13} /> Gras</button>
-        <button type="button" style={bouton} onMouseDown={garder} onClick={() => entourer("*", "texte en italique")} title="Mettre en italique"><Italic size={13} /></button>
-        <button type="button" style={bouton} onMouseDown={garder} onClick={() => prefixerLignes(false)} title="Liste à puces (sélectionne des lignes pour les transformer)"><List size={13} /> Liste</button>
-        <button type="button" style={bouton} onMouseDown={garder} onClick={() => prefixerLignes(true)} title="Liste numérotée"><ListOrdered size={13} /> 1. 2. 3.</button>
-        <button type="button" style={bouton} onMouseDown={garder} onClick={ouvrirTableau} title="Créer un tableau, ou modifier celui où se trouve le curseur"><Table size={13} /> Tableau</button>
-        <span style={{ flex: 1 }} />
-        <button type="button" style={{ ...bouton, color: apercu ? "#fff" : "var(--teal)", background: apercu ? "var(--teal)" : "#fff", borderColor: "var(--teal)" }} onClick={() => setApercu((v) => !v)} title="Voir le rendu sur le site">
-          {apercu ? <EyeOff size={13} /> : <Eye size={13} />} Aperçu
-        </button>
-      </div>
-      {apercu ? (
-        <div className="cours-carte" style={{ minHeight: 120 }}>
-          <div className="cours-corps" style={{ paddingTop: 10 }}>
-            {local.trim() ? <Markdown md={local} /> : <div style={{ color: "#9a9384", fontStyle: "italic" }}>Rien à afficher pour l'instant.</div>}
-          </div>
-        </div>
-      ) : (
-        <textarea
-          ref={ref}
-          value={local}
-          onChange={(e) => setLocal(e.target.value)}
-          onBlur={() => { if (local !== (value || "")) onCommit(local); }}
-          rows={rows}
-          placeholder={placeholder}
-          style={{ width: "100%", padding: "8px 10px", borderRadius: 8, border: "1px solid var(--ligne)", resize: "vertical", fontFamily: "ui-monospace, Menlo, Consolas, monospace", fontSize: 12.5, lineHeight: 1.5 }}
-        />
-      )}
-      <div style={{ fontSize: 11, color: "#9a9384", lineHeight: 1.45 }}>
-        Sélectionne des lignes puis « Liste » pour les transformer en liste. Ligne vide = nouveau paragraphe.
-        Pour modifier un tableau déjà écrit : clique dans ses lignes « | … | » puis sur « Tableau ».
-      </div>
-      {fenetreTab && (
-        <FenetreTableau
-          titreFenetre={fenetreTab.zone ? "Modifier le tableau" : "Nouveau tableau"}
-          initial={fenetreTab.initial}
-          onValider={validerTableau}
-          onFermer={() => setFenetreTab(null)}
-        />
-      )}
+      {barre}
+      {zoneTexte}
+      {apercu && zoneApercu}
+      {aide}
+      {fenetre}
     </div>
   );
 }
