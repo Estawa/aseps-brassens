@@ -1,8 +1,12 @@
 # Site EPS — journal des changements
 
-Version actuelle : **1.7.0**
+Version actuelle : **1.7.1**
 
 ---
+
+### v1.7.1 — 19/10/2026
+- **Tableaux sur téléphone** : ils restent un seul tableau (plus de découpage en fiches). S'ils sont
+  plus larges que l'écran, on les fait glisser avec le doigt ; la première colonne reste visible.
 
 ### v1.7.0 — 19/10/2026
 - **Éditeur visuel, sans balises** : on écrit directement sur le texte mis en forme (comme dans

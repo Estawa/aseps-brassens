@@ -336,27 +336,22 @@ details[open] > .cours-titre { border-bottom: 1px solid var(--ligne); }
 .cours-table td { padding: 8px 10px; border-top: 1px solid var(--ligne); vertical-align: top; }
 .cours-table tbody tr:nth-child(even) td { background: #faf9f6; }
 
-/* Téléphone : chaque ligne de tableau devient une petite fiche lisible */
+/* Téléphone (v1.7.1) : le tableau reste UN tableau ; s'il est trop large, on le fait glisser
+   avec le doigt, la première colonne restant visible. */
 @media (max-width: 760px) {
   .cours-titre { font-size: 15.5px; padding: 12px 14px; }
   .cours-corps { padding: 4px 14px 14px; font-size: 14px; }
-  .cours-table-wrap { border: none; overflow: visible; }
-  .cours-table thead { display: none; }
-  .cours-table, .cours-table tbody, .cours-table tr, .cours-table td { display: block; width: 100%; }
-  .cours-table tr { border: 1px solid var(--ligne); border-radius: 10px; margin-bottom: 8px; overflow: hidden; }
-  .cours-table tbody tr:nth-child(even) td { background: #fff; }
-  .cours-table td { border-top: 1px solid #f0ede6; padding: 6px 10px; }
-  .cours-table td:first-child { border-top: none; background: var(--piste-soft) !important; font-weight: 700; }
-  .cours-table td::before {
-    content: attr(data-label);
-    display: block;
-    font-size: 10.5px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.4px;
-    color: #9a9384;
-    margin-bottom: 1px;
+  .cours-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; overscroll-behavior-x: contain; }
+  .cours-table { font-size: 12.5px; width: max-content; min-width: 100%; }
+  .cours-table th { padding: 7px 9px; white-space: normal; min-width: 70px; }
+  .cours-table td { padding: 7px 9px; min-width: 70px; max-width: 220px; }
+  .cours-table th:first-child, .cours-table td:first-child {
+    position: sticky; left: 0; z-index: 1; font-weight: 700;
+    box-shadow: 1px 0 0 var(--ligne);
   }
+  .cours-table td { background: #fff; }
+  .cours-table tbody tr:nth-child(even) td:first-child { background: #faf9f6; }
+  .cours-table th:first-child { background: var(--ink); }
 }
 
 /* ---------- Affichage ordinateur (écrans larges) ----------

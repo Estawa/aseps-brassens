@@ -13,7 +13,7 @@ import { ecouterSite, publierSite, syncDisponible, ecrireAcces, ecrireMigrations
 import { PAGES_EVAL_GT, PROTOCOLES_PDF, PROTOCOLES_PDF_PRO } from "./evaluations-gt.js";
 
 const uid = () => Math.random().toString(36).slice(2, 10);
-const APP_VERSION = "1.7.0";
+const APP_VERSION = "1.7.1";
 
 // ---------- Stockage local persistant ----------
 function lsLire(cle, defaut) {
@@ -1114,7 +1114,7 @@ function EditeurTableauBloc({ bloc, majBloc }) {
       </button>
       <div style={{ fontSize: 12, color: "#6b6656" }}>{nC} colonne{nC > 1 ? "s" : ""} · {nL} ligne{nL > 1 ? "s" : ""}{bloc.titre ? ` · « ${bloc.titre} »` : ""}</div>
       <div style={{ fontSize: 11.5, color: "#6b6656", lineHeight: 1.55, background: "#faf9f6", border: "1px solid var(--ligne)", borderRadius: 8, padding: "8px 10px" }}>
-        Sur téléphone, chaque ligne du tableau s'affiche comme une petite fiche (comme dans « Manger autour de la séance »).
+        Sur téléphone, le tableau garde sa forme ; s'il est large, on le fait glisser avec le doigt (la première colonne reste visible).
       </div>
       {ouvert && (
         <FenetreTableau
