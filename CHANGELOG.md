@@ -1,8 +1,21 @@
 # Site EPS — journal des changements
 
-Version actuelle : **1.8.0**
+Version actuelle : **1.9.0**
 
 ---
+
+### v1.9.0 — 24/10/2026
+- **Sections APSA sous « Vie de l'A.S. »** : **Musculation**, **Basket-ball** et **Volley-ball**.
+  Dans le menu, elles apparaissent juste sous « Vie de l'A.S. », en retrait ; la page « Vie de l'A.S. »
+  propose un lien vers chacune, et leur fil d'Ariane ramène à « Vie de l'A.S. ».
+  Ce sont des pages de publications : les collègues peuvent y publier résultats, photos et vidéos.
+- **Musculation › Challenges et classements** (nouveau bloc « Challenges et classements Max Pro ») :
+  - onglet **Challenges** : les règles de tous les challenges de l'appli Max Pro, en parties dépliables ;
+  - onglet **Classements** : classements des challenges, par épreuve (chaque format et chaque côté)
+    et du combiné, avec filtre Filles / Garçons.
+  - Uniquement ce qui a été **vu et validé par un enseignant** dans Max Pro, avec les **pseudos** des élèves.
+    Tout se met à jour automatiquement depuis Max Pro : rien à saisir sur le site.
+- Le bloc peut aussi être placé sur n'importe quelle autre page (menu « Ajouter un bloc »).
 
 ### v1.8.0 — 19/10/2026
 - **Publications en 3 étapes** pour les collègues (et l'administrateur) dans « Résultats sportifs »

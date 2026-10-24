@@ -156,3 +156,23 @@ export async function supprimerArticleEnLigne(id) {
   await deleteDoc(doc(db, COLLECTION, "art_" + id));
   dernier.delete("art_" + id);
 }
+
+// ---------- Max Pro (v1.9.0) : challenges et classements publiés par l'appli Max Pro ----------
+// Max Pro écrit lui-même le document « aseps/maxpro » (pseudos uniquement) quand un professeur
+// est connecté ; le site se contente de le lire. rappel(donnees | null)
+export function ecouterMaxPro(rappel) {
+  if (!db) { rappel(null); return () => {}; }
+  return onSnapshot(
+    doc(db, COLLECTION, "maxpro"),
+    (snap) => {
+      if (!snap.exists()) { rappel(null); return; }
+      try {
+        const d = snap.data();
+        rappel({ ...JSON.parse(d.json), maj: d.maj || null });
+      } catch (e) {
+        rappel(null);
+      }
+    },
+    () => rappel(null)
+  );
+}

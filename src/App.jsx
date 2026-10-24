@@ -3,18 +3,19 @@ import {
   Home, LayoutList, FolderOpen, Lock, Unlock, Plus, Trash2, Pencil,
   ChevronUp, ChevronDown, ChevronRight, ExternalLink, Image as ImageIcon,
   Video, FileText, Upload, X, Link2, ArrowLeft, Menu, Images, Type, LayoutTemplate, GripVertical, LayoutGrid,
-  ChevronLeft, Copy, Undo2, Monitor, Smartphone, Check, Square, BookOpen, Wand, ListCollapse, Table,
+  ChevronLeft, Copy, Undo2, Monitor, Smartphone, Check, Square, BookOpen, Wand, ListCollapse, Table, Trophy,
 } from "lucide-react";
 import { COURS, BlocCours, blocsCoursPourPage } from "./cours.jsx";
 import { AssistantPage, ZoneTexteMd, EXEMPLE_PARTIE } from "./modele.jsx";
 import { RenduTableau, FenetreTableau, tableauVide } from "./tableau.jsx";
 import { formater } from "./format.jsx";
+import { BlocMaxPro } from "./maxpro.jsx";
 import { ecouterSite, publierSite, syncDisponible, ecrireAcces, ecrireMigrations, empreintePin, enregistrerArticle, supprimerArticleEnLigne } from "./sync.js";
 import { ListePublications, AssistantPublication, estPagePublications } from "./publications.jsx";
 import { PAGES_EVAL_GT, PROTOCOLES_PDF, PROTOCOLES_PDF_PRO } from "./evaluations-gt.js";
 
 const uid = () => Math.random().toString(36).slice(2, 10);
-const APP_VERSION = "1.8.0";
+const APP_VERSION = "1.9.0";
 
 // ---------- Stockage local persistant ----------
 function lsLire(cle, defaut) {
@@ -100,6 +101,7 @@ const SEED_AS = [
   { id: "as-presentation", titre: "Présentation et inscriptions", parentId: "as", ordre: 0, page: { blocs: [blocTexte("Activités proposées, horaires des entraînements, enseignants responsables et modalités d'inscription (licence UNSS) : informations à compléter.")] } },
   { id: "as-resultats", titre: "Résultats sportifs", parentId: "as", ordre: 1, page: { blocs: [blocTexte("Les résultats de nos équipes et de nos élèves en compétitions UNSS (district, départemental, académique, France) seront publiés ici au fil de l'année.")] } },
   { id: "as-photos", titre: "Photos et vidéos", parentId: "as", ordre: 2, page: { blocs: [blocTexte("Les photos et vidéos des entraînements, rencontres et compétitions de l'AS.")] } },
+  ...sectionsVieAS("as-photos", 3),
 ];
 
 const SEED_RUBRIQUES = [
@@ -156,7 +158,40 @@ function construireArbre(rubriques) {
   const racines = rubriques.filter((r) => !r.parentId).sort((a, b) => a.ordre - b.ordre);
   return racines.map((r) => ({
     ...r,
-    enfants: rubriques.filter((e) => e.parentId === r.id).sort((a, b) => a.ordre - b.ordre),
+    enfants: ordonnerAvecSections(rubriques.filter((e) => e.parentId === r.id).sort((a, b) => a.ordre - b.ordre)),
+  }));
+}
+
+// v1.9.0 — Sections d'une page (ex. Vie de l'A.S. › Musculation, Basket-ball, Volley-ball) :
+// ce sont des pages de la même rubrique, marquées « sousDe » ; dans le menu elles suivent leur page,
+// en retrait. Si leur page n'existe plus, elles redeviennent des pages ordinaires.
+function ordonnerAvecSections(freres) {
+  const ids = new Set(freres.map((f) => f.id));
+  const estSection = (f) => f.sousDe && ids.has(f.sousDe) && f.sousDe !== f.id;
+  const res = [];
+  freres.filter((f) => !estSection(f)).forEach((f) => {
+    res.push(f);
+    freres.filter((x) => estSection(x) && x.sousDe === f.id).forEach((x) => res.push({ ...x, estSection: true }));
+  });
+  return res;
+}
+
+// Les trois sections APSA placées sous « Vie de l'A.S. » (v1.9.0)
+function sectionsVieAS(vieId, ordreDepart) {
+  const intro = {
+    "as-muscu": "L'A.S. musculation : les challenges à relever et les classements de l'appli Max Pro. Seules les performances vues et validées par un enseignant y figurent.",
+    "as-basket": "L'actualité de l'équipe de basket-ball de l'A.S. : entraînements, rencontres, résultats et photos.",
+    "as-volley": "L'actualité de l'équipe de volley-ball de l'A.S. : entraînements, rencontres, résultats et photos.",
+  };
+  const titres = { "as-muscu": "Musculation", "as-basket": "Basket-ball", "as-volley": "Volley-ball" };
+  return Object.keys(titres).map((id, k) => ({
+    id, titre: titres[id], parentId: "as", sousDe: vieId, ordre: ordreDepart + k, publications: true,
+    page: {
+      blocs: [
+        { id: uid(), type: "texte", largeur: 12, texte: intro[id] },
+        ...(id === "as-muscu" ? [{ id: uid(), type: "maxpro", largeur: 12 }] : []),
+      ],
+    },
   }));
 }
 
@@ -326,6 +361,7 @@ function RenduBloc({ bloc, edition = false }) {
   }
   if (bloc.type === "cours") return <BlocCours bloc={bloc} edition={edition} />;
   if (bloc.type === "tableau") return <RenduTableau bloc={bloc} />;
+  if (bloc.type === "maxpro") return <BlocMaxPro edition={edition} />;
   if (bloc.type === "espace") {
     const h = bloc.hauteur || 40;
     if (edition) {
@@ -372,8 +408,8 @@ function EnTete({ arbre, ecran, allerA, adminDeverrouille, allerAdmin }) {
                 <LayoutList size={14} /> {r.titre}
               </button>
               {r.enfants.map((s) => (
-                <button key={s.id} onClick={() => { allerA({ type: "rubrique", id: s.id }); setMenuOuvert(false); }} style={{ ...navBtnStyle(ecran.type === "rubrique" && ecran.id === s.id), paddingLeft: 30, fontSize: 12.5 }}>
-                  {s.titre}
+                <button key={s.id} onClick={() => { allerA({ type: "rubrique", id: s.id }); setMenuOuvert(false); }} style={{ ...navBtnStyle(ecran.type === "rubrique" && ecran.id === s.id), paddingLeft: s.estSection ? 48 : 30, fontSize: s.estSection ? 12 : 12.5 }}>
+                  {s.estSection && <span style={{ opacity: 0.6 }}>›</span>}{s.titre}
                 </button>
               ))}
             </div>
@@ -801,7 +837,7 @@ function AdminRubriques({ rubriques, setRubriques, ongletChoisi, setOngletChoisi
             />
             {r.enfants.map((s) => (
               <LigneRubrique
-                key={s.id} rubrique={s} niveau={1} actif={!pageAccueilChoisie && ongletChoisi === s.id}
+                key={s.id} rubrique={s} niveau={s.estSection ? 2 : 1} actif={!pageAccueilChoisie && ongletChoisi === s.id}
                 onChoisir={() => { setOngletChoisi(s.id); setPageAccueilChoisie(false); }} onRenommer={() => renommer(s.id)}
                 onSupprimer={() => supprimer(s.id)} onMonter={() => deplacer(s.id, "haut")} onDescendre={() => deplacer(s.id, "bas")}
               />
@@ -842,6 +878,7 @@ const TYPES_BLOC = [
   { id: "liens", label: "Liens externes", Icon: Link2 },
   { id: "partie", label: "Partie dépliable (à écrire)", Icon: ListCollapse },
   { id: "cours", label: "Cours (partie prête)", Icon: BookOpen },
+  { id: "maxpro", label: "Challenges et classements Max Pro", Icon: Trophy },
   { id: "espace", label: "Espace vide", Icon: Square },
 ];
 function nouveauBloc(type) {
@@ -853,6 +890,7 @@ function nouveauBloc(type) {
   if (type === "diaporama") return { ...base, images: [], vitesse: 4 };
   if (type === "galerie") return { ...base, images: [], affichage: "grille", parLigneOrdi: 4, parLigneTel: 2, recadrage: "uniforme" };
   if (type === "liens") return { ...base, liens: [] };
+  if (type === "maxpro") return base;
   if (type === "tableau") return { ...base, titre: "", ...tableauVide(3, 3) };
   if (type === "cours") return { ...base, partie: "", ouvert: false };
   // « partie » : une partie dépliable dont on écrit soi-même le titre et le texte (bloc « cours » libre)
@@ -1407,6 +1445,15 @@ function EditeurContenuBloc({ bloc, majBloc }) {
     return <EditeurLiensBloc bloc={bloc} majBloc={majBloc} />;
   }
 
+  if (bloc.type === "maxpro") {
+    return (
+      <div style={{ fontSize: 12.5, color: "#6b6656", lineHeight: 1.5 }}>
+        Ce bloc affiche automatiquement les règles des challenges et les classements validés de l'appli <b>Max Pro</b> (pseudos des élèves uniquement).
+        Rien à remplir ici : tout se met à jour depuis Max Pro, dès qu'un professeur y valide une performance ou un résultat de challenge.
+      </div>
+    );
+  }
+
   return null;
 }
 function EditeurLiensBloc({ bloc, majBloc }) {
@@ -1621,16 +1668,42 @@ function migrerCours(rubriques) {
     lsEcrire("rubriques", r);
     lsEcrire("migrationCours", 8);
   }
+  // v1.9.0 : sections Musculation / Basket-ball / Volley-ball sous « Vie de l'A.S. »
+  if (lsLire("migrationCours", 0) < 9) {
+    r = ajouterSectionsVieASV190(r);
+    lsEcrire("rubriques", r);
+    lsEcrire("migrationCours", 9);
+  }
   return r;
 }
 
 // Mises à jour de contenu appliquées une seule fois à la version en ligne (marqueur « contenus »).
-const VERSION_CONTENUS = 2;
+const VERSION_CONTENUS = 3;
 function migrerContenusEnLigne(rubriques, depuis) {
   let r = rubriques;
   if (depuis < 1) r = ajouterContenusV130(r);
   if (depuis < 2) r = ajouterPartiesEvalV140(r);
+  if (depuis < 3) r = ajouterSectionsVieASV190(r);
   return r;
+}
+
+// v1.9.0 : sections « Musculation », « Basket-ball », « Volley-ball » sous la page « Vie de l'A.S. »
+// (ou « Photos et vidéos »), placées juste après elle. Rien n'est ajouté si elles existent déjà.
+function ajouterSectionsVieASV190(rubriques) {
+  if (!rubriques.some((r) => r.id === "as")) return rubriques;
+  if (["as-muscu", "as-basket", "as-volley"].some((id) => rubriques.some((r) => r.id === id))) return rubriques;
+  const pagesAS = rubriques.filter((r) => r.parentId === "as").sort((a, b) => a.ordre - b.ordre);
+  const vie = pagesAS.find((r) => /vie de l/i.test(r.titre || "")) || pagesAS.find((r) => r.id === "as-photos") || null;
+  const nouvelles = sectionsVieAS(vie ? vie.id : null, 0);
+  // ordre : juste après la page « Vie de l'A.S. » (sinon à la fin), les pages suivantes sont décalées
+  const idx = vie ? pagesAS.findIndex((r) => r.id === vie.id) : pagesAS.length - 1;
+  const ordre = [...pagesAS];
+  ordre.splice(idx + 1, 0, ...nouvelles);
+  const rang = Object.fromEntries(ordre.map((r, i) => [r.id, i]));
+  return [
+    ...rubriques.map((r) => (r.parentId === "as" && rang[r.id] !== undefined ? { ...r, ordre: rang[r.id] } : r)),
+    ...nouvelles.map((n) => ({ ...n, ordre: rang[n.id], ...(vie ? {} : { sousDe: undefined }) })),
+  ];
 }
 
 // v1.4.0 : chaque page « Évaluation » reçoit les parties qui lui manquent (exemples de notation,
@@ -2095,8 +2168,13 @@ export default function App() {
   let corps;
   if (ecran.type === "rubrique" && rubriqueCourante) {
     const r = rubriqueCourante;
-    const sousRubriques = rubriques.filter((x) => x.parentId === r.id).sort((a, b) => a.ordre - b.ordre);
-    const parent = r.parentId ? rubriques.find((x) => x.id === r.parentId) : null;
+    // sections (v1.9.0) : affichées sur la page dont elles dépendent, pas sur la page principale
+    const pageSection = r.sousDe ? rubriques.find((x) => x.id === r.sousDe && x.parentId === r.parentId) : null;
+    const sousRubriques = [
+      ...rubriques.filter((x) => x.parentId === r.id && !(x.sousDe && rubriques.some((y) => y.id === x.sousDe && y.parentId === r.id))),
+      ...(r.parentId ? rubriques.filter((x) => x.sousDe === r.id && x.parentId === r.parentId) : []),
+    ].sort((a, b) => a.ordre - b.ordre);
+    const parent = pageSection || (r.parentId ? rubriques.find((x) => x.id === r.parentId) : null);
     const publications = estPagePublications(r) ? (
       <ListePublications
         key={r.id}
